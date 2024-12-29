@@ -1,0 +1,84 @@
+.car-loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .road {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background-color: #333;
+    overflow: hidden;
+  }
+  
+  .car {
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    animation: drive 3s linear infinite;
+  }
+  
+  .car .body {
+    width: 60px;
+    height: 15px;
+    background-color: #3498db;
+    border-radius: 5px;
+    position: relative;
+    top: -5px;
+  }
+  
+  .car .wheel {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #555;
+    border-radius: 50%;
+    top: 15px;
+  }
+  
+  .car .wheel::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: #000;
+    border-radius: 50%;
+    top: 5px;
+    left: 5px;
+  }
+  
+  .car .front {
+    left: 5px;
+    animation: wheel-spin 0.5s linear infinite;
+  }
+  
+  .car .back {
+    right: 5px;
+    animation: wheel-spin 0.5s linear infinite;
+  }
+  
+  /* Keyframes for car movement */
+  @keyframes drive {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  /* Keyframes for wheel spinning */
+  @keyframes wheel-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  

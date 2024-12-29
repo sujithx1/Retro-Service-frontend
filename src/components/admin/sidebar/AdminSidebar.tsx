@@ -1,0 +1,59 @@
+import { NavLink } from "react-router-dom";
+
+
+const AdminSidebar = () => 
+    {
+       
+        const urls=[
+            {side:'Dashboard' ,icon: "🏠" ,path:'/admin'},
+            {side:'Mechanics' ,icon:"🧑‍🔧" , path:'/admin/mechanics'},
+            {side:'Users' ,   icon:"👨‍👩‍👧",  path:'/admin/users'},
+            {side:'Auto Spare Parts' ,  icon:"🚗", path:'/admin/autospareparts'},
+            {side:'Categories' , icon:"⚙️",path:'/admin/categories'},
+            {side:'Jobs' , icon:"🛠️",path:'/admin/jobs'},
+            
+        ]
+
+
+        return(
+    <aside className="bg-slate-200 w-64  h-screen flex flex-col">
+      <div className="p-4 text-2xl font-bold">
+        <span className="text-blue-700">
+            Retro
+            </span>
+            <span>
+
+            Service
+            </span>
+            </div>
+      <nav className="flex flex-col space-y-4 p-4">
+        {urls.map((item,index)=>(
+
+            <NavLink
+            className={`flex items-center space-x-2 hover:bg-white p-2 rounded no-underline font-bold text-sm `}
+            key={index}
+          
+          
+            to={item.path}
+            >
+                <span>{item.icon}</span>
+                <span>{item.side}</span>
+
+
+
+
+            </NavLink>
+            
+        // <a href="#" className="flex items-center space-x-2 hover:bg-white p-2 rounded no-underline">
+        //   <span>🏠</span>
+        //   <span >Dashboard</span>
+        // </a>
+        ))}
+       
+        {/* Add more links as needed */}
+      </nav>
+    </aside>
+  );
+  }
+
+  export default AdminSidebar

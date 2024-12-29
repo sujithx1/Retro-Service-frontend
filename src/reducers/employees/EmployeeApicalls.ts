@@ -1,0 +1,248 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  Emp_Put_job,
+  Employee_EditProfile_types,
+  EmployeeSignUpTypes,
+  EmployeeStateTypes,
+} from "../../types/employee/EmployeeTypes";
+import {
+  ErrorPayload,
+  Response_ServiceBooking_Types,
+  Service_Booking_Put_status_type,
+  UserLoginType,
+} from "../../types/clients/UsersTypes";
+import { employee_Axios_instance } from "../../axios-api/employee.api";
+import { isAxiosError } from "axios";
+import Cookies from "js-cookie";
+export const employee_signup_post = createAsyncThunk<
+  EmployeeStateTypes,
+  EmployeeSignUpTypes,
+  { rejectValue: ErrorPayload }
+>("/employee/signup", async (employeData, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.post("/signup", employeData);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error || "signup error",
+        status: error.response?.status,
+      });
+    }
+    return rejectWithValue({ message: "Something problem for signup" });
+  }
+});
+
+export const Employee_Send_otp = createAsyncThunk<
+  EmployeeStateTypes,
+  string,
+  { rejectValue: ErrorPayload }
+>("/signup/otp", async (otp, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.post("/signup/otp", { otp });
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+        status: error.response?.status,
+      });
+    }
+    return rejectWithValue({
+      message: "otp not sending something problem",
+    });
+  }
+});
+
+export const employee_resend_otp = createAsyncThunk<
+  string,
+  EmployeeSignUpTypes,
+  { rejectValue: ErrorPayload }
+>("/signup/resend", async (employeData, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.post(
+      "/signup/resendotp",
+      employeData
+    );
+    if (response.data) return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+        status: error.response?.status,
+      });
+    }
+  }
+});
+
+export const Emp_login_post = createAsyncThunk<
+  EmployeeStateTypes,
+  UserLoginType,
+  { rejectValue: ErrorPayload }
+>("/employee/login", async (employeeData, { rejectWithValue }) => {
+  console.log("login post");
+
+  try {
+    const response = await employee_Axios_instance.post("/login", employeeData);
+    console.log(response);
+
+    if (response.data && response.data.token) {
+      localStorage.setItem("employee", JSON.stringify(response.data.employee));
+
+      Cookies.set("employeeToken", response.data.token, {
+        expires: 7, // Expires in 7 days
+        path: "/",
+        secure: true, // Use `true` only in HTTPS
+      });
+      return response.data;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+        status: error.response?.status,
+      });
+    }
+    return rejectWithValue({
+      message: "Somthing problem for Employee Login",
+    });
+  }
+});
+
+export const Employee_put_Profile = createAsyncThunk<
+  EmployeeStateTypes,
+  Employee_EditProfile_types,
+  { rejectValue: ErrorPayload }
+>(
+  "/employee/profile/edit",
+  async (employeData: Employee_EditProfile_types, { rejectWithValue }) => {
+    try {
+      console.log("User Data:", employeData);
+
+      // Log FormData contents
+
+      // alert(formData)
+      const response = await employee_Axios_instance.put(
+        `/profile/${employeData.id}`,
+        employeData
+      );
+      if (response.data) return response.data.employee;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message: error.response?.data.error,
+          status: error.response?.status,
+        });
+      }
+      return rejectWithValue({
+        message: "something error for update user ",
+      });
+    }
+  }
+);
+
+export const Employee_get_Logout = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: ErrorPayload }
+>("/employee/logout", async (_, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.get("/logout");
+    if (response.data) {
+      localStorage.removeItem("employee");
+      Cookies.remove("employeeToken");
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+        status: error.response?.status,
+      });
+    }
+    return rejectWithValue({
+      message: "something error for user logout",
+    });
+  }
+});
+
+export const Employee_put_jobs = createAsyncThunk<
+  EmployeeStateTypes,
+  Emp_Put_job,
+  { rejectValue: ErrorPayload }
+>("/employee/job/put", async (empData, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.put(
+      `/job/${empData.empId}`,
+      empData.jobName
+    );
+    if (response.data) {
+      return response.data.employee;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something error for add jobs from empl",
+    });
+  }
+});
+
+export const Employee_get_Service_Booking = createAsyncThunk<
+  Response_ServiceBooking_Types[],
+  string,
+  { rejectValue: ErrorPayload }
+>("/employee/service-booking", async (employeeId, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.get(
+      `/service-booking/${employeeId}`
+    );
+
+    if (response.data) {
+      console.log("get service-booking employees", response.data);
+
+      return response.data.services;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+        status: error.response?.status,
+      });
+    }
+    return rejectWithValue({
+      message: "something error for user logout",
+    });
+  }
+});
+
+export const employee_put_ServiceBooking = createAsyncThunk<
+  Response_ServiceBooking_Types,
+  Service_Booking_Put_status_type,
+  { rejectValue: ErrorPayload }
+>("/employee/service-booking/modify", async (Service, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.put(
+      `/service-booking/status/${Service.id}`,
+      { status: Service.status }
+    );
+    if (response.data) {
+      return response.data.service;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in modify service booking in employee",
+    });
+  }
+});
