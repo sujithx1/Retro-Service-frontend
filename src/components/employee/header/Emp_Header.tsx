@@ -2,13 +2,20 @@ import { useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../../../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { clearEmp } from "../../../reducers/employees/EmployeeReducers";
-import { Employee_get_Logout } from "../../../reducers/employees/EmployeeApicalls";
+import { employee_get_details, Employee_get_Logout } from "../../../reducers/employees/EmployeeApicalls";
+import { useEffect } from "react";
 
 const Emp_Header = () =>{
   const{employee}=useSelector((state:RootState)=>state.employee)
-    
+    const employeeId=employee?.id
     const navigate=useNavigate()
     const dispatch:AppDispatch=useDispatch()
+    useEffect(()=>{
+     if (employeeId) {
+      dispatch(employee_get_details(employeeId))
+     }
+    },[dispatch,employeeId])
+    
     return (
     <header className="flex items-center justify-between bg-white p-4 shadow-md">
       <div className="text-lg font-semibold">
@@ -26,7 +33,7 @@ const Emp_Header = () =>{
         <div className="flex items-center">
   <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden hover:cursor-pointer"  onClick={()=>navigate('/employee/profile')}>
             <img
-              src={employee?.profilePic||"https://via.placeholder.com/40"}
+              src={employee?.profilePic}
               alt="User Avatar"
               className="w-full h-full object-cover"
             />

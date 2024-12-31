@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { reset } from "../../../reducers/users/UserReducers";
 import { ServiceBooking_Types } from "../../../types/clients/UsersTypes";
 import { user_post_Service_Booking } from "../../../reducers/users/UserapiCalls";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
     service: JobsStateTypes;
@@ -21,7 +22,7 @@ interface Props {
     // const [employee, setEmployee] = useState(false);
     const [showMap, setShowMap] = useState(false);
     const {isSuccess,isError,message,selectEmp,user}=useSelector((state:RootState)=>state.user)
-
+    const navigate=useNavigate()
 const dispstch:AppDispatch=useDispatch()
     useEffect(()=>{
       
@@ -44,17 +45,19 @@ const dispstch:AppDispatch=useDispatch()
         console.log("select employeee",selectEmp.userLocation);
         
         const serviceData:ServiceBooking_Types={
+          id:"",
             userId:user?.id as string,
             userName:name,
             userEmail:email,
             problem:problem,
-            EmpId:selectEmp.id,
-            EmpName:selectEmp.username,
+            employeeId:selectEmp.id,
+            employeeName:selectEmp.username,
             empLocation:selectEmp.location as string,
             jobId:service.id,
             jobName:service.name,
             ServiceMin_wage:service.minimum_wage,
-            userLocation:selectEmp.userLocation||""
+            userLocation:selectEmp.userLocation||"",
+            status:""
 
 
 
@@ -64,7 +67,9 @@ const dispstch:AppDispatch=useDispatch()
         
 
         dispstch(user_post_Service_Booking(serviceData)).unwrap()
-        .then(()=>toast.success("success Sevice Booking"))
+        .then(()=>{toast.success("success Sevice Booking")
+          navigate('/service-booking/prograss')
+        })
         .catch((err)=>toast.error(err))
         
 
@@ -124,7 +129,7 @@ const dispstch:AppDispatch=useDispatch()
           </div>
           <div className="mb-4">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Vehicle No:
+              Problem:
             </label>
             <input
               type="text"

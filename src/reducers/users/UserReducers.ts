@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ServiceBooking_Types, UserInitialState, UserSignUpTypes, UserStateTypes } from "../../types/clients/UsersTypes";
-import { User_get_allJobs, User_get_Employees, User_get_Logout, user_post_Service_Booking, user_put_Profile, user_put_User_profile_pic, UserGoogle_post, userLoginPost, UserResendOtp, UsersendOtpMail, userSignupPost } from "./UserapiCalls";
+import { User_get_allJobs, User_get_Employees, User_get_Logout, User_get_service_Booking, User_post_Employee_feedBack, user_post_Service_Booking, user_put_Profile, user_put_User_profile_pic, UserGoogle_post, userLoginPost, UserResendOtp, UsersendOtpMail, userSignupPost } from "./UserapiCalls";
 import { Emp_Location_Types, EmployeeStateTypes } from "../../types/employee/EmployeeTypes";
 import { JobsStateTypes } from "../../types/admin/admintypes";
 
@@ -25,17 +25,19 @@ const selectEmp:Emp_Location_Types={
     lng:0
 }
 const serviceBooking:ServiceBooking_Types={
+    id:"",
     userId:"",
     userName:"",
     userEmail:"",
     problem:"",
     userLocation:"",
-    EmpId:"",
-    EmpName:"",
+    employeeId:"",
+    employeeName:"",
     empLocation:"",
     jobId:"",
     jobName:"",
     ServiceMin_wage:0,
+    status:""
 
 }
 
@@ -43,6 +45,10 @@ const employees:EmployeeStateTypes[]=[]
 const jobs:JobsStateTypes[]=[]
 
 const user=localStorage.getItem('user')?JSON.parse(localStorage.getItem('user') as string):null
+
+
+ 
+
 
 const initialState:UserInitialState={
     user:user?user:null,
@@ -274,6 +280,7 @@ const userSlices=createSlice({
                                           state.isLoading=false
                                           state.isSuccess=true
                                           state.jobs=action.payload
+                                          localStorage.removeItem('service-booking')
                                           
                                       })
                                       .addCase(User_get_allJobs.rejected,(state,action)=>{
@@ -314,11 +321,53 @@ const userSlices=createSlice({
                                                 state.isLoading=false
                                                 state.isSuccess=true;
                                                 state.serviceBooking=action.payload
-                                                
+                                           
                                     
                                     
                                             })
                                             .addCase(user_post_Service_Booking.rejected,(state,action)=>{
+                                                state.isSuccess=false
+                                                state.isError=true
+                                                if (action.payload) {
+                                                   
+                                                    state.message = action.payload.message;
+                                                  } else {
+                                                    state.message = "An unknown error occurred";
+                                                  }
+                                            })
+                                              .addCase(User_get_service_Booking.pending,(state)=>{
+                                                state.isLoading=true
+                                            })
+                                      .addCase(User_get_service_Booking.fulfilled,(state,action:PayloadAction<ServiceBooking_Types>)=>{
+                                                state.isLoading=false
+                                                state.isSuccess=true;
+                                                state.serviceBooking=action.payload
+                                                
+                                    
+                                    
+                                            })
+                                            .addCase(User_get_service_Booking.rejected,(state,action)=>{
+                                                state.isSuccess=false
+                                                state.isError=true
+                                                if (action.payload) {
+                                                   
+                                                    state.message = action.payload.message;
+                                                  } else {
+                                                    state.message = "An unknown error occurred";
+                                                  }
+                                            })
+                                              .addCase(User_post_Employee_feedBack.pending,(state)=>{
+                                                state.isLoading=true
+                                            })
+                                      .addCase(User_post_Employee_feedBack.fulfilled,(state)=>{
+                                                state.isLoading=false
+                                                state.isSuccess=true;
+                                                
+                                                
+                                    
+                                    
+                                            })
+                                            .addCase(User_post_Employee_feedBack.rejected,(state,action)=>{
                                                 state.isSuccess=false
                                                 state.isError=true
                                                 if (action.payload) {

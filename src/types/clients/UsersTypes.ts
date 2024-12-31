@@ -42,10 +42,19 @@ export interface UserLoginType{
     email:string;
     password:string;
 }
+export interface UserReport_FeedBack_types{
+    userid:string,
+    userEmail:string,
+    userName:string,
+    userFeedBack:string;
+    employeeId:string;
+    employeeEmail?:string
+
+}
 export interface UserInitialState{
     user:UserStateTypes|null;
     selectEmp:Emp_Location_Types,
-    serviceBooking:ServiceBooking_Types,
+    serviceBooking:ServiceBooking_Types|null,
     employee:EmployeeStateTypes[]
     jobs:JobsStateTypes[]
     tempuser:UserSignUpTypes;
@@ -62,17 +71,19 @@ export interface ErrorPayload {
 
 
   export interface ServiceBooking_Types{
+    id:string;
     userId:string;
     userName:string;
     userEmail:string;
     problem:string;
     userLocation:string;
-    EmpId:string;
-    EmpName:string;
+    employeeId:string;
+    employeeName:string;
     empLocation:string;
     jobId:string;
     jobName:string;
     ServiceMin_wage:number,
+    status:string,
     
 
 

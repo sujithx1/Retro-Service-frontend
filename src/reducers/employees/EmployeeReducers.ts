@@ -5,6 +5,7 @@ import {
 } from "../../types/employee/EmployeeTypes";
 import {
   Emp_login_post,
+  employee_get_details,
   Employee_get_Logout,
   Employee_get_Service_Booking,
   Employee_put_jobs,
@@ -200,15 +201,40 @@ const employeeslice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         const newService_booking = action.payload;
+        if (newService_booking.status=="CANCELLED") {
+          localStorage.removeItem('service-booking')
+          
+        }
 
         state.employeeServiceBooking = state.employeeServiceBooking.map(
           (employee) =>
             employee.id === newService_booking.id
               ? newService_booking
               : employee
+
         );
       })
       .addCase(employee_put_ServiceBooking.rejected, (state,action) => {
+        state.isSuccess = false;
+        state.isError=true
+       if(action.payload)
+       {
+        state.message=action.payload.message
+       }
+
+      })
+      
+      
+      .addCase(employee_get_details.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(employee_get_details.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.employee = action.payload
+
+      })
+      .addCase(employee_get_details.rejected, (state,action) => {
         state.isSuccess = false;
         state.isError=true
        if(action.payload)

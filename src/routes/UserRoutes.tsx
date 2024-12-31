@@ -9,6 +9,7 @@ import UserProtect from "../components/client/Protect/UserProtect"
 import UserProfile from "../pages/clients/profile/UserProfile"
 import UserProfileEdit from "../pages/clients/profile/UserEditProfile"
 import UsersideEmployees from "../pages/clients/employees/UsersideEmployees"
+import Emp_Service_booking_progress from "../pages/clients/service-booking/Emp_Service_booking_progress"
 
 const UserRoutes = () => {
   return (
@@ -42,6 +43,11 @@ const UserRoutes = () => {
           <Route path="/employees" element={
             <UserProtect>
               <UsersideEmployees/>
+            </UserProtect>
+          }/>
+          <Route path="/service-booking/prograss" element={
+            <UserProtect>
+              <Emp_Service_booking_progress/>
             </UserProtect>
           }/>
 {/* 

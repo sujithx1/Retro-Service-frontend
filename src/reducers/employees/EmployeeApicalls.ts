@@ -246,3 +246,30 @@ export const employee_put_ServiceBooking = createAsyncThunk<
     });
   }
 });
+
+
+
+export const employee_get_details=createAsyncThunk<EmployeeStateTypes,string,{rejectValue:ErrorPayload}>('/employee/details',async(id,{rejectWithValue})=>{
+  try {
+    const response=await employee_Axios_instance.get(`/employee/${id}`)
+    if (response.data) {
+      return response.data.employee
+      
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+
+        
+      })
+      
+      
+    }
+    return rejectWithValue({
+    message:'something problem getting employee details'
+    })
+    
+  }
+
+})
