@@ -11,6 +11,7 @@ const AdminSidebar = () =>
             {side:'Auto Spare Parts' ,  icon:"🚗", path:'/admin/autospareparts'},
             {side:'Categories' , icon:"⚙️",path:'/admin/categories'},
             {side:'Jobs' , icon:"🛠️",path:'/admin/jobs'},
+            {side:'Report-FeedBack' , icon:"📧",path:'/admin/report-feedback'},
             
         ]
 

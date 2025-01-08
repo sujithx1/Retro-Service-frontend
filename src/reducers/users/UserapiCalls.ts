@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import {
-  ErrorPayload,
-  
+  ErrorPayload,  
+  Service_Booking_Sendreq_EveryEmp,
   ServiceBooking_Types,
   UserEditProfile,
   UserImage_Types,
@@ -290,6 +290,42 @@ export const User_get_Employees = createAsyncThunk<
   }
 });
 
+
+
+export const user_post_service_booking_send_every_Employee = createAsyncThunk<
+  void,
+  Service_Booking_Sendreq_EveryEmp,
+  { rejectValue: ErrorPayload }
+>("/user/service/post", async (bookingData, { rejectWithValue }) => {
+  try {
+    console.log("service bookinh ", bookingData);
+
+    const response = await useraxiosInstance.post(
+      "/req-services",
+      bookingData
+    );
+    if (response.data) {
+     
+      return response.data.service
+
+
+
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong ...",
+    });
+  }
+});
+
+
+
+
 export const user_post_Service_Booking = createAsyncThunk<
   ServiceBooking_Types,
   ServiceBooking_Types,
@@ -373,3 +409,98 @@ export const User_post_Employee_feedBack = createAsyncThunk<UserReport_FeedBack_
 
   }
 );
+
+
+export const User_post_Forgot_password_OTP= createAsyncThunk<string,string,{rejectValue:ErrorPayload}>(
+  "/user/forgot-password/otp",
+  async (email,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.post(`/forgot-password/otp`,{email})
+      if (response.data) {
+        return response.data.email
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+export const User_post_forgot_password_otp_check= createAsyncThunk<void,string,{rejectValue:ErrorPayload}>(
+  "/user/forgot-password/otp/check",
+  async (otp,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.post(`/forgot-password/check`,{otp})
+      if (response.data) {
+        return response.data
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+
+
+
+
+export const User_post_forgot_password= createAsyncThunk<void, { email: string; password: string }  ,{rejectValue:ErrorPayload}>(
+  "/user/forgot-password",
+  async ({email,password},{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.post(`/forgot-password`,{email,password})
+      if (response.data) {
+        return response.data
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+
+
+

@@ -20,8 +20,8 @@ const Emp_Service_booking_progress = () => {
     const [reportfeedBack,setReportFeedBack]=useState<UserReport_FeedBack_types>({
       userid:user?.id||"",
       userEmail:user?.email||"",
-      userName:"",
-      userFeedBack:"",
+      name:"",
+      feedBack:"",
       employeeId:serviceBooking?.employeeId||"",
       
 
@@ -182,8 +182,8 @@ console.log(serviceBooking);
                   <input
                     type="text"
                     id="username"
-                    name="userName"
-                    value={reportfeedBack.userName}
+                    name="name"
+                    value={reportfeedBack.name}
                     onChange={handleOnchange_report_feedBack}
                     placeholder="Enter your name"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -195,8 +195,8 @@ console.log(serviceBooking);
                   </label>
                   <textarea
                     id="feedback"
-                    name="userFeedBack"
-                    value={reportfeedBack.userFeedBack}
+                    name="feedBack"
+                    value={reportfeedBack.feedBack}
                     onChange={handleOnchange_report_feedBack}
                     placeholder="Write your feedback here"
                     rows={4}

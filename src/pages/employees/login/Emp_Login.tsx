@@ -22,10 +22,13 @@ const Emp_Login = () => {
   useEffect(() => {
     if (isError) {
       toast.error(message);
+      dispatch(empReset())
       return;
     }
     if (isSuccess) {
+      
       navigate("/employee/home");
+      dispatch(empReset())
   
     }
     return () => {

@@ -1,4 +1,4 @@
-import { UserStateTypes } from "../clients/UsersTypes";
+import { UserReport_FeedBack_types, UserStateTypes } from "../clients/UsersTypes";
 import { EmployeeStateTypes } from "../employee/EmployeeTypes";
 
 
@@ -56,7 +56,8 @@ export interface AdminInitialStateTypes{
     users:UserStateTypes[];
     employees:EmployeeStateTypes[];
     jobs:JobsStateTypes[];
-    categories:CategoryStateTypes[]
+    categories:CategoryStateTypes[],
+    feedbacks:UserReport_FeedBack_types[],
     isSuccess:boolean;
     isError:boolean;
     isLoading:boolean

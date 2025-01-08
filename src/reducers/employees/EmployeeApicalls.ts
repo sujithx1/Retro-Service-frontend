@@ -14,6 +14,7 @@ import {
 import { employee_Axios_instance } from "../../axios-api/employee.api";
 import { isAxiosError } from "axios";
 import Cookies from "js-cookie";
+import { JobsStateTypes } from "../../types/admin/admintypes";
 export const employee_signup_post = createAsyncThunk<
   EmployeeStateTypes,
   EmployeeSignUpTypes,
@@ -177,7 +178,7 @@ export const Employee_put_jobs = createAsyncThunk<
   try {
     const response = await employee_Axios_instance.put(
       `/job/${empData.empId}`,
-      empData.jobName
+      empData
     );
     if (response.data) {
       return response.data.employee;
@@ -246,6 +247,29 @@ export const employee_put_ServiceBooking = createAsyncThunk<
     });
   }
 });
+
+
+export const employee_get_allJobs=createAsyncThunk<JobsStateTypes[],void,{rejectValue:ErrorPayload}>('/employee/getjobs',async(_,{rejectWithValue})=>{
+  try {
+    console.log("get jobs");
+    
+    const response=await employee_Axios_instance.get('/jobs')
+    if(response.data)return response.data.jobs
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting jobs"
+    })
+    
+  }
+})
 
 
 

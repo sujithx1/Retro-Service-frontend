@@ -1,3 +1,4 @@
+import { JobsStateTypes } from "../admin/admintypes";
 import { Response_ServiceBooking_Types } from "../clients/UsersTypes";
 
 
@@ -25,7 +26,8 @@ export interface EmployeeStateTypes{
 }
 export interface Employee_InitialState{
     employee:EmployeeStateTypes|null;
-    employeeServiceBooking:Response_ServiceBooking_Types[]
+    employeeServiceBooking:Response_ServiceBooking_Types[],
+    jobs:JobsStateTypes[],
     tempuser:EmployeeSignUpTypes;
     isSuccess:boolean;
     isError:boolean;
@@ -58,6 +60,6 @@ export interface Employee_EditProfile_types{
 
 export interface Emp_Put_job{
     empId:string,
-    jobName:string,
-    isChecked:boolean
+    jobAdd:JobsStateTypes,
+
 }

@@ -38,17 +38,25 @@ export interface UserSuccessResponseType{
 
 
 }
+export interface FinduserLocation{
+    lat:number,
+    lng:number,
+    address:string
+}
 export interface UserLoginType{
     email:string;
     password:string;
 }
 export interface UserReport_FeedBack_types{
+    id?:string
     userid:string,
     userEmail:string,
-    userName:string,
-    userFeedBack:string;
+    name:string,
+    feedBack:string;
     employeeId:string;
-    employeeEmail?:string
+    employeeEmail?:string,
+    createdAt?:Date
+    updatedAt?:Date
 
 }
 export interface UserInitialState{
@@ -68,7 +76,18 @@ export interface ErrorPayload {
     message: string;
     status?: number;
   }
-
+export interface Service_Booking_Sendreq_EveryEmp{
+    userId:string;
+    userLocation:FinduserLocation,
+    userName:string;
+    userEmail:string;
+    problem:string;
+    jobId:string;
+    jobName:string;
+    Min_wage:number;
+    
+}
+  
 
   export interface ServiceBooking_Types{
     id:string;

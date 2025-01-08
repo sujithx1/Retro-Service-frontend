@@ -1,8 +1,8 @@
 import axios from "axios";
 import cookies from "js-cookie"
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store/store";
-import { clearUser } from "../reducers/users/UserReducers";
+// import { useDispatch } from "react-redux";
+// import { AppDispatch } from "../store/store";
+// import { clearUser } from "../reducers/users/UserReducers";
 
 
 const  useraxiosInstance=axios.create({
@@ -18,7 +18,9 @@ const  useraxiosInstance=axios.create({
 
 
 useraxiosInstance.interceptors.request.use(
+    
     (config)=>{
+        console.log("requset")
         const token=cookies.get('userToken')
         if(token)
         {
@@ -42,46 +44,59 @@ useraxiosInstance.interceptors.response.use(
     (response) => response, 
      
     async (error) => {
+        console.log("Interceptor caught error:", error);
+        console.log("Error response:", error.response);
+    
 
-const dispatch:AppDispatch=useDispatch()
+// const dispatch:AppDispatch=useDispatch()
 
-        const originalRequest = error.config;  
-        if (error.response && error.response.status === 401) {
+console.log("response");
+// Debugging point
+if (!error.response) {
+    console.error("No response from server. Check your backend or network.");
+    return Promise.reject(error);
+}
+const originalRequest = error.config;  
+        
+if (error.response && error.response.status === 401 && error.response.data.error === "jwt expired" && !originalRequest._retry) {
+    originalRequest._retry = true; // Prevent retry loop
           
-            try {
-                console.log("callig response use");
-                
-                const refreshToken = cookies.get('userToken');  // Get refresh token from cookies
-                
-                console.log(refreshToken,"refreshhhhhhhhhhhhhhhhhhhhhhh",refreshToken);
-                if (!refreshToken) {
-                    return Promise.reject("No refresh token available");  // Reject if no refresh token is found
-                }
-                
-                // Request to refresh the access token
-                const refreshResponse = await axios.post('http://localhost:3000/api/user/refresh-token', {}, {
-                    headers: {
-                        Authorization: `Bearer ${refreshToken}`,  // Send refresh token in the request
-                    },
-                    withCredentials: true
-                });
-                console.log("refrshhhhhhhhhhhh",refreshResponse);
-                
-                
-                // If the refresh token is valid, we get a new access token
-                const newAccessToken = refreshResponse.data.accessToken;
-                cookies.set('userToken', newAccessToken);  // Set the new access token in cookies
-                console.log(newAccessToken,"newwwwwwwwww accessssssssssssstoken");
-                
-                // Retry the original request with the new access token
-                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                return axios(originalRequest);  // Retry the original request with the new token
-            } catch (refreshError) {
-               
-                dispatch(clearUser())
-                localStorage.removeItem('user')
-                return Promise.reject(refreshError);  // Reject if there's an error during token refresh
+    try {
+        console.log("Token expired, attempting to refresh token...");
+        const refreshToken = cookies.get('userToken');
+        if (!refreshToken) {
+            console.error("No refresh token available. Logging out user.");
+            // dispatch(clearUser());
+            localStorage.removeItem('user');
+            return Promise.reject("No refresh token available");
+        }
+
+        // Request a new access token
+        const refreshResponse = await axios.post(
+            'http://localhost:3000/api/user/refresh-token',
+            {},
+            {
+                headers: { Authorization: `Bearer ${refreshToken}` },
+                withCredentials: true,
             }
+        );
+        console.log("Refresh successful, new token:", refreshResponse.data.accessToken);
+
+        // Update token in cookies
+        const newAccessToken = refreshResponse.data.accessToken;
+        cookies.set('userToken', newAccessToken);
+
+        // Retry the original request with the new access token
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axios(originalRequest);
+    } catch (refreshError) {
+        console.error("Failed to refresh token:", refreshError);
+
+        // Handle refresh failure (e.g., logout user)
+    //    dispatch(clearUser());
+        localStorage.removeItem('user');
+        return Promise.reject(refreshError);
+    }
         }
         return Promise.reject(error);  // Reject if not a 401 error
     }

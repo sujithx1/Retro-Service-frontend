@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import Adminaxios_Instance from "../../axios-api/adminSide.api";
 import { isAxiosError } from "axios";
 import { Add_category, Add_Job, AdminLoginTypes, AdminSuccessTypes, CategoryStateTypes, JobsStateTypes } from "../../types/admin/admintypes";
-import { ErrorPayload, UserStateTypes } from "../../types/clients/UsersTypes";
+import { ErrorPayload, UserReport_FeedBack_types, UserStateTypes } from "../../types/clients/UsersTypes";
 import { EmployeeStateTypes } from "../../types/employee/EmployeeTypes";
 import Cookies from "js-cookie";
 
@@ -25,8 +25,12 @@ AdminLoginTypes,
       return response.data;
     }
   } catch (error) {
+    console.log("Admin eroror",error);
+    
     if (isAxiosError(error)) {
       return rejectWithValue({
+    
+        
         message: error.response?.data?.error || "something an error occured",
         status: error.response?.status,
       });
@@ -348,6 +352,30 @@ export const Admin_add_Job=createAsyncThunk<JobsStateTypes,Add_Job,{rejectValue:
   try {
     const response=await Adminaxios_Instance.post('/job',JobData)
     if(response.data)return response.data.job
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error,
+        status:error.response?.status
+      })
+      
+    }
+    return rejectWithValue({message:'something problem adding job'})
+    
+  }
+
+})
+
+
+
+export const Admin_Get_FeedBack=createAsyncThunk<UserReport_FeedBack_types[],void,{rejectValue:ErrorPayload}>('/admin/getFeedback',async (_,{rejectWithValue})=>{
+  try {
+    const response=await Adminaxios_Instance.get('/report-feedback')
+    if(response.data){
+      console.log("feedbacks",response.data);
+      
+      return response.data.feedback}
+
   } catch (error) {
     if (isAxiosError(error)) {
       return rejectWithValue({

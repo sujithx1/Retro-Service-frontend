@@ -10,6 +10,8 @@ import UserProfile from "../pages/clients/profile/UserProfile"
 import UserProfileEdit from "../pages/clients/profile/UserEditProfile"
 import UsersideEmployees from "../pages/clients/employees/UsersideEmployees"
 import Emp_Service_booking_progress from "../pages/clients/service-booking/Emp_Service_booking_progress"
+import UserForgotPassword from "../pages/clients/login/UserForgotPassword"
+import PasswordForm from "../pages/clients/login/NewPassword"
 
 const UserRoutes = () => {
   return (
@@ -50,6 +52,10 @@ const UserRoutes = () => {
               <Emp_Service_booking_progress/>
             </UserProtect>
           }/>
+
+
+          <Route path="forgot-password/otp" element={<UserForgotPassword/>}/>
+          <Route path="forgot-password" element={<PasswordForm/>}/>
 {/* 
 <Route path="/map" element={<UserProtect>
 

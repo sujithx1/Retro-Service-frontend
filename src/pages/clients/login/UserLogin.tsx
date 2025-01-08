@@ -16,30 +16,24 @@ const UserLogin = () => {
     passworderr:"",
   })
   const dispatch: AppDispatch = useDispatch();
-
   const navigate = useNavigate();
-
-
   useEffect(() => {
     if (isError) {
       toast.error(message);
+      dispatch(reset())
       return;
     }
     if (isSuccess) {
       navigate("/home");
-  
+      dispatch(reset())
     }
     console.log("hai");
-    
     return () => {
       dispatch(reset());
     };
   }, [isError, isSuccess, message, dispatch, navigate]);
-
-
   const {email,password}=logindata
   const handleOnchange=(e:ChangeEvent<HTMLInputElement>)=>{
-
    const {name,value}=e.target
     setLogindata((prev)=>({
       ...prev,
@@ -53,31 +47,23 @@ const UserLogin = () => {
         passworderr:""
     }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
     if (!emailPattern.test(email)) {
       newError.emailerr="Invalid Email"
-      isValid=false
-      
+      isValid=false 
     }else
     {
       newError.emailerr=""
       isValid=true
     }
-    
-
     function validatepass() {
-      const capital=/[A-Z]/
+    const capital=/[A-Z]/
     const small=/[a-z]/
     const splc=/[@$!%*?&]/
     const dig=/\d/
     if (password.trim()=="") {
       newError.passworderr="please enter password"
-      return false
-
-
-      
+      return false  
     }
-    
    if (!capital.test(password)) {
     newError.passworderr="at least one uppercase letter"
     return false
@@ -85,28 +71,21 @@ const UserLogin = () => {
    if (!small.test(password)) {
     newError.passworderr="at least one lowercase letter"
     return false
-    
    }
    if (!splc.test(password)) {
     newError.passworderr="one special character"
-    return false
-    
+    return false 
    }
    if (!dig.test(password)) {
     newError.passworderr="one digit"
     return false
-    
    }
    if (password.length<8) {
     newError.passworderr="password must 8 letters"
-    return false
-    
+    return false  
    }
-
-   return true
-      
-      
-    }
+   return true  
+  }
     // const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     // if (!strongPasswordRegex.test(password)) {
@@ -117,29 +96,19 @@ const UserLogin = () => {
 
     if (validatepass()) {
       newError.passworderr=""
-      isValid=true
-      
+      isValid=true 
     }
-    
-    
-
     setloginError(newError)
     return isValid
-
-
   }
-
-  
   const handlesubmit =(e:FormEvent)=>{
-
-e.preventDefault()
-if (handleValidate()) {
-  
-  dispatch(userLoginPost(logindata))
-}
+    e.preventDefault()
+    if (handleValidate()) {
+      dispatch(userLoginPost(logindata))
+    }
   }
-
   return (
+    <>      
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 font-sans">
   {/* Main Container */}
   <div className="flex flex-col lg:flex-row bg-white rounded-xl shadow-lg overflow-hidden max-w-4xl">
@@ -149,7 +118,7 @@ if (handleValidate()) {
       style={{
         backgroundImage: "url('/Mobile Mechanic or a Repair Shop which is the best choice.jpeg')",
       }}
-    >
+      >
       <div className="p-8 text-center text-white bg-opacity-40 rounded-lg">
         <h2 className="text-3xl font-bold mt-5">Welcome Back!</h2>
         <p className="text-lg mb-5">Log in to access your personalized dashboard.</p>
@@ -160,9 +129,8 @@ if (handleValidate()) {
         >
           Sign Up
         </button>
-      </div>
-    </div>
-
+      </div>       
+    </div>      
     {/* Right Section */}
     <div className="flex flex-1 flex-col justify-center p-8">
       <h2 className="text-3xl font-semibold text-blue-600 text-center mb-6">Log In</h2>
@@ -192,7 +160,7 @@ if (handleValidate()) {
             value={password}
             onChange={handleOnchange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+            />
           <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-400">
             🔒
           </span>
@@ -211,6 +179,15 @@ if (handleValidate()) {
       </form>
 
       {/* Footer */}
+     
+        <span
+          className="text-center text-gray-600 mt-4 hover:underline cursor-pointer"
+          onClick={()=>navigate('/forgot-password/otp')}
+        >
+          forgot password ? 
+          
+        </span>
+    
       <p className="text-center text-gray-600 mt-4">
         Don't have an account?{" "}
         <span
@@ -225,8 +202,10 @@ if (handleValidate()) {
       </div>
     </div>
   </div>
+
 </div>
 
+          </>
   );
 };
 

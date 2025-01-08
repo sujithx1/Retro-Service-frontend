@@ -10,114 +10,101 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 
 const UserProfileEdit: React.FC = () => {
-  const { user ,isError,isSuccess,message} = useSelector((state: RootState) => state.user);
+  const { user, isError, isSuccess, message } = useSelector(
+    (state: RootState) => state.user
+  );
 
   const [useredit, setUseredit] = useState<UserEditProfile>({
-    id: user?.id||"",
-    username: user?.username||"",
+    id: user?.id || "",
+    username: user?.username || "",
     email: user?.email,
-    phone:user?.phone|| "",
-    profilePic:""
-  
+    phone: user?.phone || "",
+    profilePic: ""
   });
-  // const [image, setImage]=useState<UserImage_Types>({
-  //   id:user?.id || "",
-  //   profile_pic:""
 
-  // })
+  const [preview, setPreview] = useState<string>("");
+  const [errors, setErrors] = useState<{ username?: string; phone?: string }>({});
+
   const dispatch: AppDispatch = useDispatch();
-const navigate=useNavigate()
-  useEffect(()=>{
-    if(isSuccess)
-    {
-        navigate(-1)
-        dispatch(reset())
-        return
-    }
-  
-    if(isError)
-    {
-        toast.error(message)
-        dispatch(reset())
-        return
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (isSuccess) {
+      navigate(-1);
+      dispatch(reset());
+      return;
     }
-  
-        
-  },[isSuccess, isError, message, dispatch, navigate  ])
+
+    if (isError) {
+      toast.error(message);
+      dispatch(reset());
+      return;
+    }
+  }, [isSuccess, isError, message, dispatch, navigate]);
 
   const profilepicurl = user?.profilePic
     ? `${user.profilePic}`
     : "https://via.placeholder.com/150";
 
-  console.log("profile pic =", user?.profilePic);
-  const [preview, setPreview] = useState<string>("");
-  
-
-
   const handle_ProfilePic = (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files ? e.target.files[0] : null;
+    const file = e.target.files ? e.target.files[0] : null;
 
-      console.log("Selected profile picture file:", file);
     if (file) {
-   
-
       const reader = new FileReader();
       reader.onload = () => {
         setPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-
-     
-
-    
     }
-   
-
-
   };
+
+  const validateForm = () => {
+    const newErrors: { username?: string; phone?: string } = {};
+
+    if (!useredit.username.trim()) {
+      newErrors.username = "Name is required.";
+    }
+
+    if (useredit.phone && !/^\d{10}$/.test(useredit.phone)) {
+      newErrors.phone = "Phone number must be 10 digits.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleOnchange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUseredit((prev) => ({
       ...prev,
       [name]: value,
     }));
+    setErrors((prev) => ({ ...prev, [name]: undefined })); // Clear field-specific error
   };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
-    console.log(useredit);
-    if (preview) {
-      useredit.profilePic=preview
-      
-    }else
-    {
-      useredit.profilePic=user?.profilePic as string
+    if (!validateForm()) {
+      return;
     }
-    const UpdateUserData = {
-      
+
+    const updatedUserData = {
       ...useredit,
-    
-      
-    
+      profilePic: preview || user?.profilePic || ""
     };
-  //  if (preview) {
-  //   console.log("previewwwww",preview);
-    
-  //  }
-    
-    console.log("Updated user data:", UpdateUserData);
-    dispatch(user_put_Profile(UpdateUserData));
+
+    dispatch(user_put_Profile(updatedUserData));
   };
+
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-br from-blue-100 via-white to-blue-50">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-        {/* Header */}
         <h1 className="text-center text-3xl font-bold text-gray-800 mb-8">
           Profile
         </h1>
 
-        {/* Profile Image Section */}
         <div className="flex flex-col items-center mb-6 relative">
           <div className="relative">
             <img
@@ -127,12 +114,12 @@ const navigate=useNavigate()
             />
             <label
               htmlFor="file-upload"
-              className="absolute bottom-0 right-0 rounded-full  cursor-pointer transition duration-200"
+              className="absolute bottom-0 right-0 rounded-full cursor-pointer transition duration-200"
             >
               <FontAwesomeIcon 
-        icon={faPencilAlt} 
-        className="text-blue-500  hover:text-blue-700 transition-all"
-      />
+                icon={faPencilAlt} 
+                className="text-blue-500 hover:text-blue-700 transition-all"
+              />
             </label>
             <input
               id="file-upload"
@@ -144,9 +131,7 @@ const navigate=useNavigate()
           </div>
         </div>
 
-        {/* Form Section */}
-        <form className="space-y-5">
-          {/* Name Field */}
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="username"
@@ -161,11 +146,17 @@ const navigate=useNavigate()
               value={useredit.username}
               onChange={handleOnchange}
               placeholder="Enter your name"
-              className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-4 py-2 text-gray-700 border ${
+                errors.username ? "border-red-500" : "border-gray-300"
+              } rounded-lg focus:outline-none focus:ring-2 ${
+                errors.username ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
             />
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+            )}
           </div>
 
-          {/* Email Field */}
           <div>
             <label
               htmlFor="email"
@@ -183,7 +174,6 @@ const navigate=useNavigate()
             />
           </div>
 
-          {/* Phone Field */}
           <div>
             <label
               htmlFor="phone"
@@ -198,16 +188,21 @@ const navigate=useNavigate()
               value={useredit.phone}
               onChange={handleOnchange}
               placeholder="Enter your phone number"
-              className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-4 py-2 text-gray-700 border ${
+                errors.phone ? "border-red-500" : "border-gray-300"
+              } rounded-lg focus:outline-none focus:ring-2 ${
+                errors.phone ? "focus:ring-red-500" : "focus:ring-blue-500"
+              }`}
             />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+            )}
           </div>
 
-          {/* Save Button */}
           <div className="text-center">
             <button
               type="submit"
               className="px-8 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none transition duration-200"
-              onClick={handleSubmit}
             >
               Save
             </button>

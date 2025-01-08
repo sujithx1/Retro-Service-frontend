@@ -5,6 +5,7 @@ import {
 } from "../../types/employee/EmployeeTypes";
 import {
   Emp_login_post,
+  employee_get_allJobs,
   employee_get_details,
   Employee_get_Logout,
   Employee_get_Service_Booking,
@@ -15,6 +16,7 @@ import {
   employee_signup_post,
 } from "./EmployeeApicalls";
 import { Response_ServiceBooking_Types } from "../../types/clients/UsersTypes";
+import { JobsStateTypes } from "../../types/admin/admintypes";
 
 const employee = localStorage.getItem("employee")
   ? JSON.parse(localStorage.getItem("employee") as string)
@@ -34,6 +36,7 @@ const Service_booking_Employee: Response_ServiceBooking_Types[] = [];
 const initialState: Employee_InitialState = {
   employee: employee ? employee : null,
   employeeServiceBooking: Service_booking_Employee,
+  jobs:[],
   tempuser,
   isError: false,
   isLoading: false,
@@ -243,6 +246,26 @@ const employeeslice = createSlice({
        }
 
       })
+         .addCase(employee_get_allJobs.pending,(state)=>{
+                        state.isLoading=true
+                    })
+                    .addCase(employee_get_allJobs.fulfilled,(state,action:PayloadAction<JobsStateTypes[]>)=>{
+                        state.isLoading=false
+                        state.isSuccess=true
+                        state.jobs=action.payload
+                        
+                    })
+                    .addCase(employee_get_allJobs.rejected,(state,action)=>{
+                        state.isSuccess=false
+                        state.isError=true
+                        if (action.payload) {
+                           
+                            state.message = action.payload.message;
+                          } else {
+                            state.message = "An unknown error occurred";
+                          }
+                        
+                    })
       
       
   },

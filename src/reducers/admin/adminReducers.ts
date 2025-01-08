@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AdminInitialStateTypes, AdminSuccessTypes, CategoryStateTypes, JobsStateTypes } from "../../types/admin/admintypes";
-import { Admin_add_category, Admin_add_Job, admin_Block_UnBlock_employee, admin_Block_UnBlock_User, Admin_del_Category, Admin_del_Job, Admin_edit_employee_put, Admin_edit_users_put, Admin_get_allCategories, Admin_get_allJobs, Admin_get_Employees, Admin_get_users, Admin_put_category, Admin_put_Job, adminLoginPost } from "./adminapicalls";
+import { Admin_add_category, Admin_add_Job, admin_Block_UnBlock_employee, admin_Block_UnBlock_User, Admin_del_Category, Admin_del_Job, Admin_edit_employee_put, Admin_edit_users_put, Admin_get_allCategories, Admin_get_allJobs, Admin_get_Employees, Admin_Get_FeedBack, Admin_get_users, Admin_put_category, Admin_put_Job, adminLoginPost } from "./adminapicalls";
 // import { UserStateTypes } from "../../types/clients/UsersTypes";
 import { EmployeeStateTypes } from "../../types/employee/EmployeeTypes";
-import { UserStateTypes } from "../../types/clients/UsersTypes";
+import { UserReport_FeedBack_types, UserStateTypes } from "../../types/clients/UsersTypes";
 
 
 
@@ -14,12 +14,14 @@ const users:UserStateTypes[]=[]
 const employees:EmployeeStateTypes[]=[]
 const jobs:JobsStateTypes[]=[]
 const categories:CategoryStateTypes[]=[]
+const feedbacks:UserReport_FeedBack_types[]=[]
 const initialState:AdminInitialStateTypes={
     admin:admin?admin:null,
     users:users?users:[],
     employees:employees?employees:[],
     jobs:jobs?jobs:[],
     categories:categories?categories:[],
+    feedbacks:feedbacks?feedbacks:[],
 
     isSuccess:false,
     isError:false,
@@ -102,6 +104,8 @@ const adminslices=createSlice({
             state.isSuccess=false
             state.isError=true
             if (action.payload) {
+              console.log("admin login err",action.payload);
+              
                
                 state.message = action.payload.message;
               } else {
@@ -445,6 +449,32 @@ const adminslices=createSlice({
     
                   })
                   .addCase(Admin_add_Job.rejected,(state,action)=>{
+                    state.isSuccess=false
+                    state.isError=true
+                    console.log(action.payload);
+                    
+                    if (action.payload) {
+                      state.message=action.payload.message
+                      
+                    }else
+                    {
+                      state.message = "An unknown error occurred";
+                    }
+                  })
+                  .addCase(Admin_Get_FeedBack.pending,(state)=>{
+                    state.isLoading=true
+                  })
+                  .addCase(Admin_Get_FeedBack.fulfilled,(state,action:PayloadAction<UserReport_FeedBack_types[]>)=>{
+    
+                    state.isLoading=false
+                    state.isSuccess=true
+                    state.feedbacks=action.payload
+                    
+    
+                    
+    
+                  })
+                  .addCase(Admin_Get_FeedBack.rejected,(state,action)=>{
                     state.isSuccess=false
                     state.isError=true
                     console.log(action.payload);

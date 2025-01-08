@@ -7,6 +7,7 @@ import Admin_Categories from "../pages/admin/categories/Admin_Categories"
 import UsersManagement from "../pages/admin/users/UsersManagement"
 import Admin_joblist from "../pages/admin/jobs/Admin_joblist"
 import Protect from "../components/admin/protector/Protect"
+import AdminReportFeedbackList from "../pages/admin/report-feedback/Report-FeedBack"
 
 const AdminRoutes = () => {
   return (
@@ -46,6 +47,12 @@ const AdminRoutes = () => {
           <Protect>
 
             <Admin_joblist/>
+          </Protect>
+          }/>
+        <Route path="report-feedback" element={
+          <Protect>
+
+            <AdminReportFeedbackList/>
           </Protect>
           }/>
         <Route path="*" element={<NotFound />} />
