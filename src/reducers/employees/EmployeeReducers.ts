@@ -8,6 +8,7 @@ import {
   employee_get_allJobs,
   employee_get_details,
   Employee_get_Logout,
+  employee_get_reqServices,
   Employee_get_Service_Booking,
   Employee_put_jobs,
   Employee_put_Profile,
@@ -15,7 +16,7 @@ import {
   Employee_Send_otp,
   employee_signup_post,
 } from "./EmployeeApicalls";
-import { Response_ServiceBooking_Types } from "../../types/clients/UsersTypes";
+import { Response_Req_service_employee_types, Response_ServiceBooking_Types } from "../../types/clients/UsersTypes";
 import { JobsStateTypes } from "../../types/admin/admintypes";
 
 const employee = localStorage.getItem("employee")
@@ -32,10 +33,12 @@ const tempuser: EmployeeSignUpTypes = {
 };
 
 const Service_booking_Employee: Response_ServiceBooking_Types[] = [];
+const Service_Req_booking_Employee: Response_Req_service_employee_types[] = [];
 
 const initialState: Employee_InitialState = {
   employee: employee ? employee : null,
   employeeServiceBooking: Service_booking_Employee,
+  reqService_booking:Service_Req_booking_Employee,
   jobs:[],
   tempuser,
   isError: false,
@@ -256,6 +259,28 @@ const employeeslice = createSlice({
                         
                     })
                     .addCase(employee_get_allJobs.rejected,(state,action)=>{
+                        state.isSuccess=false
+                        state.isError=true
+                        if (action.payload) {
+                           
+                            state.message = action.payload.message;
+                          } else {
+                            state.message = "An unknown error occurred";
+                          }
+                        
+                    })
+      
+         .addCase(employee_get_reqServices.pending,(state)=>{
+                        state.isLoading=true
+                    })
+                    .addCase(employee_get_reqServices.fulfilled,(state,action)=>{
+                        state.isLoading=false
+                        state.isSuccess=true
+                        state.reqService_booking = action.payload;
+                        console.log(state.reqService_booking);
+                        
+                    })
+                    .addCase(employee_get_reqServices.rejected,(state,action)=>{
                         state.isSuccess=false
                         state.isError=true
                         if (action.payload) {

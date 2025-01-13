@@ -54,6 +54,7 @@ const UserProfile: React.FC = () => {
       {/* Menu Section */} 
       <ul className="divide-y divide-gray-200">
         <li className="py-3 px-4 hover:bg-gray-100 cursor-pointer" onClick={()=>navigate('/profile/edit')}>Edit Profile</li>
+        <li className="py-3 px-4 hover:bg-gray-100 cursor-pointer" onClick={()=>navigate('/booking-history')}>Bookings</li>
         <li className="py-3 px-4 hover:bg-gray-100 cursor-pointer">Orders</li>
         <li className="py-3 px-4 hover:bg-gray-100 cursor-pointer">Carts</li>
         <li className="py-3 px-4 hover:bg-gray-100 cursor-pointer">Address</li>

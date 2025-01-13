@@ -12,6 +12,11 @@ import UsersideEmployees from "../pages/clients/employees/UsersideEmployees"
 import Emp_Service_booking_progress from "../pages/clients/service-booking/Emp_Service_booking_progress"
 import UserForgotPassword from "../pages/clients/login/UserForgotPassword"
 import PasswordForm from "../pages/clients/login/NewPassword"
+import ReqServiceWaiting from "../pages/clients/service-booking/Req_serviceWaiting"
+import UserPayment from "../pages/clients/payment/UserPayment"
+import PaymentSuccess from "../components/payments/SuccessPayment"
+import PaymentFailed from "../components/payments/FailedPayment"
+import UserBookingHistory from "../components/client/booking/UserBookingHistory"
 
 const UserRoutes = () => {
   return (
@@ -24,8 +29,16 @@ const UserRoutes = () => {
         <Route path="/"element={<Landingpage/>}/>
         <Route path="/login" element={
 
+          <UserProtect>
             <UserLogin/>
-            } />
+
+          </UserProtect>
+
+          } />
+          
+                    <Route path="forgot-password/otp" element={<UserForgotPassword/>}/>
+                    <Route path="forgot-password" element={<PasswordForm/>}/>
+                    
         <Route path="/home" element={
           <UserProtect>
 
@@ -52,10 +65,12 @@ const UserRoutes = () => {
               <Emp_Service_booking_progress/>
             </UserProtect>
           }/>
+              <Route path="/req-service/waiting" element={
+                <UserProtect>
+                  <ReqServiceWaiting/>
+                </UserProtect>
+              }/>
 
-
-          <Route path="forgot-password/otp" element={<UserForgotPassword/>}/>
-          <Route path="forgot-password" element={<PasswordForm/>}/>
 {/* 
 <Route path="/map" element={<UserProtect>
 
@@ -63,6 +78,30 @@ const UserRoutes = () => {
 </UserProtect> */}
   {/* }/> */}
 
+<Route path="/payment" element={
+   <UserProtect>
+
+     <UserPayment/>
+   </UserProtect>
+     }/>
+<Route path="/payment-success" element={
+   <UserProtect>
+
+     <PaymentSuccess/>
+   </UserProtect>
+     }/>
+<Route path="/payment-failed" element={
+   <UserProtect>
+
+     <PaymentFailed/>
+   </UserProtect>
+     }/>
+<Route path="/booking-history" element={
+   <UserProtect>
+
+     <UserBookingHistory/>
+   </UserProtect>
+     }/>
 
         <Route path="*" element={<NotFound />} />
     </Routes>

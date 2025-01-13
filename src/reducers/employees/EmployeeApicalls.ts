@@ -7,6 +7,8 @@ import {
 } from "../../types/employee/EmployeeTypes";
 import {
   ErrorPayload,
+  req_service_accept_types,
+  Response_Req_service_employee_types,
   Response_ServiceBooking_Types,
   Service_Booking_Put_status_type,
   UserLoginType,
@@ -297,3 +299,55 @@ export const employee_get_details=createAsyncThunk<EmployeeStateTypes,string,{re
   }
 
 })
+
+
+export const employee_get_reqServices=createAsyncThunk<Response_Req_service_employee_types[],string,{rejectValue:ErrorPayload}>('/employee/reqServices',async(id,{rejectWithValue})=>{
+  try {
+    const response=await employee_Axios_instance.get(`/req-services/${id}`)
+    if (response.data) {
+      return response.data.reqService
+      
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+
+        
+      })
+      
+      
+    }
+    return rejectWithValue({
+    message:'something problem getting employee details'
+    })
+    
+  }
+
+})
+
+
+export const employee_put_accept_service= createAsyncThunk<
+  Response_Req_service_employee_types,
+  req_service_accept_types,
+  { rejectValue: ErrorPayload }
+>("/employee/service-booking/modify", async (Service, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.put(
+      `/req-serivce/acceptemployee/${Service.id}`,
+      Service
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in modify service booking in employee",
+    });
+  }
+});

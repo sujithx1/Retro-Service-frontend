@@ -2,8 +2,13 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import {
   ErrorPayload,  
+  Razorpay_Service_types,  
+  Response_Razorpay_Service_types,  
+  Response_Req_service_employee_types,  
+  Response_ServiceBooking_History_types,  
   Service_Booking_Sendreq_EveryEmp,
   ServiceBooking_Types,
+  ServicePayment_section,
   UserEditProfile,
   UserImage_Types,
   UserLoginType,
@@ -293,10 +298,10 @@ export const User_get_Employees = createAsyncThunk<
 
 
 export const user_post_service_booking_send_every_Employee = createAsyncThunk<
-  void,
+  Response_Req_service_employee_types,
   Service_Booking_Sendreq_EveryEmp,
   { rejectValue: ErrorPayload }
->("/user/service/post", async (bookingData, { rejectWithValue }) => {
+>("/user/req/services", async (bookingData, { rejectWithValue }) => {
   try {
     console.log("service bookinh ", bookingData);
 
@@ -306,7 +311,8 @@ export const user_post_service_booking_send_every_Employee = createAsyncThunk<
     );
     if (response.data) {
      
-      return response.data.service
+      localStorage.setItem("reqService", JSON.stringify(response.data.reqService));
+      return response.data.reqService
 
 
 
@@ -480,6 +486,132 @@ export const User_post_forgot_password= createAsyncThunk<void, { email: string; 
       const response=await useraxiosInstance.post(`/forgot-password`,{email,password})
       if (response.data) {
         return response.data
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+
+
+
+
+
+export const User_get_reqService= createAsyncThunk<Response_Req_service_employee_types,string ,{rejectValue:ErrorPayload}>(
+  "/user/req-service/get",
+  async (id,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.get(`/req-service/${id}`)
+      if (response.data) {
+        return response.data.reqService
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+
+
+
+
+export const User_post_Razorpay= createAsyncThunk<Response_Razorpay_Service_types,Razorpay_Service_types ,{rejectValue:ErrorPayload}>(
+  "/user/service/payment/razorpay",
+  async (payment,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.post(`/service/payment/razorpay`,payment)
+      if (response.data) {
+        return response.data
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+export const User_post_confirm_Razorpay= createAsyncThunk<Response_Razorpay_Service_types, ServicePayment_section,{rejectValue:ErrorPayload}>(
+  "/user/service/payment/razorpay/confirm",
+  async (payment,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.post(`/service/payment/razorpay/confirm`,payment)
+      if (response.data) {
+        return response.data
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+
+
+
+
+export const User_get_bookingHistories= createAsyncThunk<Response_ServiceBooking_History_types[],string,{rejectValue:ErrorPayload}>(
+  "/user/service-booking/history",
+  async (id,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.get(`/booking-history/${id}`)
+      if (response.data) {
+        return response.data.history
         
       }
     } catch (error) {

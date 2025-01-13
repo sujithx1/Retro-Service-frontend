@@ -1,5 +1,5 @@
 import { JobsStateTypes } from "../admin/admintypes";
-import { Response_ServiceBooking_Types } from "../clients/UsersTypes";
+import { Response_Req_service_employee_types, Response_ServiceBooking_Types } from "../clients/UsersTypes";
 
 
 export interface EmployeeSignUpTypes{
@@ -21,12 +21,14 @@ export interface EmployeeStateTypes{
     skills:string[];
 
     experience:number,
-    location?:string
+    location?:string,
+    revenue:number
 
 }
 export interface Employee_InitialState{
     employee:EmployeeStateTypes|null;
     employeeServiceBooking:Response_ServiceBooking_Types[],
+    reqService_booking:Response_Req_service_employee_types[],
     jobs:JobsStateTypes[],
     tempuser:EmployeeSignUpTypes;
     isSuccess:boolean;

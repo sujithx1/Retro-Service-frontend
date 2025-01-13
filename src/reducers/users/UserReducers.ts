@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  Response_ServiceBooking_History_types,
   ServiceBooking_Types,
   UserInitialState,
   UserSignUpTypes,
@@ -7,13 +8,17 @@ import {
 } from "../../types/clients/UsersTypes";
 import {
   User_get_allJobs,
+  User_get_bookingHistories,
   User_get_Employees,
   User_get_Logout,
+  User_get_reqService,
   User_get_service_Booking,
+  User_post_confirm_Razorpay,
   User_post_Employee_feedBack,
   User_post_forgot_password,
   User_post_Forgot_password_OTP,
   user_post_Service_Booking,
+  user_post_service_booking_send_every_Employee,
   user_put_Profile,
   user_put_User_profile_pic,
   UserGoogle_post,
@@ -60,17 +65,43 @@ const serviceBooking: ServiceBooking_Types = {
   status: "",
 };
 
+// const reqserviceBooking:Response_Req_service_employee_types={
+//   userId:"",
+//   userEmail:"",
+//   userName:"",
+//   userLocation:{
+//     lat:0,
+//     lng:0,
+//     address:""
+//   },
+//   jobId:"",
+//   jobName:'',
+//   problem:"",
+//   minWage:0,
+//   mechanics:[], 
+//   acceptEmployee:{
+//     employeeId:"",
+//     acceptTime:null
+
+
+//   } 
+//   ,
+//   status:""
+
+
+// }
 const employees: EmployeeStateTypes[] = [];
 const jobs: JobsStateTypes[] = [];
 
-const user = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user") as string)
-  : null;
+const user = localStorage.getItem("user")? JSON.parse(localStorage.getItem("user") as string): null;
+  const savedReqService = localStorage.getItem('reqService')?JSON.parse(localStorage.getItem('reqService') as string):null
 
 const initialState: UserInitialState = {
   user: user ? user : null,
   selectEmp,
   serviceBooking,
+  reqService:savedReqService, 
+  bookingHistories:[],
   employee: employees ? employees : [],
   jobs: jobs ? jobs : [],
   tempuser,
@@ -388,7 +419,81 @@ const userSlices = createSlice({
         if (action.payload) {
           state.message = action.payload.message;
         }
-      });
+      })
+     
+      .addCase(user_post_service_booking_send_every_Employee.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(user_post_service_booking_send_every_Employee.fulfilled, (state,action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.reqService=action.payload
+      })
+      .addCase(user_post_service_booking_send_every_Employee.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+      .addCase(User_get_reqService.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_get_reqService.fulfilled, (state,action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        console.log("action",action.payload);
+        
+
+      if (action.payload.status=="CONFIRMED") {
+
+        
+        state.reqService=action.payload
+      }
+      })
+      .addCase(User_get_reqService.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+     
+      .addCase(User_post_confirm_Razorpay.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_post_confirm_Razorpay.fulfilled, (state,action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        console.log("action",action.payload);
+        
+
+      })
+      .addCase(User_post_confirm_Razorpay.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+      .addCase(User_get_bookingHistories.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_get_bookingHistories.fulfilled, (state,action:PayloadAction<Response_ServiceBooking_History_types[]>) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        console.log("action",action.payload);
+        state.bookingHistories=action.payload
+        
+
+      })
+      .addCase(User_get_bookingHistories.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
   },
 });
 

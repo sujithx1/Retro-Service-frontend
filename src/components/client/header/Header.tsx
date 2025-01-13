@@ -62,7 +62,7 @@ const navigate=useNavigate()
           </button>
 
           {/* Profile Icon */}
-          <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden"  onClick={()=>navigate('/profile')}>
+          <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden hover:cursor-pointer"  onClick={()=>navigate('/profile')}>
             <img
               src={user?.profilePic||"https://via.placeholder.com/40"}
               alt="User Avatar"

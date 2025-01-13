@@ -8,7 +8,7 @@ import { reset } from "../../../reducers/users/UserReducers";
 import { FinduserLocation, Service_Booking_Sendreq_EveryEmp } from "../../../types/clients/UsersTypes";
 import {  user_post_service_booking_send_every_Employee } from "../../../reducers/users/UserapiCalls";
 import { useNavigate } from "react-router-dom";
-import UserCurrentLocationMap from "../userMap/userCurrentLocationMap";
+import UserCurrentLocationMap from "../userMap/UserCurrentLocationMap";
 
 interface Props {
     service: JobsStateTypes;
@@ -55,7 +55,7 @@ interface Props {
         }
         dispstch(user_post_service_booking_send_every_Employee(serviceBookingData)).unwrap()
           .then(()=>{toast.success("success Sevice Booking")
-            navigate('/service-booking/prograss')
+            navigate('/req-service/waiting')
           })
           .catch((err)=>toast.error(err))
 

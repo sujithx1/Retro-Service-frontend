@@ -63,6 +63,8 @@ export interface UserInitialState{
     user:UserStateTypes|null;
     selectEmp:Emp_Location_Types,
     serviceBooking:ServiceBooking_Types|null,
+    reqService:Response_Req_service_employee_types,
+    bookingHistories:Response_ServiceBooking_History_types[]
     employee:EmployeeStateTypes[]
     jobs:JobsStateTypes[]
     tempuser:UserSignUpTypes;
@@ -85,8 +87,39 @@ export interface Service_Booking_Sendreq_EveryEmp{
     jobId:string;
     jobName:string;
     Min_wage:number;
+   
     
 }
+export interface Response_Req_service_employee_types{
+    id:string
+    userId:string;
+    userLocation:FinduserLocation,
+    userName:string;
+    userEmail:string;
+    problem:string;
+    jobId:string;
+    jobName:string;
+    minWage:number;
+    mechanics:string[]
+    acceptEmployee:{
+        employeeId:string,
+        acceptTime:Date|null
+    },
+    bookingDate:string
+    status:string
+    
+   
+    
+}
+
+export interface req_service_accept_types{
+    id:string;
+    status:string,
+    employeeId:string
+
+
+}
+
   
 
   export interface ServiceBooking_Types{
@@ -134,4 +167,66 @@ export interface Service_Booking_Sendreq_EveryEmp{
   export interface Service_Booking_Put_status_type{
     id:string,
     status:"CONFIRMED"| "CANCELLED"
+  }
+
+
+  export interface Razorpay_Service_types{
+    // userId:string;
+    // emmId:string;
+    amount:number,
+    currency:string,
+   
+    receipt:string
+  }
+
+//   export interface RazorpayConfirm_Service_types{
+//     userId:string;
+//     emmId:string;
+//     amount:number,
+//     currency:string, 
+//     receipt:string
+//     problem:string;
+//     vehiclenumber:string;
+
+//   }
+
+  export interface Response_Razorpay_Service_types{
+  
+    amount:number,
+    currency:string,
+    id:string  ,
+  
+  }
+  interface ServiveDetails{
+    name:string
+    vehicleNumber:string;
+    problem:string;
+    phone:string;
+  }
+  export interface Response_ServiceBooking_History_types{
+  
+      amount:number;
+      employeeId:string;
+      userId:string,
+      status?:string 
+      createdAt?:string,
+      jobName:string,
+      serviceDetails:ServiveDetails
+    
+  }
+
+  export interface ServicePayment_section{
+      name:string
+      vehicleNumber:string;
+      problem:string;
+      phone:string;
+      amount:number;
+      employeeId:string;
+      userId:string,
+      status?:string 
+      createdAt?:string,
+      jobName:string,
+      serviceId:string
+      
+
   }
