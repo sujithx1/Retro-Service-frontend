@@ -1,11 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import {
+  ChatListItem,
   ErrorPayload,  
   Razorpay_Service_types,  
   Response_Razorpay_Service_types,  
   Response_Req_service_employee_types,  
   Response_ServiceBooking_History_types,  
+  Response_ServiceBooking_Types,  
+  ReviewRating_Types,  
+  Service_Booking_Put_status_type,  
   Service_Booking_Sendreq_EveryEmp,
   ServiceBooking_Types,
   ServicePayment_section,
@@ -390,7 +394,7 @@ export const User_get_service_Booking = createAsyncThunk<ServiceBooking_Types,st
   }
 );
 
-export const User_post_Employee_feedBack = createAsyncThunk<UserReport_FeedBack_types,UserReport_FeedBack_types,{rejectValue:ErrorPayload}>(
+export const User_post_Employee_feedBack = createAsyncThunk<UserReport_FeedBack_types,ReviewRating_Types,{rejectValue:ErrorPayload}>(
   "/user/report-feedback",
   async (feedBack,{rejectWithValue}) => {
 
@@ -578,7 +582,7 @@ export const User_post_confirm_Razorpay= createAsyncThunk<Response_Razorpay_Serv
     try {
       const response=await useraxiosInstance.post(`/service/payment/razorpay/confirm`,payment)
       if (response.data) {
-        return response.data
+        return response.data.servicepayment
         
       }
     } catch (error) {
@@ -604,13 +608,15 @@ export const User_post_confirm_Razorpay= createAsyncThunk<Response_Razorpay_Serv
 
 
 
-export const User_get_bookingHistories= createAsyncThunk<Response_ServiceBooking_History_types[],string,{rejectValue:ErrorPayload}>(
+export const User_get_bookingHistories= createAsyncThunk<Response_Req_service_employee_types[],string,{rejectValue:ErrorPayload}>(
   "/user/service-booking/history",
   async (id,{rejectWithValue}) => {
 
     try {
       const response=await useraxiosInstance.get(`/booking-history/${id}`)
       if (response.data) {
+        console.log("response history",response.data.history);
+        
         return response.data.history
         
       }
@@ -630,6 +636,130 @@ export const User_get_bookingHistories= createAsyncThunk<Response_ServiceBooking
   }
 );
 
+
+
+export const User_put_cancelReq_service= createAsyncThunk<Response_ServiceBooking_Types,Service_Booking_Put_status_type,{rejectValue:ErrorPayload}>(
+  "/user/cancel/req-service",
+  async (service,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.put(`/req-service/${service.id}`,service)
+      if (response.data) {
+        return response.data.service
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+
+export const User_get_servicePayment= createAsyncThunk<Response_ServiceBooking_History_types,string,{rejectValue:ErrorPayload}>(
+  "/user/servicepayment/get",
+  async (id,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.get(`/service-payment/${id}`)
+      if (response.data) {
+        console.log("response history",response.data.service);
+        
+        return response.data.service
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+export const User_get_Allchat= createAsyncThunk<ChatListItem[],string,{rejectValue:ErrorPayload}>(
+  "/user/chatlist/get",
+  async (id,{rejectWithValue}) => {
+
+    try {
+      const response=await useraxiosInstance.get(`/chats-userId/${id}`)
+      if (response.data) {
+        console.log("response history",response.data.chats);
+        
+        return response.data.service
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+
+
+
+// export const User_post_ReviewPayment= createAsyncThunk<void,ReviewRating_Types,{rejectValue:ErrorPayload}>(
+//   "/user/reviewating/post",
+//   async (review,{rejectWithValue}) => {
+
+//     try {
+//       const response=await useraxiosInstance.post(`/review-payment`,review)
+//       if (response.data) {
+//         console.log("response history",response.data);
+        
+//         return response.data
+        
+//       }
+//     } catch (error) {
+//       if (isAxiosError(error)) {
+//         return rejectWithValue({
+//           message:error.response?.data.error
+//         })
+        
+//       }
+//       return rejectWithValue({
+//         message:"something error for getting service-booking"
+//       })
+      
+//     }
+
+//   }
+// );
 
 
 

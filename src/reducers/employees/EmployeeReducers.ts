@@ -8,6 +8,8 @@ import {
   employee_get_allJobs,
   employee_get_details,
   Employee_get_Logout,
+  employee_get_MessagesemployeeId,
+  employee_get_payment_service,
   employee_get_reqServices,
   Employee_get_Service_Booking,
   Employee_put_jobs,
@@ -281,6 +283,49 @@ const employeeslice = createSlice({
                         
                     })
                     .addCase(employee_get_reqServices.rejected,(state,action)=>{
+                        state.isSuccess=false
+                        state.isError=true
+                        if (action.payload) {
+                           
+                            state.message = action.payload.message;
+                          } else {
+                            state.message = "An unknown error occurred";
+                          }
+                        
+                    })
+         .addCase(employee_get_payment_service.pending,(state)=>{
+                        state.isLoading=true
+                    })
+                    .addCase(employee_get_payment_service.fulfilled,(state)=>{
+                        state.isLoading=false
+                        state.isSuccess=true
+                        // state.reqService_booking = action.payload;
+                        // console.log(state.reqService_booking);
+                        
+                    })
+                    .addCase(employee_get_payment_service.rejected,(state,action)=>{
+                        state.isSuccess=false
+                        state.isError=true
+                        if (action.payload) {
+                           
+                            state.message = action.payload.message;
+                          } else {
+                            state.message = "An unknown error occurred";
+                          }
+                        
+                    })
+      
+         .addCase(employee_get_MessagesemployeeId.pending,(state)=>{
+                        state.isLoading=true
+                    })
+                    .addCase(employee_get_MessagesemployeeId.fulfilled,(state)=>{
+                        state.isLoading=false
+                        state.isSuccess=true
+                        // state.reqService_booking = action.payload;
+                        // console.log(state.reqService_booking);
+                        
+                    })
+                    .addCase(employee_get_MessagesemployeeId.rejected,(state,action)=>{
                         state.isSuccess=false
                         state.isError=true
                         if (action.payload) {

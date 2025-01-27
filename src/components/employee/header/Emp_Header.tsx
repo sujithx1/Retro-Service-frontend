@@ -3,9 +3,13 @@ import { AppDispatch, RootState } from "../../../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { clearEmp } from "../../../reducers/employees/EmployeeReducers";
 import { employee_get_details, Employee_get_Logout } from "../../../reducers/employees/EmployeeApicalls";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { IoIosChatboxes } from "react-icons/io";
+
 
 const Emp_Header = () =>{
+  const [unreadMessages, setUnreadMessages] = useState(3); // Example state for unread messages
+
   const{employee}=useSelector((state:RootState)=>state.employee)
     const employeeId=employee?.id
     const navigate=useNavigate()
@@ -16,6 +20,20 @@ const Emp_Header = () =>{
      }
     },[dispatch,employeeId])
     
+    // const employeeId ="6761c55438aef451f8053be6" ; 
+    // Example hardcoded employee ID; replace with actual logic to fetch employee ID
+    // const userId="676589fdb941ebfae5c5bb6c";
+    
+  
+    
+  const handleInboxClick = () => {
+    // Navigate to inbox or open inbox modal
+    console.log("Opening inbox");
+    // Reset unread messages count
+    // navigate('/employee/emp-chatt')
+    navigate('/employee/chat')
+    setUnreadMessages(0);
+  };
     return (
     <header className="flex items-center justify-between bg-white p-4 shadow-md">
       <div className="text-lg font-semibold">
@@ -28,6 +46,19 @@ const Emp_Header = () =>{
           className="border rounded-md px-4 py-2"
         /> */}
       <div className="flex items-center space-x-9">
+    
+      <button 
+            className="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors relative"
+            onClick={handleInboxClick}
+          >
+            <IoIosChatboxes className="h-5 w-5 text-gray-600" />
+            {unreadMessages > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadMessages}
+              </span>
+            )}
+          </button>
+
   <button className="p-2 bg-gray-200 rounded-full">🔔</button>
   <button className="p-2 bg-gray-200 rounded-full">⚙️</button>
         <div className="flex items-center">

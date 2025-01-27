@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import UserMap from '../map/UserMap';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
 import UserHeader from '../../../components/client/header/Header';
-import { User_get_reqService } from '../../../reducers/users/UserapiCalls';
+import { User_get_reqService, User_put_cancelReq_service } from '../../../reducers/users/UserapiCalls';
 import { useNavigate } from 'react-router-dom';
+import { Service_Booking_Put_status_type } from '../../../types/clients/UsersTypes';
+import { toast } from 'react-toastify';
 
 const ReqServiceWaiting: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(() => {
@@ -21,7 +22,8 @@ const ReqServiceWaiting: React.FC = () => {
   });
 
   const [showContactOption, setShowContactOption] = useState(timeLeft === 0);
-  const [showModal, setShowModal] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  
 
   const { reqService } = useSelector((state: RootState) => state.user);
   const dispatch: AppDispatch = useDispatch();
@@ -52,11 +54,12 @@ const ReqServiceWaiting: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (reqService.id) {
+      if (reqService.id && (timeLeft > 0 || isConfirmed)) {
         try {
           const response = await dispatch(User_get_reqService(reqService.id)).unwrap();
           console.log('Booking status updated:', response);
           if (response.status === 'CONFIRMED') {
+            setIsConfirmed(true);
             navigate('/payment');
           }
         } catch (error) {
@@ -67,9 +70,16 @@ const ReqServiceWaiting: React.FC = () => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 5000); // Polling every 5 seconds
+    const interval = setInterval(() => {
+      if (timeLeft > 0 || isConfirmed) {
+        fetchData();
+      } else {
+        clearInterval(interval);
+      }
+    }, 5000); // Polling every 5 seconds
+
     return () => clearInterval(interval);
-  }, [reqService.id, dispatch, navigate]);
+  }, [reqService.id, dispatch, navigate, timeLeft, isConfirmed]);
 
   useEffect(() => {
     return () => {
@@ -78,17 +88,30 @@ const ReqServiceWaiting: React.FC = () => {
     };
   }, []);
 
+
+  const handleCancelBooking=()=>{
+    const data:Service_Booking_Put_status_type={
+      id:reqService.id,
+      status:'CANCELLED'
+    }
+    dispatch(User_put_cancelReq_service(data)).unwrap()
+    .then((result) => {
+      console.log(result);
+      toast.success("Booking Cancelled")
+      navigate('/home')
+      
+    }).catch((err) => {
+      toast.error("Booking Not Cancelled",err)
+      
+    });
+  }
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <UserHeader />
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
-            <UserMap onclose={() => setShowModal(false)} />
-          </div>
-        </div>
-      )}
+     
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
@@ -208,13 +231,22 @@ const ReqServiceWaiting: React.FC = () => {
                   No response received. You can contact the nearest service now.
                 </p>
                 <button
-                  onClick={() => setShowModal(true)}
+                  onClick={() => navigate('/nearest-employee')}
                   className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200"
                 >
                   Contact Nearest Service
                 </button>
               </div>
             )}
+<div className="flex justify-center mt-6">
+  <button
+    onClick={handleCancelBooking} // Assuming you have a handler function
+    className="px-6 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition ease-in-out duration-150"
+  >
+    Cancel Booking
+  </button>
+</div>
+
           </div>
         </div>
       </main>

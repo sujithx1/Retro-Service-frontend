@@ -38,6 +38,7 @@ export interface Employee_InitialState{
 }
 
 export interface Emp_Location_Types{
+    userId:string;
     id:string;
     username:string;
     lat:number;
@@ -45,6 +46,8 @@ export interface Emp_Location_Types{
     location?:string;
     email?:string
     userLocation?:string;
+    profilePic?:string
+    
 }
 
 export interface Employee_EditProfile_types{
@@ -65,3 +68,18 @@ export interface Emp_Put_job{
     jobAdd:JobsStateTypes,
 
 }
+
+export interface Response_ChatsTypes{
+     id?:string,
+     sender:string,
+     receiver:string,
+     message:string,
+     timestamp:string,
+     isRead?:boolean,
+     userType:"user"|"employee"
+    
+
+}
+export interface ChatWithUserId extends Response_ChatsTypes {
+    userId: string;
+  }

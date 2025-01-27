@@ -17,6 +17,7 @@ import UserPayment from "../pages/clients/payment/UserPayment"
 import PaymentSuccess from "../components/payments/SuccessPayment"
 import PaymentFailed from "../components/payments/FailedPayment"
 import UserBookingHistory from "../components/client/booking/UserBookingHistory"
+import UserMap from "../pages/clients/map/UserMap"
 
 const UserRoutes = () => {
   return (
@@ -24,7 +25,10 @@ const UserRoutes = () => {
     <Routes>
 
     <Route path="/signup" element={
-      <UserSignup/>
+       <UserProtect>
+
+         <UserSignup/>
+       </UserProtect>
       }/>
         <Route path="/"element={<Landingpage/>}/>
         <Route path="/login" element={
@@ -68,6 +72,11 @@ const UserRoutes = () => {
               <Route path="/req-service/waiting" element={
                 <UserProtect>
                   <ReqServiceWaiting/>
+                </UserProtect>
+              }/>
+              <Route path="/nearest-employee" element={
+                <UserProtect>
+                  <UserMap/>
                 </UserProtect>
               }/>
 

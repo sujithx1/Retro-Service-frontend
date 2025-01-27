@@ -8,6 +8,7 @@ const Emp_Sidebar = () =>
             {side:'Jobs' ,icon:"🛠️" , path:'/employee/jobs'},
             {side:'Users' ,   icon:"👨‍👩‍👧",  path:'/employe/users'},
             {side:'Booking' ,  icon:"🧑‍🔧", path:'/employee/booking'},
+            {side:'Booking History' ,  icon:"🧑‍🔧", path:'/employee/booking-history'},
             // {side:'Categories' ,path:'/admin/categories'},
         ]
 

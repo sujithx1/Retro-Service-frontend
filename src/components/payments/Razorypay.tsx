@@ -58,16 +58,22 @@ const RazorpayPayment: FC<Props> = ({ service }) => {
       employeeId: service.employeeId,
       userId: service.userId,
       jobName:service.jobName,
-      serviceId:service.serviceId
-    
-      
+      serviceId:service.serviceId   
     };
+    console.log(data);
+    
 
     try {
       await dispatch(User_post_confirm_Razorpay(data)).unwrap()
-      .then(()=>{
+      .then((result)=>{
+        console.log("payment success",result);
+        
         toast.success("success")
-        navigate('/payment-success')
+        navigate('/payment-success',{
+          state:{
+            paymentId:result.id
+          }
+        })
 
       }
       
@@ -86,7 +92,7 @@ const RazorpayPayment: FC<Props> = ({ service }) => {
   useEffect(() => {
     const handlePayment = async () => {
       const payment: Razorpay_Service_types = {
-        amount: service.amount,
+        amount: Number(service.amount),
         currency: 'INR',
         receipt: 'receipt#1',
       };
@@ -103,7 +109,7 @@ const RazorpayPayment: FC<Props> = ({ service }) => {
           image: '/your_logo.png',
           order_id: order.id,
           handler: function (response) {
-            alert(`Payment successful! Payment ID: ${response.razorpay_payment_id}`);
+            console.log(`Payment successful! Payment ID: ${response.razorpay_payment_id}`);
             successPayment();
           },
           prefill: {

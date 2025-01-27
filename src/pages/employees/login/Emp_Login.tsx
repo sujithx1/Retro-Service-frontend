@@ -27,7 +27,8 @@ const Emp_Login = () => {
     }
     if (isSuccess) {
       
-      navigate("/employee/home");
+      // navigate("/employee/home");
+      window.location.href='/employee/home'
       dispatch(empReset())
   
     }
@@ -155,7 +156,7 @@ if (handleValidate()) {
           <button
             type="button"
             className="px-6 py-2 bg-yellow-500 text-black font-semibold rounded-lg hover:bg-yellow-600 transition duration-300"
-            onClick={() => navigate("/worker/signup")}
+            onClick={() => navigate("/employee/signup")}
           >
             Sign Up
           </button>
@@ -204,6 +205,15 @@ if (handleValidate()) {
             Log In
           </button>
         </form>
+        
+        <span
+          className="text-center text-gray-600 mt-4 hover:underline cursor-pointer"
+          onClick={()=>navigate('/employee/forgot-password/otp')}
+        >
+          forgot password ? 
+          
+        </span>
+    
         <p className="text-center text-gray-600 mt-4">
           Don't have an account?{" "}
           <span

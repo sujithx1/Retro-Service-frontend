@@ -4,7 +4,6 @@ import cookies from "js-cookie"
 // import { AppDispatch } from "../store/store";
 // import { clearUser } from "../reducers/users/UserReducers";
 
-
 const  useraxiosInstance=axios.create({
     baseURL:`${import.meta.env.VITE_User_Url}`,
     timeout:10000,
@@ -22,7 +21,7 @@ useraxiosInstance.interceptors.request.use(
     (config)=>{
         console.log("requset")
         const token=cookies.get('userToken')
-        if(token)
+        if(token) 
         {
             config.headers.Authorization=`Bearer ${token}`
         }
@@ -94,10 +93,23 @@ if (error.response && error.response.status === 401 && error.response.data.error
 
         // Handle refresh failure (e.g., logout user)
     //    dispatch(clearUser());
+
         localStorage.removeItem('user');
+        
+         window.location.href='/login'
         return Promise.reject(refreshError);
     }
         }
+         // Handle employee block (e.g., 403 status or specific error message)
+         if (error.response.status === 403 && error.response.data.error === "User not found or inactive") {
+            console.error("user is blocked. Redirecting to login.");
+            localStorage.removeItem('user');
+            cookies.remove('userToken'); // Remove the token
+
+            window.location.href='/login'; // Redirect to login
+            return Promise.reject(error);
+        }
+
         return Promise.reject(error);  // Reject if not a 401 error
     }
 );

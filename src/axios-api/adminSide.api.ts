@@ -89,6 +89,17 @@ if (error.response && error.response.status === 401 && error.response.data.error
         return Promise.reject(refreshError);
     }
         }
+
+
+        if (error.response.status === 403 && error.response.data.error === "Not an admin or invalid user") {
+            console.error("admin is not valid. Redirecting to login.");
+            localStorage.removeItem('user');
+            Cookies.remove('userToken'); // Remove the token
+
+            window.location.href='/login'; // Redirect to login
+            return Promise.reject(error);
+        }
+
         return Promise.reject(error);  // Reject if not a 401 error
     }
 );

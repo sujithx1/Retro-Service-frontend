@@ -13,14 +13,14 @@ const UserProtect: FC<Props> = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    if (!user && location.pathname !== "/login") {
+    if (!user && location.pathname !== "/login" && location.pathname !== "/signup") {
       navigate("/login");
-    } else if (user && location.pathname === "/login") {
+    } else if (user && (location.pathname === "/login" || location.pathname === "/signup")) {
       navigate("/home"); // Redirect to home or dashboard if already logged in
     }
   }, [navigate, user, location.pathname]);
 
-  if (!user && location.pathname !== "/login") {
+  if (!user && location.pathname !== "/login" && location.pathname !== "/signup") {
     return null;
   }
 

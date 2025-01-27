@@ -50,18 +50,22 @@ const {feedbacks}=useSelector((state:RootState)=>state.admin)
             <th className="px-4 py-2">User Email</th>
             <th className="px-4 py-2">Feedback</th>
             <th className="px-4 py-2">Employee Email</th>
+            <th className="px-4 py-2">Rating</th>
             <th className="px-4 py-2">Created At</th>
             {/* <th className="px-4 py-2">Actions</th> */}
           </tr>
         </thead>
         <tbody>
-          {feedbacks.map((feedback,index) => (
+          {[...feedbacks]
+          .sort((a,b)=>new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime())
+          .map((feedback,index) => (
             <tr key={feedback.id} className="text-gray-700 border-b">
               <td className="px-4 py-2">{index+1}</td>
               <td className="px-4 py-2">{feedback.name}</td>
               <td className="px-4 py-2">{feedback.userEmail}</td>
               <td className="px-4 py-2">{feedback.feedBack}</td>
               <td className="px-4 py-2">{feedback.employeeEmail}</td>
+              <td className="px-4 py-2">{feedback.rating}</td>
               <td className="px-4 py-2">
                 {new Date(feedback.createdAt||"").toLocaleString()||""}
               </td>

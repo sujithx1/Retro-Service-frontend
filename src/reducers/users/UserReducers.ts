@@ -1,24 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  Response_ServiceBooking_History_types,
+  
+  Response_Req_service_employee_types,
   ServiceBooking_Types,
   UserInitialState,
   UserSignUpTypes,
   UserStateTypes,
 } from "../../types/clients/UsersTypes";
 import {
+  User_get_Allchat,
   User_get_allJobs,
   User_get_bookingHistories,
   User_get_Employees,
   User_get_Logout,
   User_get_reqService,
   User_get_service_Booking,
+  User_get_servicePayment,
   User_post_confirm_Razorpay,
   User_post_Employee_feedBack,
   User_post_forgot_password,
   User_post_Forgot_password_OTP,
+  
   user_post_Service_Booking,
   user_post_service_booking_send_every_Employee,
+  User_put_cancelReq_service,
   user_put_Profile,
   user_put_User_profile_pic,
   UserGoogle_post,
@@ -48,6 +53,7 @@ const selectEmp: Emp_Location_Types = {
   userLocation: "",
   lat: 0,
   lng: 0,
+  userId:""
 };
 const serviceBooking: ServiceBooking_Types = {
   id: "",
@@ -479,15 +485,72 @@ const userSlices = createSlice({
       .addCase(User_get_bookingHistories.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(User_get_bookingHistories.fulfilled, (state,action:PayloadAction<Response_ServiceBooking_History_types[]>) => {
+      .addCase(User_get_bookingHistories.fulfilled, (state,action:PayloadAction<Response_Req_service_employee_types[]>) => {
         state.isLoading = false;
         state.isSuccess = true;
         console.log("action",action.payload);
-        state.bookingHistories=action.payload
+        const newDatas:Response_Req_service_employee_types[]=action.payload.sort((a,b)=>new Date(b.bookingDate||"").getTime()-new Date(a.bookingDate||"").getTime())
+        console.log("sorted",newDatas);
+        
+        state.bookingHistories=newDatas
         
 
       })
       .addCase(User_get_bookingHistories.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+      .addCase(User_put_cancelReq_service.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_put_cancelReq_service.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // console.log("action",action.payload);
+        // state.bookingHistories=action.payload
+        
+
+      })
+      .addCase(User_put_cancelReq_service.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+      .addCase(User_get_servicePayment.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_get_servicePayment.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // console.log("action",action.payload);
+        // state.bookingHistories=action.payload
+        
+
+      })
+      .addCase(User_get_servicePayment.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+      .addCase(User_get_Allchat.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_get_Allchat.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // console.log("action",action.payload);
+        // state.bookingHistories=action.payload
+        
+
+      })
+      .addCase(User_get_Allchat.rejected, (state, action) => {
         state.isSuccess = false;
         state.isError = true;
         if (action.payload) {

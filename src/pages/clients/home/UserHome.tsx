@@ -91,54 +91,62 @@ const UserHome = () => {
             />
 
             {/* Filter Dropdown */}
-            <select className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            {/* <select className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="All">All Categories</option>
               <option value="Mechanic">Mechanic</option>
               <option value="Parts">Auto Parts</option>
               <option value="Cleaning">Cleaning</option>
-              {/* Add more categories as needed */}
-            </select>
+            </select> */}
           </div>
         </div>
         <div className="relative z-10 bg-gray-50 py-12">
   <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-    {filterSearch.map((service) => (
-      <div
-        key={service.id}
-        className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl"
-      >
-        <img
-          src={`${service.image}`}
-          alt={service.name}
-          className="w-full h-48 object-cover"
-        />
-        <div className="p-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">
-            {service.name}
-          </h3>
-          <p className="text-sm text-gray-600 mb-4">
-            Minimum Wage: <span className="font-medium">₹{service.minimum_wage}</span>
-          </p>
-          <button className="w-full bg-blue-500 text-white py-2 rounded-md font-medium hover:bg-blue-600 transition" onClick={()=>handleServiceBooking(service)}>
-
-            Book Now
-          </button>
-        </div>
-      </div>
-    ))}
-
-
-{showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <ServiceBooking
-            service={service}
-            onClose={()=>setShowModal(false)}
+    {filterSearch.length > 0 ? (
+      filterSearch.map((service) => (
+        <div
+          key={service.id}
+          className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 hover:shadow-xl"
+        >
+          <img
+            src={`${service.image}`}
+            alt={service.name}
+            className="w-full h-48 object-cover"
           />
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              {service.name}
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Minimum Wage: <span className="font-medium">₹{service.minimum_wage}</span>
+            </p>
+            <button
+              className="w-full bg-blue-500 text-white py-2 rounded-md font-medium hover:bg-blue-600 transition"
+              onClick={() => handleServiceBooking(service)}
+            >
+              Book Now
+            </button>
+          </div>
         </div>
-      )}
+      ))
+    ) : (
+      <div className="col-span-full text-center">
+        <p className="text-lg text-gray-500">
+          No services found for "<span className="font-medium">{searchitem}</span>". Please try a different search term.
+        </p>
+      </div>
+    )}
 
+    {showModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <ServiceBooking
+          service={service}
+          onClose={() => setShowModal(false)}
+        />
+      </div>
+    )}
   </div>
 </div>
+
 
         <Footer />
       </section>

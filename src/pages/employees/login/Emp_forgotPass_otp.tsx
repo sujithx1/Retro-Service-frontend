@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { AppDispatch } from "../../../store/store";
 import { useDispatch } from "react-redux";
-import { User_post_Forgot_password_OTP, User_post_forgot_password_otp_check } from "../../../reducers/users/UserapiCalls";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { saveEmail } from "../../../reducers/users/UserReducers";
+import { Emp_post_Forgot_password_OTP, Employee_post_forgot_password_otp_check } from "../../../reducers/employees/EmployeeApicalls";
 
-const UserForgotPassword = () => {
+const Emp_forgotPass_otp = () => {
   const [email, setEmail] = useState<string>("");
   const [otp, setOtp] = useState<string>("");
   const [otpSent, setOtpSent] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const UserForgotPassword = () => {
     }
     setEmailError("");
     console.log("OTP sent to:", email);
-    dispatch(User_post_Forgot_password_OTP(email)).unwrap()
+    dispatch(Emp_post_Forgot_password_OTP(email)).unwrap()
 
     
         .then(()=>{
@@ -51,7 +51,7 @@ const UserForgotPassword = () => {
   const handleCheckOtp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("OTP entered:", otp);
-    dispatch(User_post_forgot_password_otp_check(otp)).unwrap()
+    dispatch(Employee_post_forgot_password_otp_check(otp)).unwrap()
     .then(()=>{
         // toast.success("success")
         dispatch(saveEmail(email))
@@ -147,4 +147,4 @@ const UserForgotPassword = () => {
   );
 };
 
-export default UserForgotPassword;
+export default Emp_forgotPass_otp;

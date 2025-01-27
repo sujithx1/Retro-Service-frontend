@@ -49,8 +49,9 @@ export interface UserLoginType{
 }
 export interface UserReport_FeedBack_types{
     id?:string
-    userid:string,
+    userId:string,
     userEmail:string,
+    rating:number,
     name:string,
     feedBack:string;
     employeeId:string;
@@ -64,7 +65,7 @@ export interface UserInitialState{
     selectEmp:Emp_Location_Types,
     serviceBooking:ServiceBooking_Types|null,
     reqService:Response_Req_service_employee_types,
-    bookingHistories:Response_ServiceBooking_History_types[]
+bookingHistories:Response_Req_service_employee_types[]
     employee:EmployeeStateTypes[]
     jobs:JobsStateTypes[]
     tempuser:UserSignUpTypes;
@@ -106,10 +107,8 @@ export interface Response_Req_service_employee_types{
         acceptTime:Date|null
     },
     bookingDate:string
-    status:string
-    
-   
-    
+    status:string ,
+    paymentId?:string      
 }
 
 export interface req_service_accept_types{
@@ -197,23 +196,23 @@ export interface req_service_accept_types{
     id:string  ,
   
   }
-  interface ServiveDetails{
-    name:string
-    vehicleNumber:string;
-    problem:string;
-    phone:string;
-  }
-  export interface Response_ServiceBooking_History_types{
+interface ServiveDetails{
+  name:string
+  vehicleNumber:string;
+  problem:string;
+  phone:string;
+}
+export interface Response_ServiceBooking_History_types{
+
+    amount:number;
+    employeeId:string;
+    userId:string,
+    status?:string 
+    createdAt?:string,
+    jobName:string,
+    serviceDetails:ServiveDetails
   
-      amount:number;
-      employeeId:string;
-      userId:string,
-      status?:string 
-      createdAt?:string,
-      jobName:string,
-      serviceDetails:ServiveDetails
-    
-  }
+}
 
   export interface ServicePayment_section{
       name:string
@@ -230,3 +229,19 @@ export interface req_service_accept_types{
       
 
   }
+
+
+  export interface ReviewRating_Types{
+    rating:number,
+    feedback:string,
+    userId:string,
+    employeeId:string
+  }
+
+  export interface ChatListItem {
+    id: string;
+    name: string;
+    lastMessage: string;
+    isOnline: boolean;
+  }
+  

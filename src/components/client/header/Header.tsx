@@ -17,7 +17,7 @@ const navigate=useNavigate()
   const menuItems = [
    {title: "Our Services",path:'/home'},
     {title:"Auto spare parts",path:'/autospareparts'},
-   { title:"Modification",path:'/modification'},
+  //  { title:"Modification",path:'/modification'},
    { title:"Contact Us",path:'/contactus'},
     {title:"About Us" ,path:'/about us'},
   ];

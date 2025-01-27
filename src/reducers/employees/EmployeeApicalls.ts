@@ -4,14 +4,18 @@ import {
   Employee_EditProfile_types,
   EmployeeSignUpTypes,
   EmployeeStateTypes,
+  Response_ChatsTypes,
 } from "../../types/employee/EmployeeTypes";
 import {
   ErrorPayload,
   req_service_accept_types,
   Response_Req_service_employee_types,
+  Response_ServiceBooking_History_types,
   Response_ServiceBooking_Types,
   Service_Booking_Put_status_type,
+  
   UserLoginType,
+  UserStateTypes,
 } from "../../types/clients/UsersTypes";
 import { employee_Axios_instance } from "../../axios-api/employee.api";
 import { isAxiosError } from "axios";
@@ -351,3 +355,169 @@ export const employee_put_accept_service= createAsyncThunk<
     });
   }
 });
+
+
+export const employee_get_payment_service= createAsyncThunk<
+
+Response_ServiceBooking_History_types,
+string,
+  { rejectValue: ErrorPayload }
+>("/employee/service-payment-get", async (paymentId, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.get(
+      `/service-payment/${paymentId}`
+    
+    );
+    if (response.data) {
+      return response.data.service;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in modify service booking in employee",
+    });
+  }
+});
+
+export const employee_get_MessagesemployeeId= createAsyncThunk<
+
+Response_ChatsTypes[],
+string,
+  { rejectValue: ErrorPayload }
+>("/employee/chats-get", async (employeeid, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.get(
+      `/chats-employeeid/${employeeid}`
+    
+    );
+    if (response.data) {
+      return response.data.chats;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+export const employee_get_UserDetails= createAsyncThunk<
+
+UserStateTypes,
+string,
+  { rejectValue: ErrorPayload }
+>("/employee/get/userdetails", async (userId, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.get(
+      `/user/${userId}`
+    
+    );
+    if (response.data) {
+      return response.data.user;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+
+
+
+
+export const Emp_post_Forgot_password_OTP= createAsyncThunk<string,string,{rejectValue:ErrorPayload}>(
+  "/employee/forgot-password/otp",
+  async (email,{rejectWithValue}) => {
+
+    try {
+      const response=await employee_Axios_instance.post(`/forgot-password/otp`,{email})
+      if (response.data) {
+        return response.data.email
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+export const Employee_post_forgot_password_otp_check= createAsyncThunk<void,string,{rejectValue:ErrorPayload}>(
+  "/employee/forgot-password/otp/check",
+  async (otp,{rejectWithValue}) => {
+
+    try {
+      const response=await employee_Axios_instance.post(`/forgot-password/check`,{otp})
+      if (response.data) {
+        return response.data
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+export const Employee_post_forgot_password= createAsyncThunk<void, { email: string; password: string }  ,{rejectValue:ErrorPayload}>(
+  "/user/forgot-password",
+  async ({email,password},{rejectWithValue}) => {
+
+    try {
+      const response=await employee_Axios_instance.post(`/forgot-password`,{email,password})
+      if (response.data) {
+        return response.data
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
