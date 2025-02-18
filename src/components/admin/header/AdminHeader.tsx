@@ -30,7 +30,7 @@ const AdminHeader = () => {
 />
 
             <span className="ml-2 font-medium">Sujith</span>
-            <button className="ml-2 p-1 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            <button className="ml-2 p-1 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
             onClick={()=>{
               dispatch(clearAdmin())
               localStorage.removeItem('admin');

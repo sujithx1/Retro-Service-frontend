@@ -1,14 +1,18 @@
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { RootState } from "../../../store/store";
 
 
 const Emp_Sidebar = () => 
     {
+      const {employee}=useSelector((state:RootState)=>state.employee)
         const urls=[
             {side:'Dashboard' ,icon: "🏠" ,path:'/employee/home'},
             {side:'Jobs' ,icon:"🛠️" , path:'/employee/jobs'},
-            {side:'Users' ,   icon:"👨‍👩‍👧",  path:'/employe/users'},
+            // {side:'Users' ,   icon:"👨‍👩‍👧",  path:'/employe/users'},
             {side:'Booking' ,  icon:"🧑‍🔧", path:'/employee/booking'},
             {side:'Booking History' ,  icon:"🧑‍🔧", path:'/employee/booking-history'},
+            {side:'Transactions' ,  icon:"🧑‍🔧", path:`/employee/transactions?userId=${employee?.id}&type=${'employee'}`},
             // {side:'Categories' ,path:'/admin/categories'},
         ]
 

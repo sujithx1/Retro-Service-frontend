@@ -6,7 +6,7 @@ import { FC, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-interface RazorpayOptions {
+export interface RazorpayOptions {
   key: string;
   amount: number;
   currency: string;
@@ -42,9 +42,10 @@ declare global {
 
 interface Props {
   service: ServicePayment_section;
+  servicePaymentId:string
 }
 
-const RazorpayPayment: FC<Props> = ({ service }) => {
+const RazorpayPayment: FC<Props> = ({ service,servicePaymentId }) => {
   const dispatch: AppDispatch = useDispatch();
   const navigate=useNavigate()
 
@@ -64,14 +65,15 @@ const RazorpayPayment: FC<Props> = ({ service }) => {
     
 
     try {
-      await dispatch(User_post_confirm_Razorpay(data)).unwrap()
+      await dispatch(User_post_confirm_Razorpay({id:servicePaymentId,payment:data})).unwrap()
       .then((result)=>{
         console.log("payment success",result);
         
         toast.success("success")
         navigate('/payment-success',{
           state:{
-            paymentId:result.id
+            paymentId:result.id,
+            serviceId:data.serviceId
           }
         })
 
@@ -87,7 +89,7 @@ const RazorpayPayment: FC<Props> = ({ service }) => {
       console.error('Error confirming payment:', error);
       alert('Failed to confirm payment. Please try again.');
     }
-  }, [dispatch, service,navigate]);
+  }, [dispatch, service,navigate,servicePaymentId]);
 
   useEffect(() => {
     const handlePayment = async () => {
@@ -113,9 +115,9 @@ const RazorpayPayment: FC<Props> = ({ service }) => {
             successPayment();
           },
           prefill: {
-            name: 'Your Name',
-            email: 'email@example.com',
-            contact: '9999999999',
+            name: 'Sujith',
+            email: 'retro@gmail.com',
+            contact: '7994591023',
           },
           theme: {
             color: '#3399cc',

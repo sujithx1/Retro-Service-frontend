@@ -26,7 +26,6 @@ const Profile_Employee = () => {
        profilePic:employee?.profilePic||"",
     //    skills:employee?.skills||[],
        experience:employee?.experience ||"",
-       location:employee?.location||""
        
     });
     const dispatch:AppDispatch=useDispatch()
@@ -245,14 +244,7 @@ const Profile_Employee = () => {
             className="w-full bg-gray-100 px-4 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800 font-medium"
             placeholder="Enter your experience"
           />
-          <input
-            type="text"
-            name="location"
-            value={Emp_Edit.location}
-            onChange={handleOnchange}
-            className="w-full bg-gray-100 px-4 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 text-gray-800 font-medium"
-            placeholder="Enter your location"
-          />
+         
         </div>
 
         {/* Save Button */}

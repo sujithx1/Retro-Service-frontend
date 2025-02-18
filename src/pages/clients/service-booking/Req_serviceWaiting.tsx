@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store/store';
 import UserHeader from '../../../components/client/header/Header';
 import { User_get_reqService, User_put_cancelReq_service } from '../../../reducers/users/UserapiCalls';
-import { useNavigate } from 'react-router-dom';
+import {   useNavigate } from 'react-router-dom';
 import { Service_Booking_Put_status_type } from '../../../types/clients/UsersTypes';
 import { toast } from 'react-toastify';
+import ConfirmBookingModal from './ConfirmBooking';
+// import socket from '../../../socket/socket';
 
 const ReqServiceWaiting: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState(() => {
@@ -23,9 +25,10 @@ const ReqServiceWaiting: React.FC = () => {
 
   const [showContactOption, setShowContactOption] = useState(timeLeft === 0);
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [advanceModal, setAdvanceModal] = useState(false);
   
 
-  const { reqService } = useSelector((state: RootState) => state.user);
+  const { reqService,user } = useSelector((state: RootState) => state.user);
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -52,15 +55,72 @@ const ReqServiceWaiting: React.FC = () => {
     };
   }, []);
 
+
+
+
+
+
+  // useEffect(() => {
+  //   const handleConfirmBooking = (data: { id: string }) => {
+  //     console.log("Live booking data:", data.id);
+      
+  //     if (data.id === reqService.id) {
+  //       alert("Booking success");
+  
+  //       if (!isConfirmed && timeLeft > 0) {
+  //         dispatch(User_get_reqService(reqService.id))
+  //           .unwrap()
+  //           .then((response) => {
+  //             console.log("Booking status updated:", response);
+  //             if (response.status === "ACCEPTED") {
+  //               setIsConfirmed(true);
+  //               setAdvanceModal(true);
+  //               navigate(`/advancepayment?service=${response.id}`);
+  //             } else if (response.mechanics.length === 0) {
+  //               navigate("/unavailable");
+  //               localStorage.removeItem("timeLeft");
+  //             }
+  //           })
+  //           .catch((error) => {
+  //             console.error("Failed to fetch booking status:", error);
+  //           });
+  //       }
+  //     }
+  //   };
+  
+  //   const handleBookingFailed = (data: { id: string }) => {
+  //     if (data.id === reqService.id) {
+  //       alert("No mechanics available");
+  //       navigate("/unavailable");
+  //       localStorage.removeItem("timeLeft");
+  //     }
+  //   };
+  
+  //   // Add event listeners
+  //   socket.on("confirmBooking", handleConfirmBooking);
+  //   socket.on("bookingFailed", handleBookingFailed);
+  
+  //   // Cleanup function
+  //   return () => {
+  //     socket.off("confirmBooking", handleConfirmBooking);
+  //     socket.off("bookingFailed", handleBookingFailed);
+  //   };
+  // }, [reqService.id, dispatch, isConfirmed, navigate, timeLeft]);
+  
   useEffect(() => {
     const fetchData = async () => {
       if (reqService.id && (timeLeft > 0 || isConfirmed)) {
         try {
           const response = await dispatch(User_get_reqService(reqService.id)).unwrap();
           console.log('Booking status updated:', response);
-          if (response.status === 'CONFIRMED') {
+          if (response.status === 'ACCEPTED') {
             setIsConfirmed(true);
-            navigate('/payment');
+            setAdvanceModal(true)
+            // navigate(`/advancepayment?service=${response.id}`);
+          }else if(response.mechanics.length==0){
+            navigate("/unavailable");
+            localStorage.removeItem('timeLeft');
+
           }
         } catch (error) {
           console.error('Failed to fetch booking status:', error);
@@ -106,10 +166,21 @@ const ReqServiceWaiting: React.FC = () => {
     });
   }
 
+  const handleNearest=()=>{
+    if (user && user.location) {
+      navigate(`/nearest-employees?lat=${user.location.lat}&lng=${user.location.lng}&service=${reqService.id  }`);
+      
+    }
+  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <UserHeader />
+      
+      {
+        advanceModal && <ConfirmBookingModal bookingId={reqService.id} isOpen={advanceModal} onClose={()=>setAdvanceModal(false)} />
+      }
 
      
 
@@ -231,7 +302,7 @@ const ReqServiceWaiting: React.FC = () => {
                   No response received. You can contact the nearest service now.
                 </p>
                 <button
-                  onClick={() => navigate('/nearest-employee')}
+                  onClick={handleNearest}
                   className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200"
                 >
                   Contact Nearest Service

@@ -1,5 +1,5 @@
 import { JobsStateTypes } from "../admin/admintypes";
-import { Response_Req_service_employee_types, Response_ServiceBooking_Types } from "../clients/UsersTypes";
+import { Locationuser_types, Response_Req_service_employee_types, Response_ServiceBooking_Types } from "../clients/UsersTypes";
 
 
 export interface EmployeeSignUpTypes{
@@ -10,6 +10,7 @@ export interface EmployeeSignUpTypes{
     experience:string;
     password:string;
     confirm_password:string;
+    
 }
 export interface EmployeeStateTypes{
     id:string;
@@ -19,10 +20,10 @@ export interface EmployeeStateTypes{
     isActive?:boolean;
     profilePic:string
     skills:string[];
-
     experience:number,
-    location?:string,
-    revenue:number
+    location?:Locationuser_types,
+    revenue:number,
+    onDuty?:boolean
 
 }
 export interface Employee_InitialState{
@@ -31,6 +32,7 @@ export interface Employee_InitialState{
     reqService_booking:Response_Req_service_employee_types[],
     jobs:JobsStateTypes[],
     tempuser:EmployeeSignUpTypes;
+    wallet:WalletResponse;
     isSuccess:boolean;
     isError:boolean;
     isLoading:boolean;
@@ -58,7 +60,6 @@ export interface Employee_EditProfile_types{
     profilePic:string;
     // skills:string[];
     experience:number|string,
-    location:string
 
 
 }
@@ -82,4 +83,18 @@ export interface Response_ChatsTypes{
 }
 export interface ChatWithUserId extends Response_ChatsTypes {
     userId: string;
+  }
+export interface WalletResponse  {
+    id?:string,
+    userId:string,
+    userType:string,
+    balance:number,
+    createdAt:Date|string,
+    updatedAt:Date|string
+
+  }
+
+  export interface WalletReq{
+    userId:string;
+    userType:"user"|"employee"
   }

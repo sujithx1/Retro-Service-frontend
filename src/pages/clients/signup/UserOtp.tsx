@@ -18,8 +18,8 @@ const UserOtp = () => {
       
     
       if (isSuccess) {
-        dispatch(clearTempuser())
         navigate('/login')
+        dispatch(clearTempuser())
         
         return
         

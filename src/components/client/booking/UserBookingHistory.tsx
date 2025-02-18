@@ -1,17 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import { UserIcon, ClockIcon, CalendarIcon, MapPinIcon } from 'lucide-react';
-import UserHeader from '../header/Header';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store/store';
-import { User_get_bookingHistories } from '../../../reducers/users/UserapiCalls';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import UserBookingDetails from './UserBookingDetails';
+import React, {  useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../store/store";
+import { User_get_bookingHistories } from "../../../reducers/users/UserapiCalls";
+import { CheckCircleIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import UserHeader from "../header/Header";
+import { useNavigate } from "react-router-dom";
+import socket from "../../../socket/socket";
+import { toast } from "react-toastify";
+import ToastAlert from "../../alert/ToastAlert";
+import ReportEmployee from "../review/Report";
+import { FlagIcon } from "lucide-react";
+
+interface ReportEmpTypes {
+  employeeId: string;
+  userId: string;
+  paymentId?: string; // Required for refunds
+  amount?: number; // Required for refunds
+  bookingId:string
+  
+}
 
 const UserBookingHistory: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
   const { user, bookingHistories } = useSelector((state: RootState) => state.user);
-  const [bookingId, setBookingId] = useState<string>('');
-  const [detailBookingModal, setDetailBookingModal] = useState(false);
+  // Pagination State
+  const [reportemp,setreportemp]=useState<ReportEmpTypes>()
+  const [showreport,setShowReport]=useState(false)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // Number of items per page
 
   useEffect(() => {
     if (user?.id) {
@@ -21,116 +38,182 @@ const UserBookingHistory: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'CONFIRMED':
-        return 'bg-green-100 text-green-800';
-      case 'COMPLETED':
-        return 'bg-blue-100 text-blue-800';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
+      case "CONFIRMED":
+        return "bg-green-100 text-green-800";
+      case "COMPLETED":
+        return "bg-blue-100 text-blue-800";
+      case "CANCELLED":
+        return "bg-red-100 text-red-800";
       default:
-        return 'bg-yellow-100 text-yellow-800';
+        return "bg-yellow-100 text-yellow-800";
     }
   };
 
+  
+
+  // Pagination Logic
+  const totalPages = Math.ceil(bookingHistories.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = bookingHistories.slice(indexOfFirstItem, indexOfLastItem);
+const [showMsg,setShowMsg]=useState(false)
   return (
     <>
       <UserHeader />
-      <div className="flex h-screen bg-gray-100">
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-            <div className="container mx-auto px-6 py-8">
-              <h2 className="text-3xl font-bold text-gray-800 mb-6">Booking History</h2>
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                {bookingHistories && bookingHistories.length > 0 ? (
-                  <div className="divide-y divide-gray-200">
-                    {
-                    bookingHistories
-                    
-                      .map((booking) => (
-                        <div
-                          key={booking.id}
-                          className="p-6 hover:bg-gray-50 transition-all duration-300 cursor-pointer"
-                          onClick={() => {
-                            setBookingId(booking.id);
-                            setDetailBookingModal(true);
-                          }}
-                        >
-                          <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="bg-blue-500 rounded-full p-2">
-                                <UserIcon className="h-6 w-6 text-white" />
-                              </div>
-                              <h3 className="text-xl font-semibold text-gray-800">{booking.userName}</h3>
-                            </div>
-                            <span
-                              className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                                booking.status || ''
-                              )}`}
-                            >
-                              {booking.status}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 mb-4">{booking.problem}</p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-500">
-                            <div className="flex items-center space-x-2">
-                              <ClockIcon className="h-5 w-5 text-gray-400" />
-                              <span>
-                                Accept Time: {new Date(booking.acceptEmployee?.acceptTime || '').toLocaleString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <CalendarIcon className="h-5 w-5 text-gray-400" />
-                              <span>Booking Date: {new Date(booking.bookingDate || '').toLocaleString()}</span>
-                            </div>
-                            <div className="flex items-center space-x-2 md:col-span-2">
-                              <MapPinIcon className="h-5 w-5 text-gray-400" />
-                              <span>Location: {booking.userLocation?.address || 'N/A'}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 italic p-6 text-center">No booking history available.</p>
-                )}
-              </div>
-            </div>
-          </main>
-        </div>
+    
+      {/* <div className="flex flex-col h-screen bg-gray-100 p-6"> */}
+      {showreport && reportemp && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg relative">
+      {/* Close "X" button */}
+      <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl"
+        onClick={() => setShowReport(false)}
+      >
+        &times;
+      </button>
 
-        {/* Modal for Booking Details */}
-        {detailBookingModal && (
-          <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-              <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-                &#8203;
-              </span>
-              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900">Booking Details</h3>
+      {/* ReportEmployee component */}
+      <ReportEmployee {...reportemp} />
+    </div>
+  </div>
+)}
+      {showMsg && <ToastAlert message="Message sent successfully!" type="success" onClose={() => setShowMsg(false)} />}
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Booking History</h2>
+        {/* {showMsg && <SuccessAlert message="Message sent successfully!" onClose={() => setShowMsg(false)} />} */}
+      
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+         
+          {bookingHistories.length > 0 ? (
+            <>
+              {/* Table with Horizontal Scroll on Small Screens */}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-200 text-gray-700 sticky top-0">
+                      <th className="p-4 text-left">Service</th>
+                      <th className="p-4 text-left">Date</th>
+                      <th className="p-4 text-left">Location</th>
+                      <th className="p-4 text-left">Status</th>
+                      <th className="p-4 text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentItems.map((booking) => (
+                      <tr
+                        key={booking.id}
+                        className="border-t hover:bg-gray-50 transition-all cursor-pointer"
+                        onClick={() => navigate(`/booking-history/details?bookingId=${booking.id}`)}
+                      >
+                        <td className="p-4">{booking.problem}</td>
+                        <td className="p-4">{new Date(booking.bookingDate || "").toLocaleString()}</td>
+                        <td className="p-4">{booking.userLocation?.address || "N/A"}</td>
+                        <td className={`p-4 font-semibold ${getStatusColor(booking.status || "")}`}>
+                          {booking.status}
+                        </td>
+                        <td className="p-4 flex flex-wrap items-center justify-center gap-3">
+                          {booking.status === "CONFIRMED" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/payment?bookingId=${booking.id}`);
+                              }}
+                              className="flex items-center bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition"
+                            >
+                              <CheckCircleIcon className="w-5 h-5 mr-1" /> Full Payment
+                            </button>
+                          )}
+                           {booking.status === "CONFIRMED" && (
                         <button
-                          onClick={() => setDetailBookingModal(false)}
-                          className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                      
+                          const chatData = {
+                            sender: user?.id || "",
+                            receiver: booking.acceptEmployee?.employeeId?.toString() || "",
+                            message: "Hi", // Default message
+                            timestamp: new Date().toISOString(),
+                            userType: "employee", // Assuming it's from the user
+                          };
+                      
+                          // Emit message using socket (Replace with your socket instance)
+                          if (socket) {
+                            socket.emit("sendMessage", chatData);
+                            // toast.success("Message sent successfully!"); // ✅ Show success toast
+                            setShowMsg(true)
+                          } else {
+                            console.error("Socket is not connected.");
+                            toast.error("Failed to send message.");
+
+                          }
+                      
+                          // ✅ Do not open the modal
+                        }}
+                        className="flex items-center bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition"
+                      >
+                        <ChatBubbleLeftIcon className="w-5 h-5 mr-1" /> Say Hi
+                      </button>
+                    
+                      
+                             )}
+                            {(booking.status === "CONFIRMED" || booking.status === "COMPLETED") && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            setreportemp({
+                              userId: booking.userId,
+                              employeeId: booking.acceptEmployee.employeeId,
+
+                              amount: booking.status==="COMPLETED"?booking.minWage:100,
+                              paymentId: booking.paymentId,
+                              bookingId:booking.id
+                            });
+                            setShowReport(true);
+                          }}
+                          className="flex items-center bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
                         >
-                          <span className="sr-only">Close</span>
-                          <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                          <FlagIcon className="w-5 h-5 mr-1" /> Report
                         </button>
-                      </div>
-                      {bookingId && (
-                        <UserBookingDetails bookingId={bookingId}  />
                       )}
-                    </div>
-                  </div>
-                </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>
-          </div>
-        )}
-      </div>
+
+              {/* Pagination Controls */}
+              <div className="flex justify-center items-center p-4 border-t bg-gray-100">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg mx-2 transition ${
+                    currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+                >
+                  Previous
+                </button>
+
+                <span className="text-gray-700 font-semibold">
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg mx-2 transition ${
+                    currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-500 italic p-6 text-center">No booking history available.</p>
+          )}
+        </div>
+      {/* </div> */}
     </>
   );
 };

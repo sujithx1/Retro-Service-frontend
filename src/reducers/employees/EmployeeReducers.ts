@@ -2,9 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   Employee_InitialState,
   EmployeeSignUpTypes,
+  WalletResponse,
 } from "../../types/employee/EmployeeTypes";
 import {
   Emp_login_post,
+  Emp_put_addLocation,
   employee_get_allJobs,
   employee_get_details,
   Employee_get_Logout,
@@ -12,9 +14,12 @@ import {
   employee_get_payment_service,
   employee_get_reqServices,
   Employee_get_Service_Booking,
+  Employee_get_walletDetails,
+  Employee_put_ActiveToogle,
   Employee_put_jobs,
   Employee_put_Profile,
   employee_put_ServiceBooking,
+  // Employee_put_withDrawMoney,
   Employee_Send_otp,
   employee_signup_post,
 } from "./EmployeeApicalls";
@@ -33,6 +38,14 @@ const tempuser: EmployeeSignUpTypes = {
   password: "",
   confirm_password: "",
 };
+const wallet:WalletResponse={
+  id:"",
+  balance:0,
+  userId:"",
+  createdAt:"",
+  updatedAt:'',
+  userType:""
+}
 
 const Service_booking_Employee: Response_ServiceBooking_Types[] = [];
 const Service_Req_booking_Employee: Response_Req_service_employee_types[] = [];
@@ -43,6 +56,7 @@ const initialState: Employee_InitialState = {
   reqService_booking:Service_Req_booking_Employee,
   jobs:[],
   tempuser,
+  wallet,
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -71,6 +85,22 @@ const employeeslice = createSlice({
 
       state.tempuser = newemp;
     },
+    changeRevenu:(state,action)=>{
+      
+      if (state.employee) {
+        
+        state.employee.revenue-=action.payload
+      }
+
+    },
+    empchangewalletBallence:(state,action)=>{
+      
+      if (state.wallet) {
+        
+        state.wallet.balance=action.payload
+      }
+
+    }
   },
   extraReducers(builder) {
     builder
@@ -119,6 +149,8 @@ const employeeslice = createSlice({
       .addCase(Emp_login_post.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
+        console.log(action.payload)
+        
         state.employee = action.payload;
       })
       .addCase(Emp_login_post.rejected, (state, action) => {
@@ -278,6 +310,7 @@ const employeeslice = createSlice({
                     .addCase(employee_get_reqServices.fulfilled,(state,action)=>{
                         state.isLoading=false
                         state.isSuccess=true
+                        
                         state.reqService_booking = action.payload;
                         console.log(state.reqService_booking);
                         
@@ -337,10 +370,92 @@ const employeeslice = createSlice({
                         
                     })
       
+         .addCase(Employee_put_ActiveToogle.pending,(state)=>{
+                        state.isLoading=true
+                    })
+                    .addCase(Employee_put_ActiveToogle.fulfilled,(state,action)=>{
+                        state.isLoading=false
+                        state.isSuccess=true
+                        if (state.employee) {
+                          state.employee.onDuty=action.payload
+                          
+                        }
+
+                        // state.reqService_booking = action.payload;
+                        // console.log(state.reqService_booking);
+                        
+                    })
+                    .addCase(Employee_put_ActiveToogle.rejected,(state,action)=>{
+                        state.isSuccess=false
+                        state.isError=true
+                        if (action.payload) {
+                           
+                            state.message = action.payload.message;
+                          } else {
+                            state.message = "An unknown error occurred";
+                          }
+                        
+                    })
+      
+         .addCase(Emp_put_addLocation.pending,(state)=>{
+                        state.isLoading=true
+                    })
+                    .addCase(Emp_put_addLocation.fulfilled,(state,action)=>{
+                        state.isLoading=false
+                        state.isSuccess=true
+                        if (state.employee) {
+                          state.employee.location=action.payload
+                          
+                        }
+
+                        // state.reqService_booking = action.payload;
+                        // console.log(state.reqService_booking);
+                        
+                    })
+                    .addCase(Emp_put_addLocation.rejected,(state,action)=>{
+                        state.isSuccess=false
+                        state.isError=true
+                        if (action.payload) {
+                           
+                            state.message = action.payload.message;
+                          } else {
+                            state.message = "An unknown error occurred";
+                          }
+                        
+                    })
+
+                    
+      
+         .addCase(Employee_get_walletDetails.pending,(state)=>{
+                        state.isLoading=true
+                    })
+                    .addCase(Employee_get_walletDetails.fulfilled,(state,action)=>{
+                        state.isLoading=false
+                        state.isSuccess=true
+                        if (state.employee) {
+                          state.wallet.balance=action.payload.balance
+                          
+                        }
+
+                    })
+                    .addCase(Employee_get_walletDetails.rejected,(state,action)=>{
+                        state.isSuccess=false
+                        state.isError=true
+                        if (action.payload) {
+                           
+                            state.message = action.payload.message;
+                          } else {
+                            state.message = "An unknown error occurred";
+                          }
+                        
+                    })
+
+                    
+      
       
   },
 });
 
-export const { clearEmp, clearTempEmp, empReset, setTempEmp } =
+export const { clearEmp, clearTempEmp, empReset, setTempEmp ,changeRevenu,empchangewalletBallence} =
   employeeslice.actions;
 export default employeeslice.reducer;

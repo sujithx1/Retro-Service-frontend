@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import Adminaxios_Instance from "../../axios-api/adminSide.api";
 import { isAxiosError } from "axios";
 import { Add_category, Add_Job, AdminLoginTypes, AdminSuccessTypes, CategoryStateTypes, JobsStateTypes } from "../../types/admin/admintypes";
-import { ErrorPayload, UserReport_FeedBack_types, UserStateTypes } from "../../types/clients/UsersTypes";
+import { ErrorPayload, TransactonsTypes, UserReport_FeedBack_types, UserStateTypes } from "../../types/clients/UsersTypes";
 import { EmployeeStateTypes } from "../../types/employee/EmployeeTypes";
 import Cookies from "js-cookie";
 
@@ -389,3 +389,53 @@ export const Admin_Get_FeedBack=createAsyncThunk<UserReport_FeedBack_types[],voi
   }
 
 })
+
+
+export const Admin_put_FeedBackRefund=createAsyncThunk<void,string,{rejectValue:ErrorPayload}>('/admin/putreFund',async (feedbackId,{rejectWithValue})=>{
+  try {
+    const response=await Adminaxios_Instance.put(`/report-feedback/${feedbackId}`)
+    if(response.data){
+    
+      return response.data
+    }
+
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error,
+        status:error.response?.status
+      })
+      
+    }
+    return rejectWithValue({message:'something problem adding job'})
+    
+  }
+
+})
+
+
+export const Admin_get_Transactionhistory= createAsyncThunk<
+
+TransactonsTypes[] ,
+string,
+{ rejectValue: ErrorPayload }
+>("/admin/get/transactions", async (adminId, { rejectWithValue }) => {
+  try {
+    const response = await Adminaxios_Instance.get(
+      `/transactions/${adminId}`,
+    
+    );
+    if (response.data) {
+      return response.data.transactions;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});

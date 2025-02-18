@@ -5,14 +5,18 @@ import {
   EmployeeSignUpTypes,
   EmployeeStateTypes,
   Response_ChatsTypes,
+  WalletResponse,
 } from "../../types/employee/EmployeeTypes";
 import {
   ErrorPayload,
+  Locationuser_types,
   req_service_accept_types,
   Response_Req_service_employee_types,
   Response_ServiceBooking_History_types,
   Response_ServiceBooking_Types,
   Service_Booking_Put_status_type,
+  
+  TransactonsTypes,
   
   UserLoginType,
   UserStateTypes,
@@ -98,14 +102,18 @@ export const Emp_login_post = createAsyncThunk<
     console.log(response);
 
     if (response.data && response.data.token) {
+      console.log(response.data.employee);
+      
       localStorage.setItem("employee", JSON.stringify(response.data.employee));
+      console.log("local ",localStorage.getItem('employee'));
+      
 
       Cookies.set("employeeToken", response.data.token, {
         expires: 7, // Expires in 7 days
         path: "/",
         secure: true, // Use `true` only in HTTPS
       });
-      return response.data;
+      return response.data.employee;
     }
   } catch (error) {
     if (isAxiosError(error)) {
@@ -495,7 +503,7 @@ export const Employee_post_forgot_password_otp_check= createAsyncThunk<void,stri
 
 
 export const Employee_post_forgot_password= createAsyncThunk<void, { email: string; password: string }  ,{rejectValue:ErrorPayload}>(
-  "/user/forgot-password",
+  "/employee/forgot-password",
   async ({email,password},{rejectWithValue}) => {
 
     try {
@@ -521,3 +529,144 @@ export const Employee_post_forgot_password= createAsyncThunk<void, { email: stri
 );
 
 
+
+export const Employee_put_ActiveToogle= createAsyncThunk<boolean,{id:string,duty:boolean},{rejectValue:ErrorPayload}>(
+  "/employee/onDuty",
+  async ({id,duty},{rejectWithValue}) => {
+    console.log("id,",id,"duty",duty);
+
+    
+
+    try {
+      const response=await employee_Axios_instance.put(`/onduty/${id}`,{duty})
+      if (response.data) {
+        return response.data.duty
+        
+      } 
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+
+export const Emp_put_addLocation= createAsyncThunk<Locationuser_types,{id:string,location:Locationuser_types},{rejectValue:ErrorPayload}>(
+  "/employee/location/fetch",
+  async ({id,location},{rejectWithValue}) => {
+    console.log("location  req :       ",location);
+    
+
+    try {
+      const response=await employee_Axios_instance.put(`/location/${id}`,location)
+      if (response.data) {
+        
+        return response.data.location
+        
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        return rejectWithValue({
+          message:error.response?.data.error
+        })
+        
+      }
+      return rejectWithValue({
+        message:"something error for getting service-booking"
+      })
+      
+    }
+
+  }
+);
+
+
+
+export const Employee_get_Transactionhistory= createAsyncThunk<
+
+TransactonsTypes[] ,
+string,
+  { rejectValue: ErrorPayload }
+>("/employee/get/transactions", async (employeeId, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.get(
+      `/transactions/${employeeId}`,
+    
+    );
+    if (response.data) {
+      return response.data.transactions;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+
+export const Employee_put_withDrawMoney= createAsyncThunk<
+
+WalletResponse,
+{empId:string,amount:number},
+  { rejectValue: ErrorPayload }
+>("/employee/put/withdraw", async ({empId,amount}, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.put(
+      `/withdraw/${empId}`,{amount}
+    
+    );
+    if (response.data) {
+      return response.data.wallet;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+
+export const Employee_get_walletDetails= createAsyncThunk<
+
+WalletResponse,
+string,
+  { rejectValue: ErrorPayload }
+>("/employee/get/wallet", async (empId, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.get(
+      `/wallet/${empId}`
+    
+    );
+    if (response.data) {
+      return response.data.wallet;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});

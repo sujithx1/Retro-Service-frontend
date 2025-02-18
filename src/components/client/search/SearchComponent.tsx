@@ -8,7 +8,7 @@ const SearchComponent = () => {
 
   // Debounce function to limit API calls
   const debounce = (func: (...args: string[]) => void, delay: number) => {
-    let timer: number; // Fixed typo: Nodejs → NodeJS
+    let timer: ReturnType<typeof setTimeout>; // This will work for both Node.js and browser environments
     return (...args: string[]) => {
       clearTimeout(timer);
       timer = setTimeout(() => func(...args), delay);

@@ -3,7 +3,8 @@ import { io, Socket } from "socket.io-client";
 import { AppDispatch } from "../../../store/store";
 import { useDispatch } from "react-redux";
 import { employee_get_MessagesemployeeId } from "../../../reducers/employees/EmployeeApicalls";
-import { Response_ChatsTypes } from "../../../types/employee/EmployeeTypes";
+import { EmployeeStateTypes, Response_ChatsTypes } from "../../../types/employee/EmployeeTypes";
+import { user_get_EmployeeDetails } from "../../../reducers/users/UserapiCalls";
 
 // interface Message {
 //   sender: string;
@@ -14,28 +15,41 @@ import { Response_ChatsTypes } from "../../../types/employee/EmployeeTypes";
 
 interface Props {
   userName: string;
-  employeeName: string;
   userId: string;
   employeeId: string;
-  employeeProfilePic: string;
+  onclose:()=>void
 }
 
 const UserChat: React.FC<Props> = ({
-  employeeName,
   userId,
   employeeId,
-  employeeProfilePic,
+  onclose
 }) => {
   const [messages, setMessages] = useState<Response_ChatsTypes[]>([]);
+  const [employeeDetails,setEmployeeDetails]=useState<EmployeeStateTypes>()
   const [inputMessage, setInputMessage] = useState("");
   const [socket, setSocket] = useState<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // Reference to scroll to the bottom
 const dispatch:AppDispatch=useDispatch()
+console.log("employeeid",employeeId);
+
   useEffect(() => {
     if (!employeeId) {
       console.error("Employee ID is missing. Ensure an employee is selected.");
       return;
     }
+    dispatch(user_get_EmployeeDetails(employeeId)).unwrap()
+    .then((result) => {
+      console.log(result)
+      setEmployeeDetails(result)
+
+      
+      
+    }).catch((err) => {
+      console.log(err);
+      
+      
+    });
 
     dispatch(employee_get_MessagesemployeeId(userId))
     .unwrap()
@@ -112,21 +126,42 @@ const dispatch:AppDispatch=useDispatch()
   return (
     <div className="w-full h-full max-w-lg mx-auto flex flex-col bg-gray-50 shadow-lg rounded-lg">
     {/* Header */}
-    <div className="p-4 bg-gray-800 flex items-center rounded-t-xl shadow-lg">
-      <div className="w-10 h-10 bg-gray-700 rounded-full overflow-hidden border-2 border-cyan-400">
-        <img
-          src={employeeProfilePic || "/default-avatar.png"}
-          alt="User Avatar"
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div className="ml-3">
-        <h3 className="text-base font-semibold text-gray-200">
-          {employeeName|| "employee"}
-        </h3>
-        <p className="text-xs text-gray-400">Online</p>
-      </div>
+    <div className="p-4 bg-gray-800 flex items-center justify-between rounded-t-xl shadow-lg">
+  <div className="flex items-center">
+    <div className="w-10 h-10 bg-gray-700 rounded-full overflow-hidden border-2 border-cyan-400">
+      <img
+        src={employeeDetails?.profilePic || "/default-avatar.png"}
+        alt="User Avatar"
+        className="w-full h-full object-cover"
+      />
     </div>
+    <div className="ml-3">
+      <h3 className="text-base font-semibold text-gray-200">
+        {employeeDetails?.username || "employee"}
+      </h3>
+      <p className="text-xs text-gray-400">Online</p>
+    </div>
+  </div>
+  <button
+    className="ml-auto p-2 text-gray-300 hover:text-gray-100 bg-gray-700 hover:bg-gray-600 rounded-full transition duration-200"
+    onClick={onclose}
+    aria-label="Close"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 8.586l3.95-3.95a1 1 0 111.414 1.414L11.414 10l3.95 3.95a1 1 0 01-1.414 1.414L10 11.414l-3.95 3.95a1 1 0 11-1.414-1.414L8.586 10 4.636 6.05A1 1 0 016.05 4.636L10 8.586z"
+        clipRule="evenodd"
+      />
+    </svg>
+  </button>
+</div>
+
 
     {/* Messages */}
     <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-900 scrollbar-hide">

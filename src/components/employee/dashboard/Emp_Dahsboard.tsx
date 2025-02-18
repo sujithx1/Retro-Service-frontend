@@ -1,15 +1,89 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Wrench, Car, Clock, CheckCircle, Briefcase, Loader } from 'lucide-react';
+import { Wrench, Car, Clock, CheckCircle, Briefcase, Loader, MapPin } from 'lucide-react';
 import { AppDispatch, RootState } from '../../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { employee_get_reqServices } from '../../../reducers/employees/EmployeeApicalls';
+import { employee_get_reqServices, Employee_put_ActiveToogle, Employee_put_withDrawMoney } from '../../../reducers/employees/EmployeeApicalls';
+import { useNavigate } from 'react-router-dom';
+import { ToastMsg } from '../../../types/admin/admintypes';
+import ToastAlert from '../../alert/ToastAlert';
+import { changeRevenu, empchangewalletBallence } from '../../../reducers/employees/EmployeeReducers';
 
 const Emp_Dashboard: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
   const { employee, reqService_booking } = useSelector((state: RootState) => state.employee);
+  const [isActive, setIsActive] = useState<boolean>(employee?.onDuty || false);
+ const[showmsg,setShowmsg]=useState<ToastMsg>({
+    action:false,
+    message:"",
+    type:"idle"
+  })
+
+
+
+const navigate=useNavigate()
+
+const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false); // State for withdrawal modal
+  const [withdrawAmount, setWithdrawAmount] = useState(''); 
+
+  
+  const handleWithdrawConfirm = () => {
+    if (!withdrawAmount || isNaN(Number(withdrawAmount))) {
+      // alert('Please enter a valid amount.');
+      setShowmsg({action:true,message:"Please enter a valid amount.",type:'error'})
+      return;
+    }
+
+    const amount = parseFloat(withdrawAmount);
+    if (amount <=  100) {
+      // alert('Withdrawal amount must be greater than 0.');
+      setShowmsg({action:true,message:"Withdrawal amount must be greater than 100.",type:'info'})
+
+
+      return;
+    }
+
+    if (employee?.revenue && amount > employee.revenue) {
+      // alert('Insufficient balance.');
+      setShowmsg({action:true,message:"Insufficient balance.",type:'error'})
+
+      return;
+    }
+
+    // Add your withdrawal logic here (e.g., API call)
+    // alert(`Withdrawing ₹${withdrawAmount}`);
+
+    dispatch(Employee_put_withDrawMoney({empId:employee?.id||"",amount:amount})).unwrap()
+    .then((res)=>{
+      console.log(res);
+      setShowmsg({action:true,message:`credited ${amount}`,type:'success'})
+      
+      dispatch(empchangewalletBallence(res.balance)); // Dispatch the changeRevenu action
+      
+    })
+    dispatch(changeRevenu(amount)); // Dispatch the changeRevenu action
+    
+    setIsWithdrawModalOpen(false);
+    setWithdrawAmount('');
+  };
+
+  // Handle withdrawal cancel
+  const handleWithdrawCancel = () => {
+    setIsWithdrawModalOpen(false);
+    setWithdrawAmount('');
+  };
+
+  
+
+
+  useEffect(() => {
+    console.log("emp duty toogle",employee?.onDuty)
+    
+    setIsActive(employee?.onDuty ?? false);
+  }, [employee?.onDuty]);
+  
+  
   
   const { completedCount, pendingCount } = useMemo(() => {
     console.log("Calculating counts. reqService_booking:", reqService_booking);
@@ -69,13 +143,64 @@ const Emp_Dashboard: React.FC = () => {
     );
   }
 
+  const handleActiveToogle=(id:string)=>{
+    setIsActive(!isActive)
+    console.log("duty",!isActive)
+    
+
+    const data:{id:string,duty:boolean}={
+      id:id,
+      duty:!isActive
+    }
+    dispatch(Employee_put_ActiveToogle(data))
+    
+  }
+
+
+
+  // const handleWithdrawMoney=(mone)=>{
+    
+    
+  // }
   return (
+    <>
+        {showmsg.action && <ToastAlert onClose={()=>setShowmsg((prev)=>({...prev,action:false}))} message={showmsg.message} type={showmsg.type as "info"|"success"|"error"} />}
+
     <div className="p-8 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-gray-800 mb-10">Mechanic Dashboard</h2>
+      <div className="flex justify-between items-center mb-10">
+          <h2 className="text-4xl font-bold text-gray-800">Mechanic Dashboard</h2>
+          <button
+          
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+            onClick={()=>navigate(`/employee/change-location/${employee.id}`)}
+          >
+            <MapPin className="h-5 w-5" /> Change Location
+          </button>
+        <div className=" flex items-center ">
+          <span className="text-lg font-medium mr-3">Active Status:</span>
+          <button
+            onClick={()=>handleActiveToogle(employee.id)}
+            className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${
+              isActive ? 'bg-green-500' : 'bg-gray-400'
+            }`}
+          >
+            <div
+              className={`absolute left-1 top-1 w-5 h-5 rounded-full bg-white transition-transform duration-300 ${
+                isActive ? 'translate-x-7' : 'translate-x-0'
+              }`}
+            ></div>
+          </button>
+          <span className={`ml-3 font-semibold ${isActive ? 'text-green-600' : 'text-gray-600'}`}>
+            {isActive ? 'Active' : 'Inactive'}
+          </span>
+
+        </div>
+                 </div>
 
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          
           {/* Card 1: Total Services */}
           <div className="bg-white shadow-md rounded-lg p-6 flex items-center">
             <div className="bg-blue-100 p-3 rounded-full">
@@ -117,10 +242,41 @@ const Emp_Dashboard: React.FC = () => {
             <div className="ml-4">
               <h3 className="text-lg font-semibold text-gray-700">Total Revenue</h3>
               <p className="text-2xl font-bold text-gray-900">₹{employee?.revenue || 0}</p>
+              <button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105"  onClick={() => setIsWithdrawModalOpen(true)}>
+    Withdraw
+  </button>
             </div>
           </div>
         </div>
 
+        {isWithdrawModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+              <h2 className="text-xl font-semibold text-gray-700 mb-4">Withdraw Funds</h2>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <div className="flex justify-end space-x-4">
+                <button
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+                  onClick={handleWithdrawCancel}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  onClick={handleWithdrawConfirm}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Recent Activity and Task List */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Activity */}
@@ -171,6 +327,7 @@ const Emp_Dashboard: React.FC = () => {
         </div>
       </div>
     </div>
+                </>
   );
 };
 

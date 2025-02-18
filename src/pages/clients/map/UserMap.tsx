@@ -145,11 +145,10 @@ const UserMap = () => {
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       {showChat ? (
         <UserChat
-          employeeProfilePic={selectedMechanic?.profilePic || ""}
-          employeeName={selectedMechanic?.username || ""}
           userId={userId}
           employeeId={employeeId}
           userName={user?.username || ""}
+          onclose={()=>setShowChat(false)}
         />
       ) : (
         <div className="relative w-full max-w-4xl h-[500px] shadow-lg rounded-lg overflow-hidden bg-white">

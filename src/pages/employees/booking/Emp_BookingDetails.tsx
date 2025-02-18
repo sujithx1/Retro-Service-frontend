@@ -13,6 +13,7 @@ import {
   CreditCardIcon,
   TruckIcon,
   PhoneIcon,
+
 } from "@heroicons/react/24/outline"
 import { employee_get_payment_service } from "../../../reducers/employees/EmployeeApicalls"
 import type { Response_ServiceBooking_History_types } from "../../../types/clients/UsersTypes"
@@ -22,7 +23,7 @@ interface Props {
   onClose: () => void
 }
 
-const Emp_BookingDetail: React.FC<Props> = ({ bookingId }) => {
+const Emp_BookingDetail: React.FC<Props> = ({ bookingId ,onClose}) => {
   const booking = useSelector((state: RootState) => state.employee.reqService_booking.find((b) => b.id === bookingId))
   const [paymentDetails, setPaymentDetails] = useState<Response_ServiceBooking_History_types | null>(null)
   const dispatch: AppDispatch = useDispatch()
@@ -60,9 +61,13 @@ const Emp_BookingDetail: React.FC<Props> = ({ bookingId }) => {
     <div className="container mx-auto px-6 py-8">
       <div className="flex justify-between items-center mb-6">
         {/* <h2 className="text-3xl font-bold text-gray-800">Booking Details</h2> */}
-        {/* <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-          <XMarkIcon className="h-6 w-6" />
-        </button> */}
+        <button 
+  onClick={onClose} 
+  className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+>
+  ← Back
+</button>
+
       </div>
       <div className="bg-white rounded-lg shadow-xl p-6">
         <div className="flex items-center justify-between mb-4">

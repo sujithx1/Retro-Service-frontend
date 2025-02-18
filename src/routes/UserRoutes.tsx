@@ -17,7 +17,13 @@ import UserPayment from "../pages/clients/payment/UserPayment"
 import PaymentSuccess from "../components/payments/SuccessPayment"
 import PaymentFailed from "../components/payments/FailedPayment"
 import UserBookingHistory from "../components/client/booking/UserBookingHistory"
-import UserMap from "../pages/clients/map/UserMap"
+import UserCurrentLocationMap from "../components/client/userMap/UserCurrentLocationMap"
+import NearestEmployees from "../pages/clients/service-booking/NearestEmployees"
+import RazorpayPaymentAdvance from "../pages/clients/payment/AdvancePay"
+import UserBookingDetails from "../components/client/booking/UserBookingDetails"
+import NoAvailableEmployees from "../components/client/unavailable/NoAvailableEmployees"
+import UserChatList from "../pages/clients/userchat/UserChatlist"
+import TransactionHistory from "../pages/clients/transactions/TransactionHistory"
 
 const UserRoutes = () => {
   return (
@@ -49,6 +55,12 @@ const UserRoutes = () => {
             <UserHome/>
           </UserProtect>
           }/>
+        <Route path="/change-location/:id" element={
+          <UserProtect>
+
+            <UserCurrentLocationMap/>
+          </UserProtect>
+          }/>
           <Route path="/profile" element={
             <UserProtect>
               <UserProfile/>
@@ -74,9 +86,14 @@ const UserRoutes = () => {
                   <ReqServiceWaiting/>
                 </UserProtect>
               }/>
-              <Route path="/nearest-employee" element={
+              <Route path="/nearest-employees" element={
                 <UserProtect>
-                  <UserMap/>
+                  <NearestEmployees/>
+                </UserProtect>
+              }/>
+              <Route path="/advancepayment" element={
+                <UserProtect>
+                  <RazorpayPaymentAdvance/>
                 </UserProtect>
               }/>
 
@@ -100,16 +117,39 @@ const UserRoutes = () => {
    </UserProtect>
      }/>
 <Route path="/payment-failed" element={
-   <UserProtect>
+  <UserProtect>
 
      <PaymentFailed/>
    </UserProtect>
      }/>
 <Route path="/booking-history" element={
-   <UserProtect>
+  <UserProtect>
 
      <UserBookingHistory/>
    </UserProtect>
+     }/>
+<Route path="/booking-history/details" element={
+  <UserProtect>
+
+     <UserBookingDetails/>
+   </UserProtect>
+     }/>
+<Route path="/unavailable" element={
+  <UserProtect>
+
+     <NoAvailableEmployees/>
+   </UserProtect>
+     }/>
+<Route path="/chat" element={
+  <UserProtect>
+
+     <UserChatList/>
+   </UserProtect>
+     }/>
+     <Route path="/transactions" element={
+       <UserProtect>
+         <TransactionHistory/>
+       </UserProtect>
      }/>
 
         <Route path="*" element={<NotFound />} />

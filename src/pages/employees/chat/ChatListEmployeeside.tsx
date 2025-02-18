@@ -5,6 +5,7 @@ import { Response_ChatsTypes } from "../../../types/employee/EmployeeTypes";
 import { AppDispatch, RootState } from "../../../store/store";
 import ChatDetails from "./ChatMessageComponet";
 import { UserStateTypes } from "../../../types/clients/UsersTypes";
+import { useNavigate } from "react-router-dom";
 
 const ChatList = () => {
   const { employee } = useSelector((state: RootState) => state.employee);
@@ -12,6 +13,7 @@ const ChatList = () => {
   const [chatList, setChatList] = useState<Response_ChatsTypes[]>([]);
   const [userDetails, setUserDetails] = useState<Map<string, UserStateTypes>>(new Map()); // Map to store user details
   const dispatch: AppDispatch = useDispatch();
+const navigate=useNavigate()
 
   useEffect(() => {
     if (employee?.id) {
@@ -38,7 +40,7 @@ const ChatList = () => {
           const userDetailsPromises = userIds.map((userId) =>
             dispatch(employee_get_UserDetails(userId)).unwrap() // Unwrap the payload to access user data
           );
-
+   
           try {
             // Wait for all user details to be fetched
             const details = await Promise.all(userDetailsPromises);
@@ -66,7 +68,13 @@ const ChatList = () => {
  <div className="flex h-screen bg-black text-gray-200">
   {/* Left side: Chat list */}
   <div className="w-1/4 bg-gradient-to-b from-gray-900 to-gray-800 p-6 shadow-lg rounded-xl overflow-y-auto max-h-screen border border-gray-700">
-    <h2 className="text-2xl font-bold text-cyan-400 mb-6">Chat List</h2>
+  <div className="flex justify-between items-center mb-6">
+  <h2 className="text-2xl font-bold text-cyan-400">Chat List</h2>
+  <button className="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 transition" onClick={()=>navigate(-1)}>
+    Close
+  </button>
+</div>
+
     <div className="space-y-6">
       {chatList.map((chat) => {
         const { message, timestamp } = chat;

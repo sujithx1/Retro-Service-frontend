@@ -8,6 +8,7 @@ import AdminRoutes from "./routes/AdminRoutes"
 import UserRoutes from "./routes/UserRoutes"
 import EmployeesRoutes from "./routes/EmployeesRoutes"
 import NotFound from "./components/NotFound"
+import StoreRoutes from "./routes/StoreRoutes"
 
 // import ChatHome from "./pages/employees/chat/Emp_chat"
 
@@ -19,20 +20,16 @@ function App() {
   return (
     <>
     
-   
+    
 
     <Router>
     <Routes>
-        {/* <Route path="/chatt" element={ <div className="flex h-screen">
-      <ChatHome /> */}
-      {/* <ChatWindow /> */}
-    {/* </div>} /> */}
-
+      
         
         <Route path="/*" element={<UserRoutes />} />
         <Route path="/employee/*" element={<EmployeesRoutes />} />
-        <Route path="/admin/*" element={<AdminRoutes />} />
-
+        <Route path="/admin/*" element={<AdminRoutes/>} />
+        <Route path="/store/*" element={<StoreRoutes/>} />
         <Route path="*" element={<NotFound/>} />
       </Routes>
       

@@ -1,275 +1,204 @@
-import React, { ChangeEvent, useState } from 'react';
-import { CreditCard, ShoppingCart, IndianRupee, Car, Phone, User, FileText } from 'lucide-react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import {  IndianRupee, Car, Phone } from 'lucide-react';
 import Razorpay from '../../../components/payments/Razorypay';
-import { ServicePayment_section } from '../../../types/clients/UsersTypes';
-import {  useSelector } from 'react-redux';
-import {  RootState } from '../../../store/store';
-
+import { Response_Req_service_employee_types, ServicePayment_section } from '../../../types/clients/UsersTypes';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../store/store';
+import { useSearchParams } from 'react-router-dom';
+import { User_get_reqService } from '../../../reducers/users/UserapiCalls';
+import { toast } from 'react-toastify';
 
 type PaymentMethod = 'stripe' | 'paypal' | 'razorpay';
 interface FormErrors {
-    name?: string;
-    vehicleNumber?: string;
-    problem?: string;
-    phone?: string;
-    amount?: string;
-    paymentMethod?: string;
-  }
+  vehicleNumber?: string;
+  phone?: string;
+  amount?: string;
+  paymentMethod?: string;
+}
+
 export default function UserPayment() {
-    const { reqService } = useSelector((state: RootState) => state.user);
-    const [formData, setFormData] = useState<ServicePayment_section>({
-        name: '',
-        problem: '',
-        vehicleNumber: '',
-        phone: '',
-        amount: reqService.minWage,
-        employeeId: reqService.acceptEmployee.employeeId,
-        userId: reqService.userId,
-        jobName:reqService.jobName,
-        serviceId:reqService.id
-        ,
+  const [params] = useSearchParams();
+  const bookingId = params.get('bookingId');
+  const dispatch: AppDispatch = useDispatch();
+  const [reqService, setReqservice] = useState<Response_Req_service_employee_types | null>(null);
 
-       
-    });
-    
-    // const { amount, name, phone, problem, vehicleNumber } = formData;
-    // const [reportModal,setReportModal]=useState(false)
+  const [formData, setFormData] = useState<ServicePayment_section>({
+    vehicleNumber: '',
+    phone: '',
+    amount: 0, // Will update after fetching `reqService`
+    employeeId: '',
+    userId: '',
+    jobName: '',
+    serviceId: '',
+    name:"",
+    problem:'',
 
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('stripe');
-    const [showRazorpay, setShowRazorpay] = useState(false);
-    const [errors, setErrors] = useState<FormErrors>({});
-    //  const [reportfeedBack,setReportFeedBack]=useState<UserReport_FeedBack_types>({
-    //       userid:reqService.userId||"",
-    //       userEmail:reqService.userEmail||"",
-    //       name:"",
-    //       feedBack:"",
-    //       employeeId:reqService.acceptEmployee.employeeId||"",
-          
-    
-    //     })
-        // const dispatch:AppDispatch=useDispatch()
+  });
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        
-        // Handle amount separately to ensure it's a number
-      
-            setFormData(prevData => ({ ...prevData, [name]: value }));
-        
-    };
-    const validateForm = (): boolean => {
-        const newErrors: FormErrors = {};
-        if (!formData.name.trim()) newErrors.name = 'Name is required';
-        if (!formData.vehicleNumber.trim()) newErrors.vehicleNumber = 'Vehicle number is required';
-        if (!formData.problem.trim()) newErrors.problem = 'Problem description is required';
-        if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-        if (!/^\+?[1-9]\d{1,14}$/.test(formData.phone)) newErrors.phone = 'Invalid phone number';
-        if (!formData.amount ) newErrors.amount = 'Amount is required';
-        if(formData.amount< reqService.minWage)newErrors.amount="Amount shound be Minimun wage or more"
-        if (isNaN(Number(formData.amount)) || Number(formData.amount) <= 0) newErrors.amount = 'Invalid amount';
-        if (!paymentMethod) newErrors.paymentMethod = 'Payment method is required';
-    
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-      };
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('razorpay');
+  const [showRazorpay, setShowRazorpay] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (validateForm()) {
-            
-            if (paymentMethod === 'razorpay') {
-                setShowRazorpay(true);
-            }
-        }
-    };
-    // const handleOnchange_report_feedBack=(e:ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=>{
-    //   const {name,value}=e.target
-    //   setReportFeedBack((prev)=>({
-    //     ...prev,
-    //     [name]:value
-    //   }))
+  useEffect(() => {
+    if (!bookingId) {
+      toast.error('Invalid booking');
+      return;
+    }
 
+    dispatch(User_get_reqService(bookingId))
+      .unwrap()
+      .then((res) => {
+        setReqservice(res);
 
+        // Update formData with fetched values
+        setFormData((prev) => ({
+          ...prev,
+          amount: res.minWage - 100,
+          employeeId: res.acceptEmployee?.employeeId || '',
+          userId: res.userId || '',
+          jobName: res.jobName || '',
+          serviceId: res.id || '',
+        }));
+      })
+      .catch((err) => console.log(err));
+  }, [bookingId, dispatch]);
 
-    // }
-//  const handleSubmit_report_feedBack=(e:FormEvent)=>{
-//       e.preventDefault()
-//       console.log(reportfeedBack);
-//       dispatch(User_post_Employee_feedBack(reportfeedBack))
-//       .unwrap()
-//       .then(()=>{toast.success("success feedback")
-//         setReportModal(false)
-//       })
-//       .catch((err)=>toast.error(err))
-      
-      
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    if (!formData.vehicleNumber.trim()) newErrors.vehicleNumber = 'Vehicle number is required';
+    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    if (!/^\+?[1-9]\d{1,14}$/.test(formData.phone)) newErrors.phone = 'Invalid phone number';
+    if (!formData.amount) newErrors.amount = 'Amount is required';
+    if (reqService && formData.amount < (reqService.minWage-100))
+      newErrors.amount = 'Amount should be at least the minimum wage';
+    if (isNaN(Number(formData.amount)) || Number(formData.amount) <= 0) newErrors.amount = 'Invalid amount';
+    if (!paymentMethod) newErrors.paymentMethod = 'Please select a payment method';
 
-//       }
-    return (
-        <>
-         
-            {showRazorpay && <Razorpay service={formData} />}
-            <div className="w-full max-w-4xl mx-auto space-y-8 p-4">
-                <div className="relative w-full h-64 rounded-xl overflow-hidden">
-                    <img
-                        src="/Accept Evrything.gif"
-                        alt="Vehicle service hero image"
-                        className="w-full h-full object-cover"
-                    />
-                </div>
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-                <div className="bg-white shadow-md rounded-lg p-6">
-                    <div className="mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">Service Details</h2>
-                        <p className="text-gray-600">Enter your details and choose a payment method.</p>
-                    </div>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="name" className="text-sm font-medium text-gray-700 mb-1 inline-flex items-center">
-            <User className="h-4 w-4 mr-2" />
-            <span>Full Name</span>
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="John Doe"
-            value={formData.name}
-            onChange={handleChange}
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      if (paymentMethod === 'razorpay') {
+        setShowRazorpay(true);
+      }
+    }
+  };
+
+  return (
+    <>
+      {showRazorpay && <Razorpay servicePaymentId={reqService?.paymentId||""} service={formData} />}
+      <div className="w-full max-w-3xl mx-auto space-y-8 p-6">
+        {/* Hero Section */}
+        <div className="relative w-full h-56 rounded-lg overflow-hidden shadow-md">
+          <img
+            src="/Accept Evrything.gif"
+            alt="Vehicle service hero image"
+            className="w-full h-full object-cover"
           />
-          {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
         </div>
-        <div>
-          <label htmlFor="vehicleNumber" className="text-sm font-medium text-gray-700 mb-1 inline-flex items-center">
-            <Car className="h-4 w-4 mr-2" />
-            <span>Vehicle Number</span>
-          </label>
-          <input
-            type="text"
-            id="vehicleNumber"
-            name="vehicleNumber"
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.vehicleNumber ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="ABC 1234"
-            value={formData.vehicleNumber}
-            onChange={handleChange}
-          />
-          {errors.vehicleNumber && <p className="mt-1 text-xs text-red-500">{errors.vehicleNumber}</p>}
-        </div>
-      </div>
-      <div>
-        <label htmlFor="problem" className="text-sm font-medium text-gray-700 mb-1 inline-flex items-center">
-          <FileText className="h-4 w-4 mr-2" />
-          <span>Problem Description</span>
-        </label>
-        <textarea
-          id="problem"
-          name="problem"
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] ${
-            errors.problem ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="Describe the issue with your vehicle"
-          value={formData.problem}
-          onChange={handleChange}
-        />
-        {errors.problem && <p className="mt-1 text-xs text-red-500">{errors.problem}</p>}
-      </div>
-      <div>
-        <label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-1 inline-flex items-center">
-          <Phone className="h-4 w-4 mr-2" />
-          <span>Phone Number</span>
-        </label>
-        <input
-          type="tel"
-          id="phone"
-          name="phone"
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.phone ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="+1 234 567 8900"
-          value={formData.phone}
-          onChange={handleChange}
-        />
-        {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
-      </div>
-      <div>
-        <label htmlFor="amount" className="text-sm font-medium text-gray-700 mb-1 inline-flex items-center">
-          <IndianRupee className="h-4 w-4 mr-2" />
-          <span>Amount</span>
-        </label>
-        <input
-          type="text"
-          inputMode="numeric"
-          id="amount"
-          name="amount"
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.amount ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="Enter amount in INR"
-          value={formData.amount}
-          onChange={handleChange}
-        />
-        {errors.amount && <p className="mt-1 text-xs text-red-500">{errors.amount}</p>}
-      </div>
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 inline-flex items-center">
-          <CreditCard className="h-4 w-4 mr-2" />
-          <span>Payment Method</span>
-        </label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { value: 'stripe', label: 'Credit Card (Stripe)', icon: CreditCard },
-            { value: 'paypal', label: 'PayPal', icon: ShoppingCart },
-            { value: 'razorpay', label: 'Razorpay', icon: IndianRupee },
-          ].map((method) => (
-            <label
-              key={method.value}
-              className={`inline-flex items-center space-x-2 border rounded-lg p-4 cursor-pointer transition-colors ${
-                paymentMethod === method.value ? 'bg-blue-50 border-blue-500' : 'hover:bg-gray-50'
-              }`}
-            >
+
+        {/* Payment Form */}
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Complete Your Payment</h2>
+          <p className="text-gray-600 mb-6">Enter your details and choose a payment method to proceed.</p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Vehicle Number */}
+            <div>
+              <label htmlFor="vehicleNumber" className="block text-sm font-medium text-gray-700">
+                <Car className="inline-block w-5 h-5 mr-2 text-gray-500" />
+                Vehicle Number
+              </label>
               <input
-                type="radio"
-                name="paymentMethod"
-                value={method.value}
-                checked={paymentMethod === method.value}
-                onChange={() => setPaymentMethod(method.value as PaymentMethod)}
-                className="form-radio text-blue-600"
+                type="text"
+                id="vehicleNumber"
+                name="vehicleNumber"
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.vehicleNumber ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="ABC 1234"
+                value={formData.vehicleNumber}
+                onChange={handleChange}
               />
-              <div className="inline-flex items-center space-x-2">
-                <method.icon className="h-5 w-5 text-gray-600" />
-                <span>{method.label}</span>
-              </div>
-            </label>
-          ))}
-        </div>
-        {errors.paymentMethod && <p className="mt-1 text-xs text-red-500">{errors.paymentMethod}</p>}
-      </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-        >
-          Proceed to Payment
-        </button>
-      </form>
-
-      <div className="mt-6 text-center">
-        <span className="text-gray-500">or</span>
-        {/* <button
-          className="ml-2 text-blue-600 hover:text-blue-800 focus:outline-none focus:underline transition-colors duration-200 font-medium"
-          onClick={() => setReportModal(true)}
-        >
-          Report feedback
-        </button> */}
-      </div>
-                </div>
+              {errors.vehicleNumber && <p className="mt-1 text-xs text-red-500">{errors.vehicleNumber}</p>}
             </div>
-        </>
-    );
+
+            {/* Phone Number */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                <Phone className="inline-block w-5 h-5 mr-2 text-gray-500" />
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="+1 234 567 8900"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+              {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
+                <IndianRupee className="inline-block w-5 h-5 mr-2 text-gray-500" />
+                Amount (INR)
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                id="amount"
+                name="amount"
+                className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.amount ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter amount"
+                value={formData.amount}
+                onChange={handleChange}
+              />
+              {errors.amount && <p className="mt-1 text-xs text-red-500">{errors.amount}</p>}
+            </div>
+
+            {/* Payment Method */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Select Payment Method</label>
+              <div className="flex space-x-4 mt-2">
+                {['stripe', 'paypal', 'razorpay'].map((method) => (
+                  <button
+                    key={method}
+                    type="button"
+                    className={`px-4 py-2 border rounded-md transition ${
+                      paymentMethod === method ? 'bg-blue-600 text-white' : 'bg-gray-100'
+                    }`}
+                    onClick={() => setPaymentMethod(method as PaymentMethod)}
+                  >
+                    {method.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              {errors.paymentMethod && <p className="mt-1 text-xs text-red-500">{errors.paymentMethod}</p>}
+            </div>
+
+            {/* Submit Button */}
+            <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
+              Proceed to Payment
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
+  );
 }

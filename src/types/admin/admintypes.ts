@@ -50,7 +50,11 @@ export interface AdminStatetypes{
     phone:string;
     profilePic:string
 }
-
+export interface ToastMsg{
+    action:boolean,
+    message:string,
+    type:"error"|"success"|"info"|'idle'
+  }
 export interface AdminInitialStateTypes{
     admin:AdminStatetypes|null;
     users:UserStateTypes[];

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   
+  FinduserLocation,
   Response_Req_service_employee_types,
   ServiceBooking_Types,
   UserInitialState,
@@ -23,6 +24,7 @@ import {
   
   user_post_Service_Booking,
   user_post_service_booking_send_every_Employee,
+  User_put_addLocation,
   User_put_cancelReq_service,
   user_put_Profile,
   user_put_User_profile_pic,
@@ -96,6 +98,12 @@ const serviceBooking: ServiceBooking_Types = {
 
 
 // }
+const selectLocation:FinduserLocation={
+  lat:0,
+  lng:0,
+  address:""
+
+}
 const employees: EmployeeStateTypes[] = [];
 const jobs: JobsStateTypes[] = [];
 
@@ -111,6 +119,7 @@ const initialState: UserInitialState = {
   employee: employees ? employees : [],
   jobs: jobs ? jobs : [],
   tempuser,
+  selectLocationuser:selectLocation,
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -145,6 +154,9 @@ const userSlices = createSlice({
     selectEmployee: (state, action) => {
       state.selectEmp = action.payload;
     },
+    setuserSelectLocation:(state,action)=>{
+      state.selectLocationuser=action.payload
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -557,6 +569,30 @@ const userSlices = createSlice({
           state.message = action.payload.message;
         }
       })
+      .addCase(User_put_addLocation.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_put_addLocation.fulfilled, (state,action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        console.log("userlocation");
+        
+        if (state.user) {
+          state.user.location=action.payload
+          
+        }
+        // console.log("action",action.payload);
+        // state.bookingHistories=action.payload
+        
+
+      })
+      .addCase(User_put_addLocation.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
   },
 });
 
@@ -567,5 +603,7 @@ export const {
   clearTempuser,
   selectEmployee,
   saveEmail,
+  setuserSelectLocation
+  
 } = userSlices.actions;
 export default userSlices.reducer;

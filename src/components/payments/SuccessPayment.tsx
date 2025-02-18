@@ -14,6 +14,7 @@ export default function PaymentSuccess() {
       const navigate=useNavigate()
     const location=useLocation()
     const {paymentId}=location.state||{}
+    const {serviceId}=location.state||{}
     console.log("paymentid",paymentId);
     
 
@@ -36,7 +37,7 @@ export default function PaymentSuccess() {
     <>
     {
       showReview &&paymentDetails?
-      <ReviewRating paymentDetails={paymentDetails} />
+      <ReviewRating paymentDetails={paymentDetails} serviceId={serviceId} />
       :
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center">

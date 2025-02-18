@@ -1,6 +1,6 @@
 
 import axios from "axios";
-import Cookies from "js-cookie";
+import cookies from "js-cookie";
 
 
 const Adminaxios_Instance=axios.create({
@@ -8,13 +8,15 @@ const Adminaxios_Instance=axios.create({
     timeout:10000,
     headers:{
         'Content-Type':'application/json'
-    }
+    },
+    withCredentials:true
+
 
 })
 
 Adminaxios_Instance.interceptors.request.use(
     (config)=>{
-        const token=Cookies.get('adminToken')
+        const token=cookies.get('adminToken')
         if (token) {
             config.headers.Authorization=`Bearer ${token}`
             
@@ -26,6 +28,8 @@ Adminaxios_Instance.interceptors.request.use(
         return Promise.reject(err)
     }
 )
+
+
 
 
 
@@ -54,11 +58,11 @@ if (error.response && error.response.status === 401 && error.response.data.error
           
     try {
         console.log("Token expired, attempting to refresh token...");
-        const refreshToken = Cookies.get('adminToken');
+        const refreshToken = cookies.get('adminToken');
         if (!refreshToken) {
             console.error("No refresh token available. Logging out user.");
             // dispatch(clearUser());
-            localStorage.removeItem('user');
+            localStorage.removeItem('admin');
             return Promise.reject("No refresh token available");
         }
 
@@ -75,7 +79,7 @@ if (error.response && error.response.status === 401 && error.response.data.error
 
         // Update token in cookies
         const newAccessToken = refreshResponse.data.accessToken;
-        Cookies.set('userToken', newAccessToken);
+        cookies.set('userToken', newAccessToken);
 
         // Retry the original request with the new access token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -85,24 +89,27 @@ if (error.response && error.response.status === 401 && error.response.data.error
 
         // Handle refresh failure (e.g., logout user)
     //    dispatch(clearUser());
+
         localStorage.removeItem('admin');
+        
+         window.location.href='/admin/login'
         return Promise.reject(refreshError);
     }
         }
+         // Handle employee block (e.g., 403 status or specific error message)
+         if (error.response.status === 403 && error.response.data.error === "User not found or inactive") {
+            console.error("user is blocked. Redirecting to login.");
+            localStorage.removeItem('admin');
+            cookies.remove('adminToken'); // Remove the token
 
-
-        if (error.response.status === 403 && error.response.data.error === "Not an admin or invalid user") {
-            console.error("admin is not valid. Redirecting to login.");
-            localStorage.removeItem('user');
-            Cookies.remove('userToken'); // Remove the token
-
-            window.location.href='/login'; // Redirect to login
+            window.location.href='/admin/login'; // Redirect to login
             return Promise.reject(error);
         }
 
         return Promise.reject(error);  // Reject if not a 401 error
     }
 );
+
 
 
 

@@ -4,20 +4,65 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../store/store";
-import { UserLoginType } from "../../../types/clients/UsersTypes";
-import { Emp_login_post } from "../../../reducers/employees/EmployeeApicalls";
+import { Locationuser_types, UserLoginType } from "../../../types/clients/UsersTypes";
+import { Emp_login_post, Emp_put_addLocation } from "../../../reducers/employees/EmployeeApicalls";
 
 const Emp_Login = () => {
-    const { isError, isSuccess, message } = useSelector((state: RootState) => state.employee);
+    const { isError, isSuccess, message,employee } = useSelector((state: RootState) => state.employee);
   const [logindata,setLogindata]=useState<UserLoginType>({email:"",password:""})
   const [loginError,setloginError]=useState({
     emailerr:"",
     passworderr:"",
   })
+    const [location, setLocation] = useState<Locationuser_types | null>(null);
+  
   const dispatch: AppDispatch = useDispatch();
 
   const navigate = useNavigate();
 
+  
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.log("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        try {
+          // Fetch address using OpenStreetMap's Nominatim API
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=en`
+          );
+          const data = await response.json();
+          console.log("locationn",data);
+          
+          const { suburb, town, city, village, state_district } = data.address;
+          console.log("sub",suburb,"town",town,"village",village,"state",state_district);
+          
+          const area = suburb || town || city || village || state_district || "Unknown Area";
+           console.log("area",area);
+          
+          
+          setLocation({
+            lat,
+            lng,
+            address: data.address|| "Address not found",
+          
+           
+          });
+        } catch (error) {
+          console.error("Error fetching address:", error);
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, []);
 
   useEffect(() => {
     if (isError) {
@@ -27,15 +72,23 @@ const Emp_Login = () => {
     }
     if (isSuccess) {
       
-      // navigate("/employee/home");
-      window.location.href='/employee/home'
+      navigate("/employee/home");
+      // window.location.href='/employee/home'
       dispatch(empReset())
-  
+      if(employee&&location){
+     
+       console.log("loaction ",location);
+       console.log("employee ",employee);
+       
+           
+             dispatch(Emp_put_addLocation({id:employee.id,location}))
+           }
+ 
     }
     return () => {
       dispatch(empReset());
     };
-  }, [isError, isSuccess, message, dispatch, navigate]);
+  }, [isError, isSuccess, message, dispatch, navigate,employee,location]);
 
 
   const {email,password}=logindata

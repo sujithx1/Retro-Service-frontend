@@ -29,12 +29,12 @@ const UserProfileEdit: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isSuccess) {
-      navigate(-1);
-      dispatch(reset());
-      return;
-    }
-
+    // if (isSuccess) {
+    //   navigate(-1);
+    //   dispatch(reset());
+    //   return;
+    // }
+ 
     if (isError) {
       toast.error(message);
       dispatch(reset());
@@ -95,7 +95,8 @@ const UserProfileEdit: React.FC = () => {
       profilePic: preview || user?.profilePic || ""
     };
 
-    dispatch(user_put_Profile(updatedUserData));
+    dispatch(user_put_Profile(updatedUserData)).unwrap()
+    .then(()=>{navigate(-1)})
   };
 
   return (
