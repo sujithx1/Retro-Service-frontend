@@ -11,9 +11,10 @@ interface ReportEmployeeProps {
   paymentId?: string; // Required for refunds
   amount?: number; // Required for refunds
   bookingId:string
+  onclose:()=>void
 }
 
-const ReportEmployee: React.FC<ReportEmployeeProps> = ({ employeeId, userId, paymentId, amount,bookingId }) => {
+const ReportEmployee: React.FC<ReportEmployeeProps> = ({ employeeId, userId, paymentId, amount,bookingId ,onclose}) => {
   const [rating, setRating] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -55,6 +56,7 @@ const ReportEmployee: React.FC<ReportEmployeeProps> = ({ employeeId, userId, pay
       dispatch(user_post_reportrefund(data));
 
       setSuccessMessage("Report submitted successfully!");
+      onclose()
       setFeedback("");
       setRating(0);
     } catch (error) {

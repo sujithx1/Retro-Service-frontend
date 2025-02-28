@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   
+ 
   FinduserLocation,
   Response_Req_service_employee_types,
   ServiceBooking_Types,
@@ -12,6 +13,7 @@ import {
   User_get_Allchat,
   User_get_allJobs,
   User_get_bookingHistories,
+  User_get_CartnyUserId,
   User_get_Employees,
   User_get_Logout,
   User_get_reqService,
@@ -120,6 +122,7 @@ const initialState: UserInitialState = {
   jobs: jobs ? jobs : [],
   tempuser,
   selectLocationuser:selectLocation,
+  cart:[],
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -587,6 +590,27 @@ const userSlices = createSlice({
 
       })
       .addCase(User_put_addLocation.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+      .addCase(User_get_CartnyUserId.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(User_get_CartnyUserId.fulfilled, (state,action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        console.log("userlocation");
+        
+      state.cart=action.payload
+        // console.log("action",action.payload);
+        // state.bookingHistories=action.payload
+        
+
+      })
+      .addCase(User_get_CartnyUserId.rejected, (state, action) => {
         state.isSuccess = false;
         state.isError = true;
         if (action.payload) {

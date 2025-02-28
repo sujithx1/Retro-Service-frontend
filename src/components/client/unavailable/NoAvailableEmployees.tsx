@@ -8,7 +8,7 @@ interface NoAvailableEmployeesProps {
 }
 
 const NoAvailableEmployees: React.FC<NoAvailableEmployeesProps> = ({
-  message = "All employees are currently busy. Redirecting to home...",
+  message = "Sorry No Employees are found . Redirecting to home...",
   delay = 3000,
 }) => {
   const navigate = useNavigate();

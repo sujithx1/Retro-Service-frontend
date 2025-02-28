@@ -3,6 +3,7 @@ import {
   Emp_Location_Types,
   EmployeeStateTypes,
 } from "../employee/EmployeeTypes";
+import {  Store_Product_types, Store_types } from "../storetypes";
 
 export interface UserSignUpTypes {
   username: string;
@@ -24,6 +25,7 @@ export interface UserImage_Types {
 }
 export interface UserStateTypes {
   id: string;
+  _id?:string;
   username: string;
   email: string;
   phone: string;
@@ -96,6 +98,7 @@ export interface UserInitialState {
   jobs: JobsStateTypes[];
   tempuser: UserSignUpTypes;
   selectLocationuser?:FinduserLocation;
+  cart:Cart[];
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
@@ -287,4 +290,29 @@ export interface ChatListItem {
   name: string;
   lastMessage: string;
   isOnline: boolean;
+}
+
+export interface User_Get_AllStores{
+   store:Store_types,
+   total_product:number,
+   distance:number,
+   rating:number
+}
+
+export interface Cart{
+  id:string,
+  userId:UserStateTypes,
+  storeId:string,
+  productId:Store_Product_types,
+  quantity:number;
+  price:number
+}
+
+export interface Request_Cart{
+  id:string,
+  userId:string,
+  storeId:string,
+  productId:string,
+  quantity:number;
+  price:number
 }

@@ -24,6 +24,9 @@ import UserBookingDetails from "../components/client/booking/UserBookingDetails"
 import NoAvailableEmployees from "../components/client/unavailable/NoAvailableEmployees"
 import UserChatList from "../pages/clients/userchat/UserChatlist"
 import TransactionHistory from "../pages/clients/transactions/TransactionHistory"
+import AutopartsHome from "../components/client/e-commerse/Autoparts.home"
+import ClientStoreHome from "../components/client/e-commerse/Store.home"
+import Cart from "../components/client/e-commerse/cart/Cart"
 
 const UserRoutes = () => {
   return (
@@ -149,6 +152,26 @@ const UserRoutes = () => {
      <Route path="/transactions" element={
        <UserProtect>
          <TransactionHistory/>
+       </UserProtect>
+     }/>
+     <Route path="/autoparts" element={
+       <UserProtect>
+         <AutopartsHome/>
+       </UserProtect>
+     }/>
+     <Route path="/stores" element={
+       <UserProtect>
+         <ClientStoreHome/>
+       </UserProtect>
+     }/>
+     <Route path="/stores/autoparts/:id" element={
+       <UserProtect>
+         <AutopartsHome/>
+       </UserProtect>
+     }/>
+     <Route path="/stores/cart" element={
+       <UserProtect>
+         <Cart/>
        </UserProtect>
      }/>
 

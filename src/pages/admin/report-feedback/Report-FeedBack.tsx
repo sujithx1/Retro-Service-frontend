@@ -46,7 +46,7 @@ const AdminReportFeedbackList: React.FC = () => {
 
     
     console.log(`Refunding ${amount} for feedback ID: ${feedbackId}`);
-    alert(`Refund of $${amount} processed for feedback ID: ${feedbackId}`);
+    // alert(`Refund of $${amount} processed for feedback ID: ${feedbackId}`);
 
      dispatch(Admin_put_FeedBackRefund(feedbackId)).unwrap()
      .then(()=>setShowmsg({

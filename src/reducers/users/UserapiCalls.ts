@@ -1,11 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import {
+  Cart,
   ChatListItem,
   Cords,
   ErrorPayload,
   Locationuser_types,
   Razorpay_Service_types,
+  Request_Cart,
   Response_Razorpay_Service_types,
   Response_Req_service_employee_types,
   Response_ServiceBooking_History_types,
@@ -17,6 +19,7 @@ import {
   ServiceBooking_Types,
   ServicePayment_section,
   TransactonsTypes,
+  User_Get_AllStores,
   UserEditProfile,
   UserImage_Types,
   UserLoginType,
@@ -27,8 +30,9 @@ import {
 } from "../../types/clients/UsersTypes";
 import useraxiosInstance from "../../axios-api/Usersideapi";
 import axios, { isAxiosError } from "axios";
-import { JobsStateTypes } from "../../types/admin/admintypes";
+import { CategoryStateTypes, JobsStateTypes } from "../../types/admin/admintypes";
 import { EmployeeStateTypes, Response_ChatsTypes, WalletReq, WalletResponse } from "../../types/employee/EmployeeTypes";
+import { Store_Product_types } from "../../types/storetypes";
 
 export const userSignupPost = createAsyncThunk<
   UserStateTypes,
@@ -711,7 +715,7 @@ export const User_put_sendOneEmpoloyee = createAsyncThunk<
 >("/user/reqservice/send/employee", async (service, { rejectWithValue }) => {
   try {
     const response = await useraxiosInstance.put(
-      `/req-service/employee/${service.serviceId}`,
+      `/nearest-employees/${service.serviceId}`,
       service
     );
     if (response.data) {
@@ -897,3 +901,216 @@ string,
     });
   }
 });
+
+
+
+
+
+export const User_get_20kmstores=createAsyncThunk<User_Get_AllStores[],Locationuser_types,{rejectValue:ErrorPayload}>('/user/get20kmstores',async(location,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.get('/stores',{
+      params: {
+        lat: location.lat,
+        lng: location.lng,
+      },
+    })
+    if(response.data){
+      console.log("stores",response.data);
+      
+      return response.data.stores
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+export const User_get_allCategories=createAsyncThunk<CategoryStateTypes[],void,{rejectValue:ErrorPayload}>('/user/getcategroires',async(_,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.get('/categories')
+    if(response.data)return response.data.categories
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+
+export const User_get_allProduct=createAsyncThunk<Store_Product_types[],void,{rejectValue:ErrorPayload}>('/user/getprodut',async(_,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.get('/products')
+    if(response.data)return response.data.products
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+
+export const User_get_allProductwithStoreId=createAsyncThunk<Store_Product_types[],string,{rejectValue:ErrorPayload}>('/user/getproductStoreId',async(storeId,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.get(`/products/${storeId}`)
+    if(response.data)return response.data.products
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+
+export const User_post_addtoCart=createAsyncThunk<Cart,Request_Cart,{rejectValue:ErrorPayload}>('/user/addtoCart',async(cart,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.post(`/cart`,cart)
+    if(response.data)return response.data.cart
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+
+export const User_put_addtoCart=createAsyncThunk<Cart,Request_Cart,{rejectValue:ErrorPayload}>('/user/addtoCart',async(cart,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.put(`/cart/${cart.id}`,cart)
+    if(response.data)return response.data.cart
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+export const User_get_CartnyUserId=createAsyncThunk<Cart[],string,{rejectValue:ErrorPayload}>('/user/getcartUserId',async(userId,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.get(`/cart-user/${userId}`)
+
+
+    if(response.data){
+      console.log(response.data.cart);
+      console.log(response.data);
+      
+      return response.data.cart}
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+export const User_get_CartbyProductId=createAsyncThunk<Cart|boolean,string,{rejectValue:ErrorPayload}>('/user/getcartproductId',async(productId,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.get(`/cart-product/${productId}`)
+    if(response.data)return response.data.cart
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
+
+
+export const User_removeFromCart=createAsyncThunk<void,string,{rejectValue:ErrorPayload}>('/user/removeCart',async(cartId,{rejectWithValue})=>{
+  try {
+    const response=await useraxiosInstance.delete(`/cart/${cartId}`)
+    if(response.data)return response.data
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+})
+
