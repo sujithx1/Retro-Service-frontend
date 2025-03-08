@@ -36,7 +36,7 @@ const LocationDistanceTracker: React.FC<Props> = ({
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_Google_map_APi_key,
     libraries: ["places"],
-  });
+  });    
 
   useEffect(() => {
     if (isLoaded) {

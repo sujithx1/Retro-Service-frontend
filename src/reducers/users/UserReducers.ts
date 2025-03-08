@@ -8,8 +8,10 @@ import {
   UserInitialState,
   UserSignUpTypes,
   UserStateTypes,
+  WishlistTypes,
 } from "../../types/clients/UsersTypes";
 import {
+  user_delete_Wishlist,
   User_get_Allchat,
   User_get_allJobs,
   User_get_bookingHistories,
@@ -19,6 +21,7 @@ import {
   User_get_reqService,
   User_get_service_Booking,
   User_get_servicePayment,
+  user_get_whislistuserId,
   User_post_confirm_Razorpay,
   User_post_Employee_feedBack,
   User_post_forgot_password,
@@ -122,7 +125,8 @@ const initialState: UserInitialState = {
   jobs: jobs ? jobs : [],
   tempuser,
   selectLocationuser:selectLocation,
-  cart:[],
+  cart:null,
+  wishlists:[],
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -159,6 +163,9 @@ const userSlices = createSlice({
     },
     setuserSelectLocation:(state,action)=>{
       state.selectLocationuser=action.payload
+    },
+    setUserwishlists:(state,action:PayloadAction<WishlistTypes[]>)=>{
+      state.wishlists=action.payload
     }
   },
   extraReducers: (builder) => {
@@ -617,6 +624,40 @@ const userSlices = createSlice({
           state.message = action.payload.message;
         }
       })
+      .addCase(user_get_whislistuserId.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(user_get_whislistuserId.fulfilled, (state,action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        
+      state.wishlists=action.payload
+     
+        
+
+      })
+      .addCase(user_get_whislistuserId.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isError = true;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      })
+      .addCase(user_delete_Wishlist.fulfilled, (state, action) => {
+        state.wishlists = state.wishlists.filter(
+          (item) => item.id !== action.payload // Remove item dynamically
+        );
+      })
+      .addCase(user_delete_Wishlist.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(user_delete_Wishlist.rejected, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.message = action.payload.message;
+        }
+      });
+
   },
 });
 
@@ -627,7 +668,8 @@ export const {
   clearTempuser,
   selectEmployee,
   saveEmail,
-  setuserSelectLocation
+  setuserSelectLocation,
+  setUserwishlists
   
 } = userSlices.actions;
 export default userSlices.reducer;

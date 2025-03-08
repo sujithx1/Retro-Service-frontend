@@ -27,6 +27,12 @@ import TransactionHistory from "../pages/clients/transactions/TransactionHistory
 import AutopartsHome from "../components/client/e-commerse/Autoparts.home"
 import ClientStoreHome from "../components/client/e-commerse/Store.home"
 import Cart from "../components/client/e-commerse/cart/Cart"
+import Checkout from "../components/client/checkout/Chekout"
+import RazorpayCheckout from "../components/client/checkout/Razorpay"
+import OrderHistory from "../components/client/orders/OrderHistory"
+import OrderDetails from "../components/client/orders/OrderDetail"
+import Wishlist from "../components/client/e-commerse/wishlist/Whislist"
+import ProductDetailPage from "../components/client/e-commerse/wishlist/ProductDetail"
 
 const UserRoutes = () => {
   return (
@@ -169,9 +175,39 @@ const UserRoutes = () => {
          <AutopartsHome/>
        </UserProtect>
      }/>
+     <Route path="/product-detail/:id" element={
+       <UserProtect>
+         <ProductDetailPage/>
+       </UserProtect>
+     }/>
      <Route path="/stores/cart" element={
        <UserProtect>
          <Cart/>
+       </UserProtect>
+     }/>
+     <Route path="/stores/checkout" element={
+       <UserProtect>
+         <Checkout/>
+       </UserProtect>
+     }/>
+     <Route path="/stores/checkout/razorpay/:id" element={
+       <UserProtect>
+         <RazorpayCheckout/>
+       </UserProtect>
+     }/>
+     <Route path="/order-history" element={
+       <UserProtect>
+         <OrderHistory/>
+       </UserProtect>
+     }/>
+     <Route path="/order-detail/:orderId" element={
+       <UserProtect>
+         <OrderDetails/>
+       </UserProtect>
+     }/>
+     <Route path="/wishlist" element={
+       <UserProtect>
+         <Wishlist/>
        </UserProtect>
      }/>
 

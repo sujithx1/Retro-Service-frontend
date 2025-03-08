@@ -1,4 +1,4 @@
-import { Locationuser_types } from "./clients/UsersTypes";
+import { Locationuser_types, User_OrderHistorytypes } from "./clients/UsersTypes";
 
 
 export interface Store_types{
@@ -17,6 +17,7 @@ export interface InitialState_store_types{
     tempStore:storeRegister_types|null,
     localstore:Store_types|null,
     store:Store_types|null;
+    orders:User_OrderHistorytypes[]|null,
     products:Store_Product_types[];
     isSuccess:boolean;
     isError:boolean;

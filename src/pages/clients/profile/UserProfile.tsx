@@ -79,7 +79,7 @@ const UserProfile: React.FC = () => {
           <li className="flex items-center gap-2 py-3 px-4 hover:bg-gray-100 cursor-pointer" onClick={() => navigate(`/transactions?userId=${user?.id}&type=${"user"}`)}>
           <CreditCardIcon className="w-5 h-5" /> Transactions
           </li>
-          <li className="flex items-center gap-2 py-3 px-4 hover:bg-gray-100 cursor-pointer">
+          <li className="flex items-center gap-2 py-3 px-4 hover:bg-gray-100 cursor-pointer" onClick={()=>navigate('/order-history')}>
             <ShoppingCart size={18} /> Orders
           </li>
           <li className="flex items-center gap-2 py-3 px-4 hover:bg-gray-100 cursor-pointer">

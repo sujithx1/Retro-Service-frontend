@@ -8,6 +8,7 @@ import AddProduct from "../components/store_side/Addproduct";
 import StoreProtect from "../components/store_side/Protect";
 import EditProduct from "../components/store_side/product/EditProduct";
 import StoreCurrentLocation from "../components/store_side/map/Storelocation";
+import StoreOrders from "../pages/autopartsstores/orders/Orders_storeSide";
 
 const StoreRoutes = () => {
   return (
@@ -41,6 +42,12 @@ const StoreRoutes = () => {
         <Route path="change-location/:id"  element={
           <StoreProtect>
             <StoreCurrentLocation/>
+
+          </StoreProtect>
+          }/>
+        <Route path="orders"  element={
+          <StoreProtect>
+            <StoreOrders/>
 
           </StoreProtect>
           }/>

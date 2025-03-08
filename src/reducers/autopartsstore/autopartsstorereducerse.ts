@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { InitialState_store_types } from "../../types/storetypes";
-import { Store_getAll_ProductWithstoreId, Store_put_Location, storeLoginPost, StoreRegister, StoreSendMailotp } from "./autopartsStoreapicalls";
+import { Store_get_oreders, Store_getAll_ProductWithstoreId, Store_put_Location, Store_put_oreder, storeLoginPost, StoreRegister, StoreSendMailotp } from "./autopartsStoreapicalls";
 
 
 const store = localStorage.getItem("store")? JSON.parse(localStorage.getItem("store") as string): null;
@@ -11,6 +11,7 @@ const initialState:InitialState_store_types={
     localstore:null,
     store:store?store:null,
     products:[],
+    orders:[],
 
     isError:false,
     isPending:false,
@@ -144,6 +145,56 @@ const storeSlice=createSlice({
 
         })
         .addCase(StoreRegister.rejected,(state,action)=>{ 
+            state.isPending=false
+            state.isSuccess=false
+            state.isError=true
+            if (action.payload) {
+                
+                state.message=action.payload.message 
+            }
+        })
+    
+        .addCase(Store_get_oreders.pending,(state)=>{
+            state.isPending=true
+        })
+        .addCase(Store_get_oreders.fulfilled,(state,action)=>{
+            state.isPending=false
+            state.isSuccess=true
+            state.isError=false
+           state.orders=action.payload
+                
+             
+            
+
+
+        })
+        .addCase(Store_get_oreders.rejected,(state,action)=>{ 
+            state.isPending=false
+            state.isSuccess=false
+            state.isError=true
+            if (action.payload) {
+                
+                state.message=action.payload.message 
+            }
+        })
+        .addCase(Store_put_oreder.pending,(state)=>{
+            state.isPending=true
+        })
+        .addCase(Store_put_oreder.fulfilled,(state,action)=>{
+            state.isPending=false
+            state.isSuccess=true
+            state.isError=false
+       if(state.orders) {
+            const updatedOrderIndex = state.orders.findIndex(order => order.id === action.payload.id);
+            if (updatedOrderIndex !== -1) {
+                state.orders[updatedOrderIndex] =  action.payload
+               }   }
+             
+            
+
+
+        })
+        .addCase(Store_put_oreder.rejected,(state,action)=>{ 
             state.isPending=false
             state.isSuccess=false
             state.isError=true

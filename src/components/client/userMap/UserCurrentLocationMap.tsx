@@ -52,16 +52,18 @@ const UserCurrentLocationMap = () => {
         const formattedAddress = {
           country: addressComponents.find(comp => comp.types.includes("country"))?.long_name || "",
           county: addressComponents.find(comp => comp.types.includes("administrative_area_level_2"))?.long_name || "",
-          neighbourhood: addressComponents.find(comp => comp.types.includes("neighborhood"))?.long_name || "",
+          neighbourhood: addressComponents.find(comp => comp.types.includes("sublocality_level_2"))?.long_name || "",
           postcode: addressComponents.find(comp => comp.types.includes("postal_code"))?.long_name || "",
           road: addressComponents.find(comp => comp.types.includes("route"))?.long_name || "",
           state: addressComponents.find(comp => comp.types.includes("administrative_area_level_1"))?.long_name || "",
-          suburb: addressComponents.find(comp => comp.types.includes("sublocality"))?.long_name || "",
+          suburb: addressComponents.find(comp => comp.types.includes("sublocality_level_1"))?.long_name || "",
           town: addressComponents.find(comp => comp.types.includes("locality"))?.long_name || "",
           city: addressComponents.find(comp => comp.types.includes("locality"))?.long_name || "",
           state_district: addressComponents.find(comp => comp.types.includes('administrative_area_level_2'))?.long_name || '',
 
         };
+        console.log("location address",formattedAddress);
+        
         setAddress(formattedAddress);
       } else {
         console.error("Geocoder failed due to: " + status);

@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Store_Product_types, Store_types, storeRegister_types, StoreSuccessResponseType } from "../../types/storetypes";
 import storeApiInstance from "../../axios-api/storesideapi";
 import { isAxiosError } from "axios";
-import { ErrorPayload, Locationuser_types } from "../../types/clients/UsersTypes";
+import { ErrorPayload, Locationuser_types, User_orderEdit_types, User_OrderHistorytypes } from "../../types/clients/UsersTypes";
 import Cookies from "js-cookie";
 import { CategoryStateTypes } from "../../types/admin/admintypes";
 
@@ -290,6 +290,62 @@ export const Store_update_Product=createAsyncThunk<Store_Product_types,Store_Pro
     const response=await storeApiInstance.put(`/product/${product.id}`,product)
     if(response.data){
       return response.data.product
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+
+
+
+})
+
+
+
+
+
+export const Store_get_oreders=createAsyncThunk<User_OrderHistorytypes[],string,{rejectValue:ErrorPayload}>('/store/orders',async(storeId,{rejectWithValue})=>{
+  try {
+    const response=await storeApiInstance.get(`/orders/${storeId}`)
+    if(response.data){
+      return response.data.orders
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+
+
+
+})
+
+
+
+export const Store_put_oreder=createAsyncThunk<User_OrderHistorytypes,User_orderEdit_types,{rejectValue:ErrorPayload}>('/store/order/edit',async(order,{rejectWithValue})=>{
+  try {
+    const response=await storeApiInstance.put(`/order/${order.orderId}`,order)
+    if(response.data){
+      return response.data.order
     }
   } catch (error) {
     if (isAxiosError(error)) {
