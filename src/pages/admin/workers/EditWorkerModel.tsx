@@ -23,11 +23,13 @@ const EditWorkerModel:FC<Props> = ({editEmployee,onclose}) => {
         phone:editEmployee.phone,
         skills:editEmployee.skills,
         experience:editEmployee.experience,
-        profile_pic:editEmployee.profile_pic,
-        location:editEmployee.location?editEmployee.location:""
+        profilePic:editEmployee.profilePic,
+        location:editEmployee.location,
 
     })
     const dispatch:AppDispatch=useDispatch()
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
     //  const navigate=useNavigate()
     // useEffect(()=>{
     //      if (isError) {
@@ -48,6 +50,8 @@ const EditWorkerModel:FC<Props> = ({editEmployee,onclose}) => {
     const handleInputChange = (e:ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+        setErrors((prev) => ({ ...prev, [name]: "" }));
+
       };
     
        
@@ -65,6 +69,15 @@ const EditWorkerModel:FC<Props> = ({editEmployee,onclose}) => {
 //               ));
 
 
+const validateForm = () => {
+  const  tempErrors: { [key: string]: string } = {};
+  if (!formData.username.trim()) tempErrors.username = "Username is required";
+  if (formData.experience<0) tempErrors.experience = "Experience is required";
+  if (!String(formData.skills).trim()) tempErrors.skills = "Skills are required";
+
+  setErrors(tempErrors);
+  return Object.keys(tempErrors).length === 0;
+};
               
     
     
@@ -83,7 +96,10 @@ const EditWorkerModel:FC<Props> = ({editEmployee,onclose}) => {
       const handleSave = () => {
         // Trigger save logic
         // onSave(formData);
+
+
         console.log(formData);
+        if (!validateForm()) return
         dispatch(Admin_edit_employee_put(formData)).unwrap()
         .then((updatedData)=> {
             console.log("succes",updatedData);
@@ -105,75 +121,59 @@ const EditWorkerModel:FC<Props> = ({editEmployee,onclose}) => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-lg font-semibold mb-4">Edit Employee</h2>
           
-            <form>
-              {/* Username */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 p-2 rounded"
-                />
-              </div>
+           
+        <form>
+          {/* Username */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
+              className="w-full border p-2 rounded"
+            />
+            {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+          </div>
 
-              {/* Email (Readonly) */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  readOnly
-                  className="w-full border border-gray-300 p-2 rounded bg-gray-100"
-                />
-              </div>
+          {/* Email (Readonly) */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              readOnly
+              className="w-full border p-2 rounded bg-gray-100"
+            />
+          </div>
 
-              {/* Profile Picture */}
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium">Profile Picture</label>
-                <input
-                  type="file"
+          {/* Experience */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Experience</label>
+            <input
+              type="text"
+              name="experience"
+              value={formData.experience}
+              onChange={handleInputChange}
+              className="w-full border p-2 rounded"
+            />
+            {errors.experience && <p className="text-red-500 text-sm">{errors.experience}</p>}
+          </div>
 
-                  onChange={handleFileChange}
-                  className="w-full border border-gray-300 p-2 rounded"
-                />
-              </div> */}
-
-              {/* Location */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium">Location</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 p-2 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium">experience</label>
-                <input
-                  type="text"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 p-2 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium">skills</label>
-                <input
-                  type="text"
-                  name="skills"
-                  value={formData.skills}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 p-2 rounded"
-                />
-              </div>
-            </form>
-
+          {/* Skills */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Skills</label>
+            <input
+              type="text"
+              name="skills"
+              value={formData.skills}
+              onChange={handleInputChange}
+              className="w-full border p-2 rounded"
+            />
+            {errors.skills && <p className="text-red-500 text-sm">{errors.skills}</p>}
+          </div>
+        </form>
             {/* Buttons */}
             <div className="flex justify-end gap-4">
               <button

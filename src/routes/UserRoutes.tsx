@@ -32,7 +32,14 @@ import RazorpayCheckout from "../components/client/checkout/Razorpay"
 import OrderHistory from "../components/client/orders/OrderHistory"
 import OrderDetails from "../components/client/orders/OrderDetail"
 import Wishlist from "../components/client/e-commerse/wishlist/Whislist"
-import ProductDetailPage from "../components/client/e-commerse/wishlist/ProductDetail"
+import ProductDetailPage from "../components/client/e-commerse/ProductDetail"
+import MEEET from "../components/calls/Videocall2"
+import WalletPayment from "../components/client/checkout/Wallet.pay"
+import Contact from "../components/client/Contact"
+import About from "../components/client/Aboutus"
+// import Videocall from "../components/calls/Videocall"
+// import VideoCallLob  by from "../components/calls/Lobby"
+// import VideoCallLobby from "../components/calls/Lobby"
 
 const UserRoutes = () => {
   return (
@@ -62,6 +69,18 @@ const UserRoutes = () => {
           <UserProtect>
 
             <UserHome/>
+          </UserProtect>
+          }/>
+        <Route path="/contact" element={
+          <UserProtect>
+
+            <Contact/>
+          </UserProtect>
+          }/>
+        <Route path="/aboutUs" element={
+          <UserProtect>
+
+            <About/>
           </UserProtect>
           }/>
         <Route path="/change-location/:id" element={
@@ -103,6 +122,16 @@ const UserRoutes = () => {
               <Route path="/advancepayment" element={
                 <UserProtect>
                   <RazorpayPaymentAdvance/>
+                </UserProtect>
+              }/>
+              {/* <Route path="/call" element={
+                <UserProtect>
+                  <VideoCallLobby/>
+                </UserProtect>
+              }/> */}
+              <Route path="/call" element={
+                <UserProtect>
+                  <MEEET/>
                 </UserProtect>
               }/>
 
@@ -193,6 +222,11 @@ const UserRoutes = () => {
      <Route path="/stores/checkout/razorpay/:id" element={
        <UserProtect>
          <RazorpayCheckout/>
+       </UserProtect>
+     }/>
+     <Route path="/stores/checkout/wallet/:userId" element={
+       <UserProtect>
+         <WalletPayment/>
        </UserProtect>
      }/>
      <Route path="/order-history" element={

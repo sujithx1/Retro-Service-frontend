@@ -9,6 +9,7 @@ import { Store_get_oreders, Store_put_oreder } from "../../../reducers/autoparts
 import { User_orderEdit_types, User_OrderHistorytypes } from "../../../types/clients/UsersTypes";
 import { ToastMsg } from "../../../types/admin/admintypes";
 import ToastAlert from "../../../components/alert/ToastAlert";
+import { useNavigate } from "react-router-dom";
 
 const StoreOrders = () => {
   const { orders, store } = useSelector((state: RootState) => state.store);
@@ -18,6 +19,8 @@ const [error,setError]=useState<ToastMsg>({
     message:'',
     type:'idle'
   })
+
+  const navigate=useNavigate()
  const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 3;
 
@@ -132,7 +135,7 @@ dispatch(Store_put_oreder(data)).unwrap()
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-200 text-gray-700">
-                  <th className="p-4 text-left">Order ID</th>
+                  <th className="p-4 text-left">date</th>
                   <th className="p-4 text-left">Customer</th>
                   <th className="p-4 text-left">Total</th>
                   <th className="p-4 text-left">Status</th>
@@ -141,13 +144,15 @@ dispatch(Store_put_oreder(data)).unwrap()
                 </tr>
               </thead>
               <tbody>
-                {currentOrders&&currentOrders.map((order: User_OrderHistorytypes) => (
+                {currentOrders&& currentOrders
+// .sort((a, b) => Number(b.createdAt) - Number(a.createdAt))
+. map((order: User_OrderHistorytypes) => (
                   <motion.tr
                     key={order.id}
                     whileHover={{ scale: 1.02 }}
                     className="border-b transition-all hover:bg-gray-50"
                   >
-                    <td className="p-4">{order.id && order.id.slice(-6)}</td>
+                    <td className="p-4">{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td className="p-4">{order.userId.username}</td>
                     <td className="p-4 font-semibold">₹{order.total.toFixed(2)}</td>
                     <td className="p-4">
@@ -157,7 +162,7 @@ dispatch(Store_put_oreder(data)).unwrap()
                     </td>
                     <td className="p-4">{order.paymentStatus}</td>
                     <td className="p-4 flex space-x-2">
-                      <button className="bg-blue-500 text-white px-3 py-1 rounded-md flex items-center">
+                      <button className="bg-blue-500 text-white px-3 py-1 rounded-md flex items-center" onClick={()=>navigate(`/store/order/${order.id}`)}>
                         <FaEye className="mr-1" /> View
                       </button>
                       {order.orderStatus === "pending" && (
@@ -170,7 +175,7 @@ dispatch(Store_put_oreder(data)).unwrap()
                       {order.orderStatus === "returned" && (
                         <>
                           <button className="bg-yellow-500 text-white px-3 py-1 rounded-md flex items-center" onClick={()=>handlereturnconfirmeSubmit(order)}>
-                            <FaCheckCircle className="mr-1"  /> return-confirme
+                            <FaCheckCircle className="mr-1"  /> return-confirm
                           </button>
                         </>
                       )}

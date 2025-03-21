@@ -1,36 +1,63 @@
+import { useEffect, useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+
 const AdminDashboard = () => {
-    return(
-    <main className="p-6 flex-1 bg-gray-100">
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Cards */}
-        {/* <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-bold">New Net Income</h3>
-          <p className="text-2xl font-semibold">£8,245.00</p>
-          <span className="text-green-500">+0.5% from last week</span>
-        </div> */}
-        {/* Add more cards  as needed */}
+  // Mock payment data
+  const [paymentData, setPaymentData] = useState({
+    totalRevenue: 120000,
+    totalTransactions: 450,
+    successfulPayments: 400,
+    failedPayments: 50,
+  });
+
+  const paymentChartData = [
+    { name: "Success", value: paymentData.successfulPayments, fill: "#10B981" },
+    { name: "Failed", value: paymentData.failedPayments, fill: "#EF4444" },
+  ];
+
+  useEffect(() => {
+    // Fetch real payment details from backend (mocked for now)
+    // fetch("/api/admin/payment-details").then((res) => res.json()).then(setPaymentData);
+  }, []);
+
+  return (
+    <main className="p-6 bg-gray-100 min-h-screen">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Admin Dashboard</h2>
+
+      {/* Stats Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow text-center">
+          <h3 className="text-lg font-semibold">Total Revenue</h3>
+          <p className="text-2xl font-bold text-green-600">₹{paymentData.totalRevenue}</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow text-center">
+          <h3 className="text-lg font-semibold">Total Transactions</h3>
+          <p className="text-2xl font-bold text-blue-600">{paymentData.totalTransactions}</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow text-center">
+          <h3 className="text-lg font-semibold">Successful Payments</h3>
+          <p className="text-2xl font-bold text-green-500">{paymentData.successfulPayments}</p>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow text-center">
+          <h3 className="text-lg font-semibold">Failed Payments</h3>
+          <p className="text-2xl font-bold text-red-500">{paymentData.failedPayments}</p>
+        </div>
       </section>
-  
-      <section className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Sales Chart */}
-        {/* <div className="bg-white p-4 rounded shadow">
-          <h3 className="font-bold">Overall Sales</h3>
-          <div> */}
-            {/* Replace with chart library */}
-            {/* <div className="h-40 bg-gray-200">Line Chart Placeholder</div>
-          </div>
-        </div> */}
-        {/* Sales Report */}
-        {/* <div className="bg-white p-4 rounded shadow">
-          <h3 className="font-bold">Sales Report</h3>
-          <div> */}
-            {/* Replace with pie chart */}
-            {/* <div className="h-40 bg-gray-200">Pie Chart Placeholder</div>
-          </div>
-        </div> */}
+
+      {/* Payment Chart */}
+      <section className="mt-8 bg-white p-6 rounded-lg shadow">
+        <h3 className="text-xl font-semibold text-gray-700">Payment Status</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={paymentChartData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" />
+          </BarChart>
+        </ResponsiveContainer>
       </section>
     </main>
   );
-  }
+};
 
-  export default AdminDashboard
+export default AdminDashboard;

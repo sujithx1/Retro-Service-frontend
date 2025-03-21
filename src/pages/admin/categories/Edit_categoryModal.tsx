@@ -39,16 +39,37 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({
  
 
  },[Category,dispatch])
+ const [errors, setErrors] = useState<{ name: string; description: string }>({ name: "", description: "" });
+ 
+ const validate = () => {
+  const newErrors: { name?: string; description?: string; minimum_wage?: string } = {}; // ✅ Use optional keys
+  if (!formValues.name.trim()) newErrors.name = "Category name is required.";
+  if (!formValues.description.trim()) newErrors.description = "Description is required.";
+
+  setErrors({ 
+    name: newErrors.name || "", 
+    description: newErrors.description || "", 
+  });      
+  return Object.keys(newErrors).length === 0; // Return true if no errors
+};
+
+
  const handleOnchChange=(e:ChangeEvent<HTMLInputElement>)=>{
     const{name,value}=e.target
     setFormValues((prev)=>({
         ...prev,
         [name]:value
     }))
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+
+
   }
 
   const handleSubmit=(e:FormEvent)=>{
+
     e.preventDefault()
+    if (!validate()) return;
+
     dispatch(Admin_put_category(formValues))
     .unwrap()
     .then((updateData)=>{
@@ -75,6 +96,8 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({
             placeholder="Category Name"
             className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+
           <input
             type="text"
             name="description"
@@ -83,6 +106,8 @@ const EditCategoryModal: FC<EditCategoryModalProps> = ({
             placeholder="Category Description"
             className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+
           <div className="flex justify-end gap-2">
             <button
               onClick={onClose}

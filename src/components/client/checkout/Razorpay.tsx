@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { Cart, Checkout_paymentTypes, Razorpay_Service_types } from "../../../types/clients/UsersTypes";
-import { AppDispatch } from "../../../store/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch,  } from "../../../store/store";
+import { useDispatch,  } from "react-redux";
 import { User_get_CartnyUserId, User_post_chekoutRazorpay, User_post_Razorpay } from "../../../reducers/users/UserapiCalls";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { RazorpayOptions } from "../../../components/payments/Razorypay";
+// import { setCheckoutBoolean } from "../../../reducers/users/UserReducers";
 
 // Define Razorpay types
 interface Razorpay {
@@ -29,7 +30,6 @@ const RazorpayCheckout = () => {
     const [cartDetails, setCartDetails] = useState<Cart | null>(null);
 const [isPaymentStarted, setIsPaymentStarted] = useState(false); // Prevent multiple calls
 
-
 const {id} =useParams()
 console.log(id);
 
@@ -40,6 +40,18 @@ const navigate = useNavigate();
 // Fetch Cart Details
 useEffect(() => {
   if (!id) return;
+
+  // if (checkoutBoolean) {
+  //   toast.info('payment already on Proceess')
+    
+
+  //   setTimeout(() => {
+  //     navigate('/stores')
+  //   }, 2000);
+  //   return
+  // }
+  // dispatch(setCheckoutBoolean(true))
+
   
   dispatch(User_get_CartnyUserId(id))
     .unwrap()
@@ -52,7 +64,7 @@ useEffect(() => {
       toast.error("Failed to load cart details.");
       navigate("/payment-failed");
     });
-}, [dispatch, id, navigate]);
+}, [dispatch, id, navigate,]);
 
 // Handle Successful Payment
 const successPayment = useCallback(async (paymentId:string) => {
@@ -60,6 +72,7 @@ const successPayment = useCallback(async (paymentId:string) => {
     toast.error("Cart not found.");
     return;
 }
+
 
 const data: Checkout_paymentTypes = {
     cartId: cartDetails.id,
@@ -72,11 +85,14 @@ console.log(data);
 
 
 try {
+  
     await dispatch(User_post_chekoutRazorpay(data))
       .unwrap()
       .then((result) => {
         console.log("Payment success:", result);
         toast.success("Payment Successful!");
+        // dispatch(setCheckoutBoolean(false))
+
         navigate("/order-history");
       })
       .catch((err) => {
@@ -163,7 +179,23 @@ useEffect(() => {
           <div className="animate-spin mt-3 w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
         </div>
       ) : (
-        <p className="text-lg font-semibold text-gray-700">Redirecting...</p>
+       <>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+  <div className="bg-white shadow-lg rounded-2xl p-8 text-center">
+    <p className="text-xl font-bold text-red-500 animate-pulse">
+      Sorry facing Some Issue </p>
+    <button 
+      className="mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300"
+   
+   onClick={()=>navigate('/stores')}
+   >
+      Go Back Home
+    </button>
+  </div>
+</div>
+
+       </> 
+
       )}
     </div>
   );

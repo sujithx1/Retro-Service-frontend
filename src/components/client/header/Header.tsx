@@ -15,7 +15,7 @@ const UserHeader: React.FC = () => {
   const menuItems = [
     { title: "Services", path: "/home" },
     { title: "Stores", path: "/stores" },
-    { title: "Contact", path: "/contactus" },
+    { title: "Contact", path: "/contact" },
     { title: "About", path: "/aboutus" },
   ];
 

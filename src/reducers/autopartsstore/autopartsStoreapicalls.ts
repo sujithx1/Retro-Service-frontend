@@ -367,3 +367,31 @@ export const Store_put_oreder=createAsyncThunk<User_OrderHistorytypes,User_order
 })
 
 
+
+
+export const Store_get_oreder=createAsyncThunk<User_OrderHistorytypes,string,{rejectValue:ErrorPayload}>('/store/order/get',async(orderId,{rejectWithValue})=>{
+  try {
+    const response=await storeApiInstance.get(`/order/${orderId}`)
+    if(response.data){
+      return response.data.order
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+
+
+
+})
+
+

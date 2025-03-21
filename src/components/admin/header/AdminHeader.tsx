@@ -23,10 +23,10 @@ const AdminHeader = () => {
           <button className="p-2 bg-gray-200 rounded-full">⚙️</button>
           <div className="flex items-center">
           <img 
-  src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg" 
+  src="https://res.cloudinary.com/ded1lrbaz/image/upload/v1740765152/linkdindp_qzccet.jpg" 
   alt="Default Profile Picture" 
-  width="40" 
-  height="40"
+  className="w-9 h-9 rounded-full object-cover"
+
 />
 
             <span className="ml-2 font-medium">Sujith</span>

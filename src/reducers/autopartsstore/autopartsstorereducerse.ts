@@ -161,7 +161,10 @@ const storeSlice=createSlice({
             state.isPending=false
             state.isSuccess=true
             state.isError=false
-           state.orders=action.payload
+            const sortedOrders = action.payload.sort(
+                (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              );
+           state.orders=sortedOrders
                 
              
             

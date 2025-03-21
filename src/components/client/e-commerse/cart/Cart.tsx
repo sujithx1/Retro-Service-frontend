@@ -103,7 +103,7 @@ export default function CartPage() {
     if (newQuantity < 1) {
       setShowMsg({ action: true, message: "Quantity cannot be less than 1", type: "error" });
       return;
-    }
+    } 
   
     if (newQuantity > productToUpdate.product.stock) {
       setShowMsg({

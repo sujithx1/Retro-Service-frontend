@@ -5,7 +5,7 @@ import { User_get_orderhistory } from "../../../reducers/users/UserapiCalls";
 import { User_OrderHistorytypes } from "../../../types/clients/UsersTypes";
 import { useNavigate } from "react-router-dom";
 
-const ITEMS_PER_PAGE = 5; // Number of orders per page
+const ITEMS_PER_PAGE = 3; // Number of orders per page
 
 const OrderHistory = () => {
   const { user } = useSelector((state: RootState) => state.user);

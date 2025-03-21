@@ -127,6 +127,7 @@ const initialState: UserInitialState = {
   selectLocationuser:selectLocation,
   cart:null,
   wishlists:[],
+  checkoutBoolean:false,
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -166,6 +167,11 @@ const userSlices = createSlice({
     },
     setUserwishlists:(state,action:PayloadAction<WishlistTypes[]>)=>{
       state.wishlists=action.payload
+    }
+    ,
+
+    setCheckoutBoolean:(state,action)=>{
+      state.checkoutBoolean=action.payload
     }
   },
   extraReducers: (builder) => {
@@ -669,7 +675,8 @@ export const {
   selectEmployee,
   saveEmail,
   setuserSelectLocation,
-  setUserwishlists
+  setUserwishlists,
+  setCheckoutBoolean
   
 } = userSlices.actions;
 export default userSlices.reducer;

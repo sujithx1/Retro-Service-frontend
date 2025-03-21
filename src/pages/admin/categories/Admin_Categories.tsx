@@ -13,7 +13,8 @@ const Admin_Categories = () => {
 
 
     
-    
+  const [errors, setErrors] = useState<{ name: string; description: string }>({ name: "", description: "" });
+
     
       const [newCategory, setNewCategory] = useState<Add_category>({ name: "", description:"" });
       const dispatch:AppDispatch=useDispatch()
@@ -31,6 +32,17 @@ const Admin_Categories = () => {
       };
 
 
+      const validate = () => {
+        const newErrors: { name?: string; description?: string; minimum_wage?: string } = {}; // ✅ Use optional keys
+        if (!newCategory.name.trim()) newErrors.name = "Category name is required.";
+        if (!newCategory.description.trim()) newErrors.description = "Description is required.";
+   
+        setErrors({ 
+          name: newErrors.name || "", 
+          description: newErrors.description || "", 
+        }); // ✅ Ensure all keys exist        
+        return Object.keys(newErrors).length === 0; // Return true if no errors
+      };
       // 
     
       useEffect(()=>{
@@ -44,21 +56,32 @@ const Admin_Categories = () => {
         dispatch(Admin_get_allCategories())
 
       },[isError,message,dispatch])
-      const handleOnchChange = (e:ChangeEvent<HTMLInputElement>) => {
+
+
+
+      const handleOnChange = (e:ChangeEvent<HTMLInputElement>) => {
+
+
        
         const {name,value}=e.target
+
           setNewCategory((prev)=>({
 
             ...prev,
            
             [name]:value
 
-          })); 
+          }));
+          setErrors((prev) => ({ ...prev, [name]: "" }));
+
+        
         
       };
 
       const handleSubmit=()=>{
         console.log(newCategory);
+        if (!validate()) return;
+
         dispatch(Admin_add_category(newCategory))
         setNewCategory({name:"",description:""})
         
@@ -152,38 +175,56 @@ const Admin_Categories = () => {
 </div>
 
         {/* Add Category Section */}
-        <div className="bg-white shadow-lg rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">
-            Add New Category
-          </h2>
-          <div className="flex flex-col space-y-4">
-            <input
-              type="text"
-              placeholder="Category Name"
-              name="name"
-              value={newCategory.name}
-              onChange={handleOnchChange}
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <input
-              type="text"
-              placeholder="Description"
-              name="description"
-              value={newCategory.description}
-              onChange={handleOnchChange}
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <button
-              onClick={handleSubmit}
-              className="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition"
-            >
-              Add Category
-            </button>
+          {/* Add Category Section */}
+          <div className="bg-white shadow-lg rounded-lg p-6">
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">
+                  Add New Category
+                </h2>
+                <div className="flex flex-col space-y-4">
+                  {/* Name Input */}
+                  <input
+                    type="text"
+                    placeholder="Category Name"
+                    name="name"
+                    value={newCategory.name}
+                    onChange={handleOnChange}
+                    className={`p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.name
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
+                  />
+                  {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+
+                  {/* Description Input */}
+                  <input
+                    type="text"
+                    placeholder="Description"
+                    name="description"
+                    value={newCategory.description}
+                    onChange={handleOnChange}
+                    className={`p-3 border rounded-lg focus:outline-none focus:ring-2 ${
+                      errors.description
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
+                  />
+                  {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+
+                  {/* Submit Button */}
+                  <button
+                    onClick={handleSubmit}
+                    className="bg-blue-500 text-white py-3 px-6 rounded-lg hover:bg-blue-600 transition"
+                  >
+                    Add Category
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+    
+
 </div>
 
  

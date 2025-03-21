@@ -15,6 +15,7 @@ const UserChatList = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 
+  
   useEffect(() => {
     if (!user?.id) {
       console.warn("User ID is missing!");
@@ -125,7 +126,7 @@ const UserChatList = () => {
       <div className="flex-1 bg-gradient-to-b from-gray-900 to-gray-800 p-8 shadow-2xl rounded-xl overflow-hidden ml-5 max-h-screen border border-gray-700">
         {selectedUserId ? (
           <div className="h-full overflow-y-auto scrollbar-hide">
-            <UserChatDetails employeeId={selectedUserId } userId={user?.id||""} />
+            <UserChatDetails userName={user?.username||""} employeeId={selectedUserId } userId={user?.id||""} />
           </div>
         ) : (
           <div className="flex items-center justify-center h-full text-center">

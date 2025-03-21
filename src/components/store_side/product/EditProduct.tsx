@@ -76,7 +76,7 @@ const EditProduct = () => {
 
     dispatch(Store_update_Product( updatedProduct ))
       .unwrap()
-      .then(() => navigate("/products"))
+      .then(() => navigate("/store/products"))
       .catch((err) => console.error("Update failed", err));
   };
 
@@ -138,7 +138,7 @@ const EditProduct = () => {
           <label className="block text-gray-700">Category</label>
           <select
             name="category"
-            value={typeof product.category === "string" ? product.category : product.category}
+            value={typeof product.category.id === "string" ? product.category.id : product.category.name}
             onChange={handleInputChange}
             className="w-full p-2 border rounded"
           >

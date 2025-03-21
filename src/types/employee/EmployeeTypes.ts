@@ -22,7 +22,7 @@ export interface EmployeeStateTypes{
     skills:string[];
     experience:number,
     location?:Locationuser_types,
-    revenue:number,
+    revenue?:number,
     onDuty?:boolean
 
 }
@@ -70,6 +70,15 @@ export interface Emp_Put_job{
 
 }
 
+export interface CallData {
+    senderId: string;
+    senderName:string;
+    receiverId: string;
+    receiverName?:string;
+    callType: "audio" | "video";
+    roomId?:string
+  }
+  
 export interface Response_ChatsTypes{
      id?:string,
      sender:string,

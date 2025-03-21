@@ -13,24 +13,37 @@ const EditUsermodal:FC<Props> = ({users,onclose}) => {
 
 
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
 
-    
         const [formData,setFormData]=useState<UserStateTypes>({
     
             id:users.id,
             username:users.username,
             email:users.email,
             phone:users.phone,
-           profile_pic:users.profile_pic,
+           profilePic:users.profilePic,
           
     
         })
         const dispatch:AppDispatch=useDispatch()
+
+
+        const validateForm = () => {
+          const tempErrors: Record<string, string> = {};
+          if (!formData.username.trim()) tempErrors.username = "Username is required";
+          if (formData.phone.length !== 10) tempErrors.phone = "Enter a valid phone number";
+        
+          setErrors(tempErrors);
+          return Object.keys(tempErrors).length === 0; // Return true if no errors
+        };
+             
  
      const handleInputChange = (e:ChangeEvent<HTMLInputElement>) => {
          const { name, value } = e.target;
          setFormData((prev) => ({ ...prev, [name]: value }));
+         setErrors((prev) => ({ ...prev, [name]: "" }));
+
        };
 
        const {isError,message}=useSelector((state:RootState)=>state.admin)
@@ -46,7 +59,12 @@ const EditUsermodal:FC<Props> = ({users,onclose}) => {
              const handleSave = () => {
                // Trigger save logic
                // onSave(formData);
+                              console.log(formData);
+
+               if (!validateForm()) return
                console.log(formData);
+
+
                dispatch(Admin_edit_users_put(formData)).unwrap()
                .then((updatedData)=> {
                    console.log("succes",updatedData);
@@ -63,6 +81,10 @@ const EditUsermodal:FC<Props> = ({users,onclose}) => {
                
                // setIsModalOpen(false);
              };
+
+
+
+
   return (
     <>
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -81,6 +103,7 @@ const EditUsermodal:FC<Props> = ({users,onclose}) => {
                   className="w-full border border-gray-300 p-2 rounded"
                 />
               </div>
+              {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
 
               {/* Email (Readonly) */}
               <div className="mb-4">
@@ -117,6 +140,8 @@ const EditUsermodal:FC<Props> = ({users,onclose}) => {
                   className="w-full border border-gray-300 p-2 rounded"
                 />
               </div>
+              {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
+
             </form>
 
             {/* Buttons */}

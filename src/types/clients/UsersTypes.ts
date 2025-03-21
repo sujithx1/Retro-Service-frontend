@@ -100,6 +100,7 @@ export interface UserInitialState {
   selectLocationuser?:FinduserLocation;
   cart:Cart|null;
   wishlists:WishlistTypes[],
+  checkoutBoolean:boolean,
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;
@@ -351,6 +352,7 @@ export interface User_OrderHistorytypes{
  paymentMethod: string;
  orderStatus:string;
  transactionId?: string;
+ concern?:string;
  createdAt: Date;
  updatedAt: Date;
 

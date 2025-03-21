@@ -1,22 +1,38 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { io, Socket } from "socket.io-client";
-import { Response_ChatsTypes } from "../../../types/employee/EmployeeTypes";
+// import {  Socket } from "socket.io-client";
+import { CallData, Response_ChatsTypes } from "../../../types/employee/EmployeeTypes";
 import { AppDispatch } from "../../../store/store";
 import { UserStateTypes } from "../../../types/clients/UsersTypes";
 import { User_get_bookingHistories, user_get_EmployeeDetails, User_get_MessagesUserId } from "../../../reducers/users/UserapiCalls";
 import ToastAlert from "../../../components/alert/ToastAlert";
+import socket from "../../../socket/socket";
+import { v4 as uuidv4 } from "uuid"; // Import UUID library
+import { useNavigate } from "react-router-dom";
 
-const UserChatDetails = ({ employeeId, userId }: { employeeId: string; userId: string }) => {
+
+const UserChatDetails = ({ employeeId, userId,userName }: { employeeId: string; userId: string,userName:string }) => {
   const [messages, setMessages] = useState<Response_ChatsTypes[]>([]);
   const [userDetails, setUserDetails] = useState<UserStateTypes>();
   const [inputMessage, setInputMessage] = useState("");
-  const [socket, setSocket] = useState<Socket | null>(null);
+  // const [sockets, setSocket] = useState<Socket | null>(null);
   const dispatch: AppDispatch = useDispatch();
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref for the end of the message container
   const [chatEnabled, setChatEnabled] = useState(false);
   const [allCompleted, setAllCompleted] = useState(false);
 const [showwarning ,setShowWarning]=useState<boolean>(false)
+const navigate=useNavigate()
+useEffect(() => {
+  console.log("🔗 Checking socket connection...");
+  if (!socket.connected) {
+    socket.connect();
+  }
+
+  return () => {
+    console.log("🛑 Disconnecting socket...");
+  };
+}, []);
+
 
   useEffect(() => {
     if (userId) {
@@ -74,21 +90,41 @@ console.log('allJobsCompleted',allJobsCompleted);
         });
     }
 
-    const newSocket = io("http://localhost:3000");
-    setSocket(newSocket);
+    // const newSocket = socket;
+    // setSocket(newSocket);
 
-    newSocket.emit("register", "user", userId);
+    // newSocket.emit("register", "user", userId);
 
-    newSocket.on("chatMessage", (data: Response_ChatsTypes) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
+    // newSocket.on("chatMessage", (data: Response_ChatsTypes) => {
+    //   setMessages((prevMessages) => [...prevMessages, data]);
+    // });
 
-    return () => {
-      if (newSocket) {
-        newSocket.disconnect();
-      }
-    };
+    // return () => {
+    //   if (newSocket) {
+    //     newSocket.off('chatMessage');
+        
+    //   }
+    // };
   }, [dispatch, employeeId, userId]);
+
+
+
+  useEffect(() => {
+    if (!socket) return; // Ensure socket exists
+  
+    socket.emit("register", "user", userId);
+  
+    const handleMessage = (data: Response_ChatsTypes) => {
+      setMessages((prevMessages) => [...prevMessages, data]);
+    };
+  
+    socket.on("chatMessage", handleMessage);
+  
+    return () => {
+      socket.off("chatMessage", handleMessage);
+    };
+  }, [userId]); // Run only when userId changes
+  
 
 
   useEffect(() => {
@@ -119,28 +155,74 @@ console.log('allJobsCompleted',allJobsCompleted);
     }
   };
   
+const handleCall = (callType: "audio" | "video") => {
+
+
+  if (socket && employeeId) {
+    const generatedRoomId = uuidv4(); // Generate a unique ID
+
+    const callData: CallData = {
+      senderId: userId,
+      senderName:userName,  
+      receiverId: employeeId,
+      callType,
+      roomId:generatedRoomId
+    };
+
+    socket.emit("call", callData);
+    console.log("socket id",socket.id);
+   
+    
+    navigate(`/call?type=${callData.callType}&action=${'sender'}&sender=${callData.senderId}&receiver=${callData.receiverId}&senderName=${callData.senderName}&roomId=${callData.roomId}`)
+    console.log(`${callType} call initiated`);
+  
+  } 
+};
+
+
+const handleAudioCall = () => handleCall("audio");
+const handleVideoCall = () => handleCall("video");
+
 
   return (
     
       <div className="w-full h-full flex flex-col bg-gradient-to-b from-gray-900 to-gray-800 shadow-xl rounded-xl">
               {showwarning && <ToastAlert message="Please Book now" type="error" onClose={() => setShowWarning(false)} />}
+{/* Header Section */}
+<div className="p-4 bg-gray-800 flex items-center justify-between rounded-t-xl shadow-lg">
+  <div className="flex items-center">
+    <div className="w-10 h-10 bg-gray-700 rounded-full overflow-hidden border-2 border-cyan-400">
+      <img
+        src={userDetails?.profilePic || "/default-avatar.png"}
+        alt="User Avatar"
+        className="w-full h-full object-cover"
+      />
+    </div>
+    <div className="ml-3">
+      <h3 className="text-base font-semibold text-gray-200">
+        {userDetails?.username || "User"}
+      </h3>
+      <p className="text-xs text-gray-400">Online</p>
+    </div>
+  </div>
 
-        {/* Header Section */}
-        <div className="p-4 bg-gray-800 flex items-center rounded-t-xl shadow-lg">
-          <div className="w-10 h-10 bg-gray-700 rounded-full overflow-hidden border-2 border-cyan-400">
-            <img
-              src={userDetails?.profilePic || "/default-avatar.png"}
-              alt="User Avatar"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="ml-3">
-            <h3 className="text-base font-semibold text-gray-200">
-              {userDetails?.username || "User"}
-            </h3>
-            <p className="text-xs text-gray-400">Online</p>
-          </div>
-        </div>
+  {/* Call Buttons */}
+  <div className="flex gap-3">
+    <button 
+      onClick={handleAudioCall} 
+      className="p-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-md transition"
+    >
+      📞
+    </button>
+    <button 
+      onClick={handleVideoCall} 
+      className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-md transition"
+    >
+      🎥
+    </button>
+  </div>
+</div>
+
     
         {/* Chat Messages Section */}
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-900 scrollbar-hide">

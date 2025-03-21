@@ -1,3 +1,4 @@
+import { CategoryStateTypes } from "./admin/admintypes";
 import { Locationuser_types, User_OrderHistorytypes } from "./clients/UsersTypes";
 
 
@@ -52,7 +53,7 @@ export interface Store_Product_types{
     description:string,
     price:number,
     stock:number,
-    category:string,
+    category:CategoryStateTypes,
     images:string[],
     isActive?:boolean
 

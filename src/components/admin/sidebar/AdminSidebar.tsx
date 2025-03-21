@@ -8,7 +8,7 @@ const AdminSidebar = () =>
             {side:'Dashboard' ,icon: "🏠" ,path:'/admin'},
             {side:'Mechanics' ,icon:"🧑‍🔧" , path:'/admin/mechanics'},
             {side:'Users' ,   icon:"👨‍👩‍👧",  path:'/admin/users'},
-            {side:'Auto Spare Parts' ,  icon:"🚗", path:'/admin/autospareparts'},
+            // {side:'Auto Spare Parts' ,  icon:"🚗", path:'/admin/autospareparts'},
             {side:'Categories' , icon:"⚙️",path:'/admin/categories'},
             {side:'Jobs' , icon:"🛠️",path:'/admin/jobs'},
             {side:'Report-FeedBack' , icon:"📧",path:'/admin/report-feedback'},

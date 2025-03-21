@@ -10,13 +10,34 @@ interface  Props{
 
 const EditJobModal:FC<Props> = ({onClose,Job}) => {
 
+
+  const [errors, setErrors] = useState<{ name: string; description: string ,minimum_wage:string }>({ name: "", description: "" ,minimum_wage:"" });
+  
+  
+
     const [formValues, setFormValues] = useState<JobsStateTypes>({
         id:"",
         name: "",
         description: "",
         minimum_wage: 0,
       });
-const dispatch:AppDispatch=useDispatch()
+      const dispatch:AppDispatch=useDispatch()
+      
+      const validate = () => {
+        const newErrors: { name?: string; description?: string; minimum_wage?: string } = {}; // ✅ Use optional keys
+        if (!formValues.name.trim()) newErrors.name = "Category name is required.";
+       if (!formValues.description.trim()) newErrors.description = "Description is required.";
+       if (formValues.minimum_wage<100) newErrors.minimum_wage = "minimum 100 required.";
+      
+  setErrors({ 
+    name: newErrors.name || "", 
+    description: newErrors.description || "", 
+    minimum_wage: newErrors.minimum_wage || "" 
+  }); // ✅ Ensure all keys exist
+
+  return !newErrors.name && !newErrors.description && !newErrors.minimum_wage; // Return true if no errors
+      };
+
       useEffect(()=>{
         setFormValues(Job)
 
@@ -32,6 +53,7 @@ const dispatch:AppDispatch=useDispatch()
       }
       const handleSubmit=(e:FormEvent)=>{
         e.preventDefault()
+        if(!validate())return
         dispatch(Admin_put_Job(formValues))
         onClose()
         
@@ -52,6 +74,8 @@ const dispatch:AppDispatch=useDispatch()
             placeholder="Job Name"
             className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+         {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+
           <input
             type="text"
             name="description"
@@ -60,6 +84,8 @@ const dispatch:AppDispatch=useDispatch()
             placeholder="Job Description"
             className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+
           <input
             type="number"
             name="minimum_wage"
@@ -68,6 +94,8 @@ const dispatch:AppDispatch=useDispatch()
             placeholder="Minimum Wage"
             className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+            {errors.minimum_wage && <p className="text-red-500 text-sm">{errors.minimum_wage}</p>}
+
           <div className="flex justify-end gap-2">
             <button
               onClick={onClose}

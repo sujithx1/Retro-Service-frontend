@@ -92,13 +92,13 @@ const Sidebar: React.FC = () => {
 
           {/* Customers */}
           <li>
-            <button
+            {/* <button
               onClick={() => toggleSection("customers")}
               className="flex items-center w-full p-2 text-gray-700 hover:bg-gray-100 rounded"
             >
               👥 <span className="ml-3">Customers</span>
               <span className="ml-auto">{openSections.customers ? "▲" : "▼"}</span>
-            </button>
+            </button> */}
             {openSections.customers && (
               <ul className="ml-6 space-y-1">
                 <li>

@@ -9,11 +9,10 @@ import UserRoutes from "./routes/UserRoutes"
 import EmployeesRoutes from "./routes/EmployeesRoutes"
 import NotFound from "./components/NotFound"
 import StoreRoutes from "./routes/StoreRoutes"
-
-// import ChatHome from "./pages/employees/chat/Emp_chat"
+// import LocalMeet from "./routes/videocall"
 
 function App() {
-
+  
   
 
 
@@ -30,9 +29,10 @@ function App() {
         <Route path="/employee/*" element={<EmployeesRoutes />} />
         <Route path="/admin/*" element={<AdminRoutes/>} />
         <Route path="/store/*" element={<StoreRoutes/>} />
+        {/* <Route path="/localCall" element={<LocalMeet/>} /> */}
         <Route path="*" element={<NotFound/>} />
       </Routes>
-      
+      s
       
         
         
@@ -41,8 +41,10 @@ function App() {
 
       
     </Router>
+
     
     <ToastContainer/>
+
  
     </>
   )
