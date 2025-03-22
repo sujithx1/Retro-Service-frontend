@@ -18,7 +18,7 @@ const filteredEmployees = employees.filter(employee => {
     employee.skills.some(skill =>
       skill.toLowerCase().includes(searchTerm.toLowerCase())
     ) ||
-    (employee.location && employee.location.toLowerCase().includes(searchTerm.toLowerCase()))
+    (employee.location && employee.location.address.suburb.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 });
 
@@ -56,7 +56,7 @@ const filteredEmployees = employees.filter(employee => {
               <div className="text-center">
                 <h2 className="text-xl font-semibold text-gray-800">{employee.username}</h2>
                 <h4 className="text-md text-gray-500 mb-2">{employee.skills[0]}</h4>
-                <p className="text-gray-400 mb-4">{employee.location || "Location not specified"}</p>
+                <p className="text-gray-400 mb-4">{employee.location?.address.suburb || "Location not specified"}</p>
                 <button className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 transition-colors">
                   Contact
                 </button>

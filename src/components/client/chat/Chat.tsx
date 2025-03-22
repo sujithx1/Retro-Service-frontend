@@ -73,7 +73,7 @@ console.log("employeeid",employeeId);
       
     });  
     // Connect to the socket server
-    const newSocket = io("http://localhost:3000"); // Replace with your backend server URL
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL); // Replace with your backend server URL
     setSocket(newSocket);
 
     newSocket.emit("register", "user", userId);

@@ -64,7 +64,7 @@ employee_Axios_instance.interceptors.response.use(
 
                 // Request a new access token
                 const refreshResponse = await axios.post(
-                    'http://localhost:3000/api/employee/refresh-token',
+                    `${import.meta.env.VITE_Employee_Url}/refresh-token`,
                     {},
                     {
                         headers: { Authorization: `Bearer ${refreshToken}` },

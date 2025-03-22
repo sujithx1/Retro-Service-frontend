@@ -43,7 +43,6 @@ Adminaxios_Instance.interceptors.response.use(
         console.log("Error response:", error.response);
     
 
-// const dispatch:AppDispatch=useDispatch()
 
 console.log("response");
 // Debugging point
@@ -68,7 +67,7 @@ if (error.response && error.response.status === 401 && error.response.data.error
 
         // Request a new access token
         const refreshResponse = await axios.post(
-            'http://localhost:3000/api/admin/refresh-token',
+            `${import.meta.env.VITE_Admin_Url}/refresh-token`,
             {},
             {
                 headers: { Authorization: `Bearer ${refreshToken}` },
@@ -81,14 +80,11 @@ if (error.response && error.response.status === 401 && error.response.data.error
         const newAccessToken = refreshResponse.data.accessToken;
         cookies.set('userToken', newAccessToken);
 
-        // Retry the original request with the new access token
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axios(originalRequest);
     } catch (refreshError) {
         console.error("Failed to refresh token:", refreshError);
 
-        // Handle refresh failure (e.g., logout user)
-    //    dispatch(clearUser());
 
         localStorage.removeItem('admin');
         
@@ -96,7 +92,6 @@ if (error.response && error.response.status === 401 && error.response.data.error
         return Promise.reject(refreshError);
     }
         }
-         // Handle employee block (e.g., 403 status or specific error message)
          if (error.response.status === 403 && error.response.data.error === "User not found or inactive") {
             console.error("user is blocked. Redirecting to login.");
             localStorage.removeItem('admin');

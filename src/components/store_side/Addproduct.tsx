@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import ToastAlert from "../alert/ToastAlert";
 import { ErrorPayload } from "../../types/clients/UsersTypes";
 
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ded1lrbaz/image/upload";
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDNARY_URL;
 const UPLOAD_PRESET = "Product_images";
 
 const AddProduct = () => {
@@ -20,7 +20,7 @@ const AddProduct = () => {
     // const [imageUrls, setImageUrls] = useState<string[]>([]);
     const navigate = useNavigate();
 const {store}=useSelector((state:RootState)=>state.store)
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{name:string,description:string,price:string,category:string,quantity:string}>({
         name: "",
         description: "",
         price: "",
@@ -116,10 +116,12 @@ const {store}=useSelector((state:RootState)=>state.store)
         const product: Store_Product_types = {
             id: "",
             ...formData,
+            category:categories.find((item)=>item.id==formData.category)as CategoryStateTypes,
             price: Number(formData.price),
             storeId:store?.id||"",
             stock: Number(formData.quantity),
             images: uploadedUrls,
+            
         };
 
         // Dispatch to Redux

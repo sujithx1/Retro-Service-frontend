@@ -87,7 +87,7 @@ const employeeslice = createSlice({
     },
     changeRevenu:(state,action)=>{
       
-      if (state.employee) {
+      if (state.employee&&state.employee.revenue) {
         
         state.employee.revenue-=action.payload
       }

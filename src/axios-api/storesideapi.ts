@@ -68,7 +68,7 @@ if (error.response && error.response.status === 401 && error.response.data.error
 
         // Request a new access token
         const refreshResponse = await axios.post(
-            'http://localhost:3000/api/store/refresh-token',
+            `${import.meta.env.VITE_Store_Url}/refresh-token`,
             {},
             {
                 headers: { Authorization: `Bearer ${refreshToken}` },

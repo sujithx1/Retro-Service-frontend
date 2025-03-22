@@ -7,7 +7,7 @@ import { Store_Product_types,  } from "../../../types/storetypes";
 import axios from "axios";
 import { FaTrash, FaUpload } from "react-icons/fa";
 
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ded1lrbaz/image/upload";
+const CLOUDINARY_URL =import.meta.env.VITE_CLOUDNARY_URL;
 const UPLOAD_PRESET = "Product_images";
 
 const EditProduct = () => {

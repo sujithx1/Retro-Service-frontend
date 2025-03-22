@@ -20,8 +20,8 @@ const [editEmp,setEditEmp]=useState<EmployeeStateTypes>({
   phone:"",
   skills:[""],
   experience:0,
-  profile_pic:"",
-  location:""
+  profilePic:"",
+  
 
 })
 const [showEditModal,setShowEditModal]=useState<boolean>(false)
@@ -105,7 +105,7 @@ const {employees,isError,message}=useSelector((state:RootState)=>state.admin)
                     >
                       <td className="flex items-center gap-4 p-4">
                         <img
-                          src={worker.profile_pic as string}
+                          src={worker.profilePic as string}
                           alt={worker.username}
                           className="w-10 h-10 rounded-full object-cover"
                         />
@@ -139,7 +139,7 @@ const {employees,isError,message}=useSelector((state:RootState)=>state.admin)
                               phone: worker.phone,
                               skills: worker.skills,
                               experience: worker.experience,
-                              profile_pic: worker.profile_pic as string,
+                              profilePic: worker.profilePic as string,
                               location: worker.location,
                             });
                           }}

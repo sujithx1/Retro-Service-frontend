@@ -62,7 +62,7 @@ const Emp_forgotPass_otp = () => {
   };
 
   useEffect(() => {
-    let interval:number;
+    let interval:NodeJS.Timeout;
     if (timer !== null && timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => (prev !== null ? prev - 1 : null));

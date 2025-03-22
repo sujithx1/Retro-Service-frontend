@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 
 const AdminDashboard = () => {
   // Mock payment data
-  const [paymentData, setPaymentData] = useState({
+  const [paymentData] = useState({
     totalRevenue: 120000,
     totalTransactions: 450,
     successfulPayments: 400,
