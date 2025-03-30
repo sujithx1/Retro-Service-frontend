@@ -10,6 +10,7 @@ export interface EmployeeSignUpTypes{
     experience:string;
     password:string;
     confirm_password:string;
+    proof:string    
     
 }
 export interface EmployeeStateTypes{
@@ -23,7 +24,9 @@ export interface EmployeeStateTypes{
     experience:number,
     location?:Locationuser_types,
     revenue?:number,
-    onDuty?:boolean
+    onDuty?:boolean,
+    isValidated?:boolean,
+    proof?:string
 
 }
 export interface Employee_InitialState{
@@ -75,6 +78,7 @@ export interface CallData {
     senderName:string;
     receiverId: string;
     receiverName?:string;
+    senderProfilePic:string;
     callType: "audio" | "video";
     roomId?:string
   }
@@ -86,7 +90,13 @@ export interface Response_ChatsTypes{
      message:string,
      timestamp:string,
      isRead?:boolean,
-     userType:"user"|"employee"
+     userType:"user"|"employee",
+     attachment?: {
+        type: string;   
+        url: string;
+        name: string;
+        size: number;
+    }
     
 
 }

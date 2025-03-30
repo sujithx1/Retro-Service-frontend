@@ -27,6 +27,7 @@ const SearchComponent = () => {
       } else {
         console.error("Unexpected response format:", response.data);
         setResults([]); // Reset results if data is not an array
+
       }
     } catch (error) {
       console.error("Error fetching search results:", error);

@@ -52,6 +52,7 @@ const RazorpayPaymentAdvance = () => {
   const successPayment = useCallback(async () => {
     if (!reqService) {
       toast.error("Service not found.");
+      
       return;
     }
    
@@ -76,6 +77,8 @@ const RazorpayPaymentAdvance = () => {
         .then((result) => {
           console.log("Payment success:", result);
           toast.success("Payment Successful!");
+          localStorage.removeItem("paymentStarted"); // ✅ Reset payment status
+
           navigate("/booking-history");
         })
         .catch((err) => {
@@ -118,12 +121,24 @@ const RazorpayPaymentAdvance = () => {
         prefill: {
             name: "Sujith",
             email: "sujith@example.com",
-            contact: "9876543210",
+            contact: "7994591023",
         },
         theme: {
             color: "#3399cc",
         },
-    };
+        modal: {
+          escape: true, // Allow users to close via "ESC"
+          ondismiss: function () {
+            console.log("User canceled the payment.");
+            toast.warn("Payment was canceled. Please try again.");
+            setLoading(false); // Reset loading state
+            navigate('/home')
+          },
+  
+    }
+  }
+
+
     
     const rzp = new window.Razorpay(options);
     rzp.open();

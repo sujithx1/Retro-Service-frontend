@@ -23,6 +23,10 @@ export interface RazorpayOptions {
   theme: {
     color: string;
   };
+  modal: {
+    escape: boolean;
+    ondismiss: () => void;
+}
 }
 
 interface Razorpay {
@@ -122,6 +126,13 @@ const RazorpayPayment: FC<Props> = ({ service,servicePaymentId }) => {
           theme: {
             color: '#3399cc',
           },
+          modal: {
+            escape: true, // Allow users to close via "ESC"
+            ondismiss: function () {
+              console.log("User canceled the payment.");
+              toast.warn("Payment was canceled. Please try again.");
+            },
+          }
         };
 
         const rzp = new window.Razorpay(options);

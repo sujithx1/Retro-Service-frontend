@@ -1,22 +1,21 @@
-// Import required Firebase modules
-import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+// // Import required Firebase modules
+// import {  initializeApp } from "firebase/app";
+// import { getStorage } from "firebase/storage";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDUJ8ThDfGOhS6RjRXhO_7Peaun6rhmOiA",
-  authDomain: "retro-service.firebaseapp.com",
-  projectId: "retro-service",
-  storageBucket: "retro-service.appspot.com",
-  messagingSenderId: "950638929085",
-  appId: "1:950638929085:web:fdf465558a45d26028c3d4",
-  measurementId: "G-DE56W5MD67",
-};
+// const firebaseConfig = {
+//   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+//   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+//   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+//   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+//   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+//   appId: import.meta.env.VITE_FIREBASE_APP_ID,
+//   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+// };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Cloud Messaging
-const messaging = getMessaging(app);
+// const app = initializeApp(firebaseConfig);
 
-export { messaging, getToken, onMessage };
-    
+// // ✅ Now, safely initialize storage
+// export const storage = getStorage(app);
+
+

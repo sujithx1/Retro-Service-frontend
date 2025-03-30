@@ -6,6 +6,7 @@ import AdminSidebar from "../../../components/admin/sidebar/AdminSidebar";
 import AdminHeader from "../../../components/admin/header/AdminHeader";
 import ToastAlert from "../../../components/alert/ToastAlert";
 import { ToastMsg } from "../../../types/admin/admintypes";
+import { useNavigate } from "react-router-dom";
 
 const AdminReportFeedbackList: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -17,7 +18,8 @@ const AdminReportFeedbackList: React.FC = () => {
     message:"",
     type:"idle"
   })
-
+  // const [bookingDetailsModal,setBookingModal]=useState(false)
+const navigate=useNavigate()
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // Set how many items per page
 
@@ -59,6 +61,7 @@ const AdminReportFeedbackList: React.FC = () => {
   return (
     <>
     {showmsg.action && <ToastAlert onClose={()=>setShowmsg((prev)=>({...prev,action:false}))} message={showmsg.message} type={showmsg.type as "info"|"success"|"error"} />}
+     
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
       <div className="flex flex-col flex-1">
@@ -87,7 +90,13 @@ const AdminReportFeedbackList: React.FC = () => {
                   {paginatedFeedbacks.map((feedback) => (
                     <tr
                       key={feedback.id}
-                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={()=>{
+                        navigate(`/admin/booking-details/${feedback.bookingId}`)
+
+                      }}
+
+
                       >
                       {/* <td className="px-4 py-3 text-gray-700">{feedback.name}</td> */}
                       <td className="px-4 py-3 text-gray-700">{feedback.userEmail}</td>

@@ -37,6 +37,7 @@ const tempuser: EmployeeSignUpTypes = {
   experience: "",
   password: "",
   confirm_password: "",
+  proof:""
 };
 const wallet:WalletResponse={
   id:"",
@@ -126,11 +127,11 @@ const employeeslice = createSlice({
       .addCase(Employee_Send_otp.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(Employee_Send_otp.fulfilled, (state, action) => {
+      .addCase(Employee_Send_otp.fulfilled, (state) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.isError = false;
-        state.employee = action.payload;
+        // state.employee = action.payload;
       })
       .addCase(Employee_Send_otp.rejected, (state, action) => {
         state.isSuccess = false;

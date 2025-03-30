@@ -2,8 +2,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import Adminaxios_Instance from "../../axios-api/adminSide.api";
 import { isAxiosError } from "axios";
 import { Add_category, Add_Job, AdminLoginTypes, AdminSuccessTypes, CategoryStateTypes, JobsStateTypes } from "../../types/admin/admintypes";
-import { ErrorPayload, TransactonsTypes, UserReport_FeedBack_types, UserStateTypes } from "../../types/clients/UsersTypes";
-import { EmployeeStateTypes } from "../../types/employee/EmployeeTypes";
+import { ErrorPayload, Response_Req_service_employee_types, TransactonsTypes, UserReport_FeedBack_types, UserStateTypes } from "../../types/clients/UsersTypes";
+import { EmployeeStateTypes, WalletResponse } from "../../types/employee/EmployeeTypes";
 import Cookies from "js-cookie";
 
 export const adminLoginPost = createAsyncThunk<
@@ -427,6 +427,114 @@ string,
     );
     if (response.data) {
       return response.data.transactions;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+
+
+export const AdminHandleApprove_mechaninc= createAsyncThunk<
+
+void ,
+string,
+{ rejectValue: ErrorPayload }
+>("/admin/approve/mechanic", async (mechanicId, { rejectWithValue }) => {
+  try {
+    const response = await Adminaxios_Instance.put(
+      `/approve-mechanic/${mechanicId}`,
+    
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+
+
+export const admin_getServiceBookingDetails= createAsyncThunk<
+
+Response_Req_service_employee_types ,
+string,
+{ rejectValue: ErrorPayload }
+>("/admin/get/booking_details", async (bookingId, { rejectWithValue }) => {
+  try {
+    const response = await Adminaxios_Instance.get(
+      `/service-booking/${bookingId}`,
+    
+    );
+    if (response.data) {
+      return response.data.booking
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+
+export const admin_getwallet= createAsyncThunk<
+
+WalletResponse ,
+void,
+{ rejectValue: ErrorPayload }
+>("/admin/get/walletDetails", async (_, { rejectWithValue }) => {
+  try {
+    const response = await Adminaxios_Instance.get(
+      `/wallet`,
+    
+    );
+    if (response.data) {
+      return response.data.wallet
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});
+
+export const admin_getalltransaction= createAsyncThunk<
+
+TransactonsTypes[] ,
+void,
+{ rejectValue: ErrorPayload }
+>("/admin/get/transactions", async (_, { rejectWithValue }) => {
+  try {
+    const response = await Adminaxios_Instance.get(
+      `/transactions`,
+    
+    );
+    if (response.data) {
+      console.log(response.data);
+      
+      return response.data.transactions
     }
   } catch (error) {
     if (isAxiosError(error)) {

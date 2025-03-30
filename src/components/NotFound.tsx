@@ -1,20 +1,28 @@
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
-const NotFound = () => {
-  const navigate = useNavigate();
-
+const NotFoundPage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <h1 className="text-6xl font-bold text-red-600 mb-4">404</h1>
-      <p className="text-xl text-gray-700 mb-6">Page Not Found</p>
-      <button
-        onClick={() => navigate(-1)}
-        className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300"
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-center">
+      {/* Robot Illustration */}
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/2793/2793702.png"
+        alt="Robot Error"
+        className="w-48 h-auto mb-6"
+      />
+
+      {/* Error Message */}
+      <h1 className="text-6xl font-bold text-purple-700">404</h1>
+      <p className="text-xl text-gray-600 mt-2">Sorry! We couldn't find that page.</p>
+
+      {/* Back to Home Button */}
+      <a
+        href="/"
+        className="mt-5 px-6 py-3 bg-purple-700 text-white text-lg rounded-lg shadow-lg hover:bg-purple-800 transition"
       >
-        Go Back Home
-      </button>
+        Go Home
+      </a>
     </div>
   );
 };
 
-export default NotFound;
+export default NotFoundPage;

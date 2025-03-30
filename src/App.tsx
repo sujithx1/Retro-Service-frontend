@@ -9,28 +9,29 @@ import UserRoutes from "./routes/UserRoutes"
 import EmployeesRoutes from "./routes/EmployeesRoutes"
 import NotFound from "./components/NotFound"
 import StoreRoutes from "./routes/StoreRoutes"
-import { useEffect } from "react"
-import socket from "./socket/socket"
+import AudioPlayer from "./pages/clients/userchat/audioplayer"
+// import { useEffect } from "react"
+// import socket from "./socket/socket"
 // import LocalMeet from "./routes/videocall"
 
 function App() {
   
-  useEffect(() => {
-    if (!socket.connected) {
-      console.log("Socket is not connected, attempting to connect...");
-      socket.connect(); // Use connect() instead of emitting "connection"
-    }
+  // useEffect(() => {
+  //   if (!socket.connected) {
+  //     console.log("Socket is not connected, attempting to connect...");
+  //     socket.connect(); // Use connect() instead of emitting "connection"
+  //   }
 
-    socket.on("connection", () => {
-      console.log("Socket connected:", socket.id);
-    });
+  //   socket.on("connection", () => {
+  //     console.log("Socket connected:", socket.id);
+  //   });
 
 
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
 
 
@@ -48,7 +49,7 @@ function App() {
         <Route path="/employee/*" element={<EmployeesRoutes />} />
         <Route path="/admin/*" element={<AdminRoutes/>} />
         <Route path="/store/*" element={<StoreRoutes/>} />
-        {/* <Route path="/localCall" element={<LocalMeet/>} /> */}
+        <Route path="/audio" element={<AudioPlayer audioUrl="https://res.cloudinary.com/ded1lrbaz/video/upload/v1743248023/uploads/cuay4i4abvka5qavlzdd.webm"/>} />
         <Route path="*" element={<NotFound/>} />
       </Routes>
       

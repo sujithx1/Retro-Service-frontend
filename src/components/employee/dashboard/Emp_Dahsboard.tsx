@@ -171,12 +171,12 @@ const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false); // State 
       <div className="flex justify-between items-center mb-10">
           <h2 className="text-4xl font-bold text-gray-800">Mechanic Dashboard</h2>
           <button
-          
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
-            onClick={()=>navigate(`/employee/change-location/${employee.id}`)}
-          >
-            <MapPin className="h-5 w-5" /> Change Location
-          </button>
+  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition w-fit text-sm sm:text-base"
+  onClick={() => navigate(`/employee/change-location/${employee.id}`)}
+>
+  <MapPin className="h-4 w-4 sm:h-5 sm:w-5" /> Change Location
+</button>
+
         <div className=" flex items-center ">
           <span className="text-lg font-medium mr-3">Active Status:</span>
           <button

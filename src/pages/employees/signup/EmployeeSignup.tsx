@@ -7,9 +7,12 @@ import { employee_signup_post } from "../../../reducers/employees/EmployeeApical
 import { toast } from "react-toastify"
 import Emp_Otp from "./Emp_Otp"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 
 const WorkerSignup = () => {
+  const [idFile, setIdFile] = useState<File | null>(null);
+
   const [showOtp,setShowOtp]=useState<boolean>(false)
   const [signup ,setSignup]=useState<EmployeeSignUpTypes>({
     username:'',
@@ -18,7 +21,8 @@ const WorkerSignup = () => {
     password:"",
     confirm_password:"",
     skills:"",
-    experience:''
+    experience:'',
+    proof:""
   })
   const [err,setError]=useState({
     username:'',
@@ -27,7 +31,9 @@ const WorkerSignup = () => {
      password:'',
      confirm_password:'',
      skills:'',
-     experience:''
+     experience:'',
+     idFile: ''
+
 })
   const {username,email,phone,password,confirm_password,skills,experience}=signup
   const dispatch:AppDispatch=useDispatch()
@@ -64,7 +70,9 @@ const handleValidation=():boolean=>
         password:'',
         confirm_password:'',
         skills:'',
-        experience:''
+        experience:'',
+        idFile: ''
+
 
     }
     if (username.trim()=="") {
@@ -114,6 +122,10 @@ const handleValidation=():boolean=>
         newError.confirm_password="Password dosent match"
         isValid=false   
     }
+    if (!idFile) {
+      newError.idFile = "Valid ID document is required";
+      isValid = false;
+    }
 
 
     setError(newError)
@@ -138,26 +150,75 @@ const handleOnchange=(e:ChangeEvent<HTMLInputElement>)=>{
 }
 
 
-const handleSubmit=(e:FormEvent<HTMLFormElement>)=>{
-  e.preventDefault()
-  if (handleValidation()) {
-    console.log("validate is true");
-    
-    console.log(signup);
-    dispatch(setTempEmp(signup))
-    dispatch(employee_signup_post(signup))
-
-
-  }else{
-    console.log(err);
-    
-    console.log("not validate");
-    
+const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files.length > 0) {
+    setIdFile(e.target.files[0]);
   }
+};
+
+
+
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDNARY_URL;
+
+const UPLOAD_PRESET = "Mechanic_Proof";
+
+const uploadImage = async (idFile: File | null): Promise<string | null> => {
+  if (!idFile) {
+    toast.error("Please add a valid proof");
+    return null;
   }
 
+  const formData = new FormData();
+  formData.append("file", idFile);
+  formData.append("upload_preset", UPLOAD_PRESET);
 
- 
+  try {
+    const response = await axios.post(CLOUDINARY_URL, formData);
+
+    if (response.data.secure_url) {
+      console.log(response.data)
+      
+      return response.data.secure_url as string;
+    } else {
+      toast.error("Upload failed. No image URL received.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    toast.error("Image not uploaded");
+    return null;
+  }
+};
+
+
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (!handleValidation()) {
+    console.log("Form validation failed:", err);
+    return;
+  }
+
+  const proofUrl = await uploadImage(idFile);
+  
+  if (!proofUrl) {
+    console.log("Image upload failed");
+    return;
+  }
+
+  setSignup((prev) => ({
+    ...prev,
+    proof: proofUrl, 
+  }));
+
+  const updatedSignup = { ...signup, proof: proofUrl };
+  dispatch(setTempEmp(updatedSignup));
+  dispatch(employee_signup_post(updatedSignup));
+};
+
+
+
+
   return (
     <>
     {showOtp ? <Emp_Otp/>: (
@@ -221,6 +282,28 @@ const handleSubmit=(e:FormEvent<HTMLFormElement>)=>{
                      {error && <span className="text-red-500 text-sm">{error}</span>}
                    </div>
                  ))}
+
+
+<div className="mb-4">
+  <label className="block text-gray-700 font-semibold mb-2">Upload ID Document</label>
+  <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-4 bg-white flex flex-col items-center justify-center cursor-pointer hover:border-green-500 transition">
+    <input
+      type="file"
+      onChange={handleFileChange}
+      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+      accept=".pdf,.jpg,.png,.jpeg"
+    />
+    <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 16v5h10v-5m-5-14v14m-3-3h6" />
+    </svg>
+    <p className="text-gray-600 text-sm">Drag & drop or click to upload</p>
+    {idFile && (
+      <p className="mt-2 text-green-600 font-medium text-sm">{idFile.name}</p>
+    )}
+  </div>
+  {err.idFile && <span className="text-red-500 text-sm">{err.idFile}</span>}
+</div>
+
 
                   <button
                     type="submit"

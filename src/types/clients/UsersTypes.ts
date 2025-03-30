@@ -85,6 +85,7 @@ export interface UserReport_FeedBack_types {
   amount?:number;
   type?:string;
   refaund:boolean;
+  bookingId?:string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -101,6 +102,7 @@ export interface UserInitialState {
   cart:Cart|null;
   wishlists:WishlistTypes[],
   checkoutBoolean:boolean,
+  paymentStarted:boolean,
   isSuccess: boolean;
   isError: boolean;
   isLoading: boolean;

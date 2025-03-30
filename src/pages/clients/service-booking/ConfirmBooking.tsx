@@ -3,11 +3,13 @@ import { CheckCircle, XCircle, Loader } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ConfirmationCancellModal from "../../../components/are you sure/CancellModal";
-import { AppDispatch } from "../../../store/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../../store/store";
+import { useDispatch, useSelector } from "react-redux";
 import { User_put_cancelReq_service } from "../../../reducers/users/UserapiCalls";
 import { Service_Booking_Put_status_type } from "../../../types/clients/UsersTypes";
 import ToastAlert from "../../../components/alert/ToastAlert";
+import { toast } from "react-toastify";
+import { setPaymentStart } from "../../../reducers/users/UserReducers";
 
 interface ConfirmBookingModalProps {
   isOpen: boolean;
@@ -24,10 +26,21 @@ const ConfirmBookingModal: React.FC<ConfirmBookingModalProps> = ({
   const [cancelModal,setCancelModal]=useState(false)
 const [showmsg,setShowmsg]=useState(false)
   const dispatch:AppDispatch=useDispatch()
+  const {paymentStarted}=useSelector((state:RootState)=>state.user)
 
 const navigate=useNavigate()
   const handlePayment = async () => {
+    console.log("payment stateus",paymentStarted);
+    
+    const storedPaymentState = localStorage.getItem("paymentStarted");
+
+    if (paymentStarted || storedPaymentState === "true") {
+      toast.error("Payment already in process.");
+      navigate("/home");
+      return;
+    }
     setIsLoading(true);
+    dispatch(setPaymentStart())
     navigate(`/advancepayment?service=${bookingId}`)
    
   };

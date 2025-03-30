@@ -128,6 +128,7 @@ const initialState: UserInitialState = {
   cart:null,
   wishlists:[],
   checkoutBoolean:false,
+  paymentStarted:false,
   isError: false,
   isLoading: false,
   isSuccess: false,
@@ -172,6 +173,11 @@ const userSlices = createSlice({
 
     setCheckoutBoolean:(state,action)=>{
       state.checkoutBoolean=action.payload
+    },
+    setPaymentStart:(state)=>{
+      state.paymentStarted=true
+      localStorage.setItem("paymentStarted", "true"); // ✅ Store in localStorage
+
     }
   },
   extraReducers: (builder) => {
@@ -676,7 +682,7 @@ export const {
   saveEmail,
   setuserSelectLocation,
   setUserwishlists,
-  setCheckoutBoolean
+  setCheckoutBoolean,setPaymentStart
   
 } = userSlices.actions;
 export default userSlices.reducer;

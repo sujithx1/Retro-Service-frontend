@@ -60,7 +60,7 @@ const UserHome = () => {
 
     debounceTimer = setTimeout(() => {
       fetchServices(query); // Fetch services after debounce delay
-    }, 1000); // 300ms debounce delay
+    }, 1000);
   };
 
   // Handle service booking

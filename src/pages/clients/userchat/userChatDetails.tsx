@@ -9,6 +9,11 @@ import ToastAlert from "../../../components/alert/ToastAlert";
 import socket from "../../../socket/socket";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library
 import { useNavigate } from "react-router-dom";
+import { uploadFile } from "../../../utils/uploads";
+import MessageAttachment from "./MessageAttachment";
+import FileUploader from "./fileUploade";
+import AudioRecorder from "./audioRecord";
+import { uploadAudioandVideo } from "../../../utils/uploadAudio";
 
 
 const UserChatDetails = ({ employeeId, userId,userName }: { employeeId: string; userId: string,userName:string }) => {
@@ -22,16 +27,107 @@ const UserChatDetails = ({ employeeId, userId,userName }: { employeeId: string; 
   const [allCompleted, setAllCompleted] = useState(false);
 const [showwarning ,setShowWarning]=useState<boolean>(false)
 const navigate=useNavigate()
-useEffect(() => {
-  console.log("🔗 Checking socket connection...");
-  if (!socket.connected) {
-    socket.connect();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+
+
+
+
+const handleSendFile = async (file: File) => {
+  if (!chatEnabled) {
+    setShowWarning(true);
+    return;
   }
 
-  return () => {
-    console.log("🛑 Disconnecting socket...");
-  };
-}, []);
+  setIsUploading(true);
+  setUploadProgress(0);
+
+  try {
+    const uploadedFile = await uploadFile(file, (progress) =>
+      console.log(`Upload progress: ${progress}%`)
+    );
+
+    // socket.emit("register", "user", userId);
+
+    // Ensure that uploadedFile properties are correctly used
+    const messagePayload: Response_ChatsTypes = {
+      sender: userId,
+      receiver: employeeId,
+      message: "image",
+      timestamp: new Date().toISOString(),
+      isRead: false,
+      userType: "employee",
+      attachment: {
+        type: uploadedFile.type,
+        url: uploadedFile.url, // ✅ Fixed: Use uploadedFile.url
+        name: uploadedFile.name, // ✅ Fixed: Use uploadedFile.name
+        size: uploadedFile.size, // ✅ Fixed: Use uploadedFile.size
+      },
+    };
+
+    socket.emit("sendMessage", messagePayload);
+    setMessages((prevMessages) => [...prevMessages, messagePayload]);
+  } catch (error) {
+    console.error("Error sending file:", error);
+    ToastAlert({
+      message: "Failed to send file",
+      type: "error",
+      onClose() {},
+    });
+  } finally {
+    setIsUploading(false);
+  }
+};
+
+
+
+const handleSendAudio = async (audioBlob: Blob) => {
+  if (!chatEnabled) {
+    setShowWarning(true);
+    return;
+  }
+
+  setIsUploading(true);
+  setUploadProgress(0);
+  
+  try {
+    const fileName = `audio_message_${Date.now()}.wav`;
+    const audioFile = new File([audioBlob], `audio_${Date.now()}.mp3`, { type: "audio/mp3" });
+
+    const { url } = await uploadAudioandVideo(audioFile,
+      (progress) => setUploadProgress(progress)
+    );
+
+    console.log(url);
+    
+    const messagePayload: Response_ChatsTypes = {
+      sender: userId,
+      receiver: employeeId,
+      message: "[Audio Message]",
+      timestamp: new Date().toISOString(),
+      isRead: false,
+      userType: "employee",
+      attachment: {
+        type: "audio",
+        url,
+        name: fileName,
+        size: audioBlob.size
+      }
+    };
+    
+    socket.emit("sendMessage", messagePayload);
+    setMessages((prevMessages) => [...prevMessages, messagePayload]);
+  } catch (error) {
+    console.error("Error sending audio:", error);
+    ToastAlert({ message: "Failed to send audio", type: "error",onClose(){} });
+  } finally {
+    setIsUploading(false);
+  }
+};
+
+
+
 
 
   useEffect(() => {
@@ -67,12 +163,18 @@ console.log('allJobsCompleted',allJobsCompleted);
       dispatch(User_get_MessagesUserId(userId))
         .unwrap()
         .then((result: Response_ChatsTypes[]) => {
+          console.log("resultttttttttttt",result);
+          
           const filteredMessages = result.filter(
             (msg) =>
               (msg.sender === employeeId && msg.receiver === userId) ||
               (msg.sender === userId && msg.receiver === employeeId)
           );
           console.log("fileter",filteredMessages);
+       
+            socket.emit("markAsRead", { sender: employeeId, receiver: userId });
+          
+          
           
           setMessages(filteredMessages);
         })
@@ -116,14 +218,28 @@ console.log('allJobsCompleted',allJobsCompleted);
   
     const handleMessage = (data: Response_ChatsTypes) => {
       setMessages((prevMessages) => [...prevMessages, data]);
-    };
+    
   
+      // Emit a read receipt if the received message is from the employee
+      if (data.sender === employeeId) {
+        socket.emit("markAsRead", { sender: employeeId, receiver: userId });
+      }
+    }
     socket.on("chatMessage", handleMessage);
   
+  
+    socket.on("messagesRead", ({ sender }) => {
+      console.log("✅ Messages read by:", sender);
+
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) => (msg.sender === sender ? { ...msg, isRead: true } : msg))
+      );
+    });
     return () => {
       socket.off("chatMessage", handleMessage);
+      socket.off('messagesRead')
     };
-  }, [userId]); // Run only when userId changes
+  }, [userId,employeeId]); // Run only when userId changes
   
 
 
@@ -143,6 +259,8 @@ console.log('allJobsCompleted',allJobsCompleted);
           receiver: employeeId,
           message: inputMessage,
           timestamp: new Date().toISOString(),
+          isRead: false, // New messages are unread by default
+
           userType: "employee",
         };
   
@@ -165,6 +283,7 @@ const handleCall = (callType: "audio" | "video") => {
       senderId: userId,
       senderName:userName,  
       receiverId: employeeId,
+      senderProfilePic:userDetails?.profilePic||"",
       callType,
       roomId:generatedRoomId
     };
@@ -225,8 +344,12 @@ const handleVideoCall = () => handleCall("video");
 
     
         {/* Chat Messages Section */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-900 scrollbar-hide">
-          {messages.map((msg, index) => (
+       <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-900 scrollbar-hide">
+
+
+
+
+   {messages.map((msg, index) => (
             <div
               key={index}
               className={`flex items-end ${
@@ -240,7 +363,17 @@ const handleVideoCall = () => handleCall("video");
                     : "bg-gray-800 text-gray-200"
                 }`}
               >
-                <p className="text-sm">{msg.message}</p>
+                            { 
+              msg.attachment?.url?"":
+              <p className="text-sm">{msg.message}
+              
+              </p>}
+
+                
+                    {msg.attachment?.url && <MessageAttachment attachment={msg.attachment}/>}
+
+
+                
                 <div className="text-xs text-gray-400 mt-1 flex items-center justify-between">
                   <span>
                     {new Date(msg.timestamp).toLocaleTimeString([], {
@@ -248,15 +381,11 @@ const handleVideoCall = () => handleCall("video");
                       minute: "2-digit",
                     })}
                   </span>
-                  {msg.sender === userId && (
-                    <span className="flex items-center space-x-1">
-                      {msg.isRead ? (
-                        <span className="text-cyan-400">✓✓</span>
-                      ) : (
-                        <span className="text-gray-500">✓</span>
-                      )}
-                    </span>
-                  )}
+                     {msg.sender === userId && (
+                  <span  className="text-cyan-400">{msg.isRead ? "✓✓" : "✓"}</span>
+                )}
+                  
+              
                 </div>
                 <span
                   className={`absolute w-3 h-3 ${
@@ -268,6 +397,21 @@ const handleVideoCall = () => handleCall("video");
               </div>
             </div>
           ))}
+
+{isUploading && (
+          <div className="fixed bottom-20 right-4 bg-gray-800 p-3 rounded-lg shadow-lg">
+            <div className="w-64">
+              <p className="text-sm text-white mb-1">Uploading...</p>
+              <div className="w-full bg-gray-700 rounded-full h-2.5">
+                <div 
+                  className="bg-blue-500 h-2.5 rounded-full" 
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-400 mt-1 text-right">{uploadProgress}%</p>
+            </div>
+          </div>
+        )}
     
           {/* Scroll to bottom ref */}
           <div ref={messagesEndRef} />
@@ -286,6 +430,16 @@ const handleVideoCall = () => handleCall("video");
     
         {/* Input Section */}
         <div className="p-4 bg-gray-800 border-t border-gray-700 flex items-center rounded-b-xl">
+           <div className="flex items-center gap-2 mr-2">
+                    <FileUploader 
+                      onFileSelect={handleSendFile}
+                      disabled={!chatEnabled}
+                    />
+                    <AudioRecorder 
+                      onRecordingComplete={handleSendAudio}
+                      disabled={!chatEnabled}
+                    />
+                  </div>
           <input
             type="text"
             className="flex-1 px-3 py-2 rounded-lg text-sm bg-gray-700 border border-gray-600 text-gray-300 focus:ring-2 focus:ring-cyan-400 outline-none"

@@ -8,6 +8,7 @@ import UsersManagement from "../pages/admin/users/UsersManagement"
 import Admin_joblist from "../pages/admin/jobs/Admin_joblist"
 import Protect from "../components/admin/protector/Protect"
 import AdminReportFeedbackList from "../pages/admin/report-feedback/Report-FeedBack"
+import BookingDetailsPage from "../pages/admin/report-feedback/reportBoooking_details"
 
 const AdminRoutes = () => {
   return (
@@ -53,6 +54,12 @@ const AdminRoutes = () => {
           <Protect>
 
             <AdminReportFeedbackList/>
+          </Protect>
+          }/>
+        <Route path="booking-details/:id" element={
+          <Protect>
+
+            <BookingDetailsPage/>
           </Protect>
           }/>
         <Route path="*" element={<NotFound />} />

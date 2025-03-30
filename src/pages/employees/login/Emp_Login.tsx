@@ -70,7 +70,7 @@ const Emp_Login = () => {
       dispatch(empReset())
       return;
     }
-    if (isSuccess) {
+    if (isSuccess&&employee) {
       
       navigate("/employee/home");
       // window.location.href='/employee/home'
