@@ -132,6 +132,7 @@ const handlePayment = useCallback(async () => {
       description: "Booking Confirmation Fee",
       image: "/your_logo.png",
       order_id: response.id,
+
     
       
       
@@ -149,6 +150,15 @@ const handlePayment = useCallback(async () => {
       theme: {
         color: "#3399cc",
       },
+      modal: {
+        escape: true, // Allow users to close via "ESC"
+        ondismiss: function () {
+          console.log("User canceled the payment.");
+          toast.warn("Payment was canceled. Please try again.");
+          setLoading(false); // Reset loading state
+          navigate('/home')
+        },
+      }
     };
     
     const rzp = new window.Razorpay(options);
