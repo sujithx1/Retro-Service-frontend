@@ -1,33 +1,70 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaChartLine, FaShoppingBag, FaBoxOpen } from "react-icons/fa";
+import { FaShoppingBag, FaBoxOpen, FaUndoAlt, FaTimesCircle, FaWallet } from "react-icons/fa";
 import { MdInventory } from "react-icons/md";
+
 import Sidebar from "../../../components/store_side/Sidebar";
 import StoreHeader from "../../../components/store_side/Header";
-import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../store/store";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { Store_get_oreders, Store_get_Wallet } from "../../../reducers/autopartsstore/autopartsStoreapicalls";
+import { User_OrderHistorytypes } from "../../../types/clients/UsersTypes";
 
 const StoreDashboard = () => {
-  const { store } = useSelector((state: RootState) => state.store);
-  const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
+  const { store } = useSelector((state: RootState) => state.store);
+
   const [loading, setLoading] = useState(true);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [pendingEarnings, setPendingEarnings] = useState(0);
+  const [returnedProducts, setReturnedProducts] = useState(0);
+  const [canceledProducts, setCanceledProducts] = useState(0);
+  const [bestProduct, setBestProduct] = useState("N/A");
+  const [walletBalance, setWalletBalance] = useState(0);
 
   useEffect(() => {
     if (store) {
-      Promise.all([dispatch(Store_get_Wallet(store.id)), dispatch(Store_get_oreders(store.id))])
-        .then(() => setLoading(false))
-        .catch(() => setLoading(false));
+      Promise.all([
+        dispatch(Store_get_Wallet(store.id)).unwrap()
+        .then((res) => setWalletBalance(res.balance)),
+        dispatch(Store_get_oreders(store.id)).unwrap().then((res) => processOrders(res))
+      ]).finally(() => setLoading(false));
     }
   }, [dispatch, store]);
 
+  const processOrders = (orders: User_OrderHistorytypes[]) => {
+    let revenue = 0, pending = 0, returns = 0, cancels = 0;
+    const productCount: Record<string, number> = {};
+
+    orders.forEach((order) => {
+      if (order.orderStatus === "completed") revenue += order.total;
+      else if (order.orderStatus === "pending") pending += order.total;
+      else if (order.orderStatus === "returned") returns++;
+      else if (order.orderStatus === "canceled") cancels++;
+
+      order.cart.products.forEach((item) => {
+        productCount[item.product.name] = (productCount[item.product.name] || 0) + item.quantity;
+      });
+    });
+
+    setTotalRevenue(revenue);
+    setPendingEarnings(pending);
+    setReturnedProducts(returns);
+    setCanceledProducts(cancels);
+
+    const bestSelling = Object.entries(productCount).sort((a, b) => b[1] - a[1])[0];
+    setBestProduct(bestSelling ? bestSelling[0] : "N/A");
+  };
+
   const stats = [
-    { label: "Total Sales", value: "$12,340", icon: FaChartLine, color: "from-blue-500 to-blue-700" },
-    { label: "Orders", value: "234", icon: FaBoxOpen, color: "from-green-500 to-green-700" },
-    { label: "Products", value: "45", icon: MdInventory, color: "from-yellow-500 to-yellow-700" },
-    { label: "Earnings", value: "$4,560", icon: FaShoppingBag, color: "from-purple-500 to-purple-700" },
+    { label: "Wallet Balance", value: `$${walletBalance}`, icon: FaWallet, color: "from-purple-500 to-purple-700" },
+    { label: "Total Revenue", value: `$${totalRevenue}`, icon: FaShoppingBag, color: "from-green-500 to-green-700" },
+    { label: "Pending Earnings", value: `$${pendingEarnings}`, icon: FaBoxOpen, color: "from-yellow-500 to-yellow-700" },
+    { label: "Returned Products", value: returnedProducts, icon: FaUndoAlt, color: "from-red-500 to-red-700" },
+    { label: "Canceled Products", value: canceledProducts, icon: FaTimesCircle, color: "from-gray-500 to-gray-700" },
+    { label: "Best Product", value: bestProduct, icon: MdInventory, color: "from-blue-500 to-blue-700" }
   ];
 
   return (
@@ -36,7 +73,6 @@ const StoreDashboard = () => {
       <div className="flex min-h-screen bg-gray-100">
         <Sidebar />
         <div className="flex-1 p-8">
-          {/* Page Title */}
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-extrabold text-gray-800">📊 Store Dashboard</h2>
             <button

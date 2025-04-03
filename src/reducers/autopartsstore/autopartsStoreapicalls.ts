@@ -398,12 +398,10 @@ export const Store_get_oreder=createAsyncThunk<User_OrderHistorytypes,string,{re
 
 
 
-export const Store_get_Wallet=createAsyncThunk<WalletResponse,string,{rejectValue:ErrorPayload}>('/store/trasactions/get',async(storeId,{rejectWithValue})=>{
+export const Store_get_Wallet=createAsyncThunk<WalletResponse,string,{rejectValue:ErrorPayload}>('/store/wallet/get',async(storeId,{rejectWithValue})=>{
   try {
     const response=await storeApiInstance.get(`/wallet/${storeId}`)
-    if(response.data){
-      return response.data.wallet
-    }
+    return response.data.wallet
   } catch (error) {
     if (isAxiosError(error)) {
       return rejectWithValue({
