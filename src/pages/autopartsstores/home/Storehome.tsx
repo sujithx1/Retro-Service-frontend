@@ -3,13 +3,25 @@ import { FaChartLine, FaShoppingBag, FaBoxOpen } from "react-icons/fa";
 import { MdInventory } from "react-icons/md";
 import Sidebar from "../../../components/store_side/Sidebar";
 import StoreHeader from "../../../components/store_side/Header";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../store/store";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Store_get_oreders, Store_get_Wallet } from "../../../reducers/autopartsstore/autopartsStoreapicalls";
 
 const StoreDashboard = () => {
   const { store } = useSelector((state: RootState) => state.store);
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (store) {
+      Promise.all([dispatch(Store_get_Wallet(store.id)), dispatch(Store_get_oreders(store.id))])
+        .then(() => setLoading(false))
+        .catch(() => setLoading(false));
+    }
+  }, [dispatch, store]);
 
   const stats = [
     { label: "Total Sales", value: "$12,340", icon: FaChartLine, color: "from-blue-500 to-blue-700" },
@@ -35,27 +47,32 @@ const StoreDashboard = () => {
             </button>
           </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center transition-all hover:shadow-2xl relative"
-              >
-                <div
-                  className={`absolute -top-6 w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r ${stat.color} text-white shadow-lg`}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center transition-all hover:shadow-2xl relative overflow-hidden"
                 >
-                  <stat.icon className="text-2xl" />
-                </div>
-                <div className="mt-8 text-center">
-                  <h3 className="text-xl font-semibold text-gray-700">{stat.label}</h3>
-                  <p className="text-gray-500 text-lg font-medium mt-1">{stat.value}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <div
+                    className={`absolute -top-6 w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r ${stat.color} text-white shadow-lg`}
+                  >
+                    <stat.icon className="text-2xl" />
+                  </div>
+                  <div className="mt-8 text-center">
+                    <h3 className="text-xl font-semibold text-gray-700">{stat.label}</h3>
+                    <p className="text-gray-500 text-lg font-medium mt-1">{stat.value}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

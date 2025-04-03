@@ -5,6 +5,7 @@ import { isAxiosError } from "axios";
 import { ErrorPayload, Locationuser_types, User_orderEdit_types, User_OrderHistorytypes } from "../../types/clients/UsersTypes";
 import Cookies from "js-cookie";
 import { CategoryStateTypes } from "../../types/admin/admintypes";
+import { WalletResponse } from "../../types/employee/EmployeeTypes";
 
 
 export const StoreRegister=createAsyncThunk<Store_types|void,storeRegister_types,{ rejectValue: ErrorPayload }>('/store/register',async(storeData,{rejectWithValue})=>{
@@ -374,6 +375,34 @@ export const Store_get_oreder=createAsyncThunk<User_OrderHistorytypes,string,{re
     const response=await storeApiInstance.get(`/order/${orderId}`)
     if(response.data){
       return response.data.order
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message:error.response?.data.error
+        ,status:error.response?.status
+      })
+
+      
+    }
+    return rejectWithValue({
+      message:"something wrong geting categories"
+    })
+    
+  }
+
+
+
+})
+
+
+
+
+export const Store_get_Wallet=createAsyncThunk<WalletResponse,string,{rejectValue:ErrorPayload}>('/store/trasactions/get',async(storeId,{rejectWithValue})=>{
+  try {
+    const response=await storeApiInstance.get(`/wallet/${storeId}`)
+    if(response.data){
+      return response.data.wallet
     }
   } catch (error) {
     if (isAxiosError(error)) {
