@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaShoppingBag, FaBoxOpen, FaUndoAlt, FaTimesCircle, FaWallet } from "react-icons/fa";
-import { MdInventory } from "react-icons/md";
 
 import Sidebar from "../../../components/store_side/Sidebar";
 import StoreHeader from "../../../components/store_side/Header";
@@ -21,22 +20,21 @@ const StoreDashboard = () => {
   const [pendingEarnings, setPendingEarnings] = useState(0);
   const [returnedProducts, setReturnedProducts] = useState(0);
   const [canceledProducts, setCanceledProducts] = useState(0);
-  const [bestProduct, setBestProduct] = useState("N/A");
+  const [bestProduct, setBestProduct] = useState<{ name: string; image: string; price: number } | null>(null);
   const [walletBalance, setWalletBalance] = useState(0);
 
   useEffect(() => {
     if (store) {
       Promise.all([
-        dispatch(Store_get_Wallet(store.id)).unwrap()
-        .then((res) => setWalletBalance(res.balance)),
-        dispatch(Store_get_oreders(store.id)).unwrap().then((res) => processOrders(res))
+        dispatch(Store_get_Wallet(store.id)).unwrap().then((res) => setWalletBalance(res.balance)),
+        dispatch(Store_get_oreders(store.id)).unwrap().then((res) => processOrders(res)),
       ]).finally(() => setLoading(false));
     }
   }, [dispatch, store]);
 
   const processOrders = (orders: User_OrderHistorytypes[]) => {
     let revenue = 0, pending = 0, returns = 0, cancels = 0;
-    const productCount: Record<string, number> = {};
+    const productCount: Record<string, { count: number; image: string; price: number }> = {};
 
     orders.forEach((order) => {
       if (order.orderStatus === "completed") revenue += order.total;
@@ -45,7 +43,10 @@ const StoreDashboard = () => {
       else if (order.orderStatus === "canceled") cancels++;
 
       order.cart.products.forEach((item) => {
-        productCount[item.product.name] = (productCount[item.product.name] || 0) + item.quantity;
+        if (!productCount[item.product.name]) {
+          productCount[item.product.name] = { count: 0, image: item.product.images[0], price: item.product.price };
+        }
+        productCount[item.product.name].count += item.quantity;
       });
     });
 
@@ -54,8 +55,8 @@ const StoreDashboard = () => {
     setReturnedProducts(returns);
     setCanceledProducts(cancels);
 
-    const bestSelling = Object.entries(productCount).sort((a, b) => b[1] - a[1])[0];
-    setBestProduct(bestSelling ? bestSelling[0] : "N/A");
+    const bestSelling = Object.entries(productCount).sort((a, b) => b[1].count - a[1].count)[0];
+    setBestProduct(bestSelling ? { name: bestSelling[0], ...bestSelling[1] } : null);
   };
 
   const stats = [
@@ -64,7 +65,6 @@ const StoreDashboard = () => {
     { label: "Pending Earnings", value: `$${pendingEarnings}`, icon: FaBoxOpen, color: "from-yellow-500 to-yellow-700" },
     { label: "Returned Products", value: returnedProducts, icon: FaUndoAlt, color: "from-red-500 to-red-700" },
     { label: "Canceled Products", value: canceledProducts, icon: FaTimesCircle, color: "from-gray-500 to-gray-700" },
-    { label: "Best Product", value: bestProduct, icon: MdInventory, color: "from-blue-500 to-blue-700" }
   ];
 
   return (
@@ -88,7 +88,7 @@ const StoreDashboard = () => {
               <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
@@ -108,6 +108,21 @@ const StoreDashboard = () => {
                 </motion.div>
               ))}
             </div>
+          )}
+
+          {/* Best Selling Product Section */}
+          {bestProduct && (
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="mt-10 bg-white p-6 rounded-2xl shadow-md flex flex-col sm:flex-row items-center transition-all hover:shadow-2xl"
+            >
+              <img src={bestProduct.image} alt={bestProduct.name} className="w-28 h-28 object-cover rounded-xl" />
+              <div className="ml-6 text-center sm:text-left">
+                <h3 className="text-2xl font-semibold text-gray-800">{bestProduct.name}</h3>
+                <p className="text-gray-500 text-lg font-medium mt-2">Price: ${bestProduct.price}</p>
+              </div>
+            </motion.div>
           )}
         </div>
       </div>
