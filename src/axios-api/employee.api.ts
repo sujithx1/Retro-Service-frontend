@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 export const employee_Axios_instance=axios.create({
     baseURL:`${import.meta.env.VITE_Employee_Url}`,
-    timeout:10000,
+    // timeout:10000,
     headers:{
         "Content-Type":"application/json"
     },
