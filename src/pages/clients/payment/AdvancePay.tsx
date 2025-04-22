@@ -83,6 +83,8 @@ const RazorpayPaymentAdvance = () => {
         })
         .catch((err) => {
           toast.error("Payment verification failed."+err);
+          localStorage.removeItem("paymentStarted"); // ✅ Reset payment status
+
           navigate("/payment-failed");
         });
     } catch (error) {
