@@ -21,15 +21,9 @@ import TransactionHistory from "../pages/clients/transactions/TransactionHistory
 import { CallData } from "../types/employee/EmployeeTypes";
 import MEEET from "../components/calls/Videocall2";
 import IncomingCallPopup from "../components/notification/incomecall";
-// import Videocall from "../components/calls/Videocall";
-// import Emp_call from "../components/employee/call/emp_call";
-// import Call from "./call";
-// import CallPage from "./Callercomponent";
-
-// import VideoCallLobby from "../components/calls/Lobby";
-// import { CallData } from "../types/employee/EmployeeTypes";
-
-// import EmployeeChat from "../pages/employees/chat/Chatewindow";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "../firebase/firstore";
+import Push_Notification from "../components/notification/Push_Notification";
 
 const EmployeesRoutes = () => {
   const { employee } = useSelector((state: RootState) => state.employee);
@@ -38,6 +32,43 @@ const EmployeesRoutes = () => {
 
   const canPlaySoundRef = useRef(false); // ✅ Use ref to track state outside React
 const navigate=useNavigate()
+const [notification, setNotification] = useState<{ title: string; message: string } | null>(null);
+
+
+
+useEffect(() => {
+
+
+  // Listen for messages
+  onMessage(messaging, (payload) => {
+    const { title, body} = payload.notification ?? {};
+    setNotification({ title: title ?? '', message: body ?? '' });
+  });
+  console.log("notificationnnn  --------- ");
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+    .register('/firebase-messaging-sw.js')
+    .then((registration) => {
+      console.log('Service Worker registered:', registration);
+  
+      if (registration.waiting) {
+        console.log("waiting...");
+        
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+    })
+    .catch((error) => {
+      console.error('Service Worker registration failed:', error);
+    });
+  
+  }else{
+    console.log("........ service worker not in Navigator .......");
+    
+  }
+
+}, []);
+
   useEffect(() => {
     socket.emit("register", "employee", employee?.id);
 
@@ -136,6 +167,13 @@ const rejectCall=(callData:CallData)=>{
 
   return (
     <>
+       {notification && (
+      <Push_Notification
+        title={notification.title}
+        message={notification.message}
+        onClose={() => setNotification(null)}
+      />
+    )}
 
 {incomingCall && (
         // <div className="fixed bottom-4 right-4 bg-gray-800 text-white p-4 rounded shadow-lg">

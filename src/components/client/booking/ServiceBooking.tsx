@@ -16,9 +16,6 @@ interface Props {
   }
    const ServiceBooking: React.FC<Props> = ({ service, onClose }) => {
     const [problem, setProblem] = useState('');
-    // const [userLocation,setUserLocation]=useState<FinduserLocation>()
-// const [employee, setEmployee] = useState(false);
-    // const [showMap, setShowMap] = useState(false);
     const {isSuccess,isError,message,user,reqService}=useSelector((state:RootState)=>state.user)
     const navigate=useNavigate()
     const dispstch:AppDispatch=useDispatch()
@@ -30,9 +27,6 @@ interface Props {
         }
     },[dispstch,isError,isSuccess,message])
 
-    // const handleToggleUserCurrentLocationMap = () => {
-    //   setShowuserCurrentLocationMap((prev) => !prev); // Toggle the visibility of the map
-    // };
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
     
@@ -58,7 +52,8 @@ interface Props {
           
         }
         dispstch(user_post_service_booking_send_every_Employee(serviceBookingData)).unwrap()
-          .then(()=>{toast.success("success Sevice Booking")
+          .then(()=>{
+            toast.success("success Sevice Booking")
             navigate('/req-service/waiting')
             console.log("req mechaincs",reqService.mechanics);
             
@@ -68,38 +63,19 @@ interface Props {
           .catch((err)=>toast.error(err))
 
         
+      }else {
+        toast.info("Check your Location")
       }
-      // if(selectEmp){
-      //   console.log("select employeee",selectEmp.userLocation);
-        
-      //   const serviceData:ServiceBooking_Types={
-      //     id:"",
-      //       userId:user?.id as string,
-      //       userName:name,
-      //       userEmail:email,
-      //       problem:problem,
-      //       employeeId:selectEmp.id,
-      //       employeeName:selectEmp.username,
-      //       empLocation:selectEmp.location as string,
-      //       jobId:service.id,
-      //       jobName:service.name,
-      //       ServiceMin_wage:service.minimum_wage,
-      //       userLocation:selectEmp.userLocation||"",
-      //       status:""
-      //   }
-      //   console.log("serviceeeeeeeeeee",serviceData);
-      //   dispstch(user_post_Service_Booking(serviceData)).unwrap()
-      //   .then(()=>{toast.success("success Sevice Booking")
-      //     navigate('/service-booking/prograss')
-      //   })
-      //   .catch((err)=>toast.error(err))
-      // }
+      
       onClose(); // Close the popup after submission
     };
   
 
     
     return (
+      <>
+
+
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
         <button
           onClick={onClose}
@@ -170,6 +146,7 @@ interface Props {
           </div>
         </form>
       </div>
+      </>
     );
   };
   

@@ -5,10 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../store/store";
 import { Locationuser_types, UserLoginType } from "../../../types/clients/UsersTypes";
-import { Emp_login_post, Emp_put_addLocation } from "../../../reducers/employees/EmployeeApicalls";
+import { Emp_login_post, Emp_put_addLocation, Employee_sendFCM_token } from "../../../reducers/employees/EmployeeApicalls";
+import { getToken } from "firebase/messaging";
+import { messaging } from "../../../firebase/firstore";
 
 const Emp_Login = () => {
     const { isError, isSuccess, message,employee } = useSelector((state: RootState) => state.employee);
+    const [FCM_Token,setFCM_token]=useState<string>("")
   const [logindata,setLogindata]=useState<UserLoginType>({email:"",password:""})
   const [loginError,setloginError]=useState({
     emailerr:"",
@@ -19,6 +22,32 @@ const Emp_Login = () => {
   const dispatch: AppDispatch = useDispatch();
 
   const navigate = useNavigate();
+
+
+
+
+
+  useEffect(()=>{
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        getToken(messaging, { vapidKey: "BM_4eJlUqeqI8UIcvMxT4qQOrpFZWzTKduSrUpkxrqu_qsKGZDmOke7QlHjSa_1s9AMvZ16yBDgegLrJrJXCkSk" })
+          .then((currentToken) => {
+            if (currentToken) {
+              console.log("FCM Token:", currentToken);
+              // Send this token to backend to store
+              setFCM_token(currentToken)
+            } else {
+              console.log("No registration token available.");
+            }
+          })
+          .catch((err) => {
+            console.log("An error occurred while retrieving token. ", err);
+          });
+      }
+    });
+  },[])
+
+
 
   
   useEffect(() => {
@@ -189,7 +218,16 @@ const Emp_Login = () => {
 e.preventDefault()
 if (handleValidate()) {
   
-  dispatch(Emp_login_post(logindata))
+  dispatch(Emp_login_post(logindata)).unwrap()
+  .then((res)=>{
+
+      const data={
+        empId:res.id,
+        FCM_token:FCM_Token
+      }
+    dispatch(Employee_sendFCM_token(data))
+    
+  })
 }
   }
   return (

@@ -670,3 +670,29 @@ string,
     });
   }
 });
+
+export const Employee_sendFCM_token= createAsyncThunk<
+
+void,
+{empId:string,FCM_token:string},
+  { rejectValue: ErrorPayload }
+>("/employee/send/FC_token", async ({empId,FCM_token}, { rejectWithValue }) => {
+  try {
+    const response = await employee_Axios_instance.put(
+      `/FCM_token/${empId}`,{FCM_token}
+    
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data.error,
+      });
+    }
+    return rejectWithValue({
+      message: "something wrong in geting chats ",
+    });
+  }
+});

@@ -10,35 +10,15 @@ import EmployeesRoutes from "./routes/EmployeesRoutes"
 import NotFound from "./components/NotFound"
 import StoreRoutes from "./routes/StoreRoutes"
 import AudioPlayer from "./pages/clients/userchat/audioplayer"
-// import { useEffect } from "react"
-// import socket from "./socket/socket"
-// import LocalMeet from "./routes/videocall"
 
 function App() {
-  
-  // useEffect(() => {
-  //   if (!socket.connected) {
-  //     console.log("Socket is not connected, attempting to connect...");
-  //     socket.connect(); // Use connect() instead of emitting "connection"
-  //   }
 
-  //   socket.on("connection", () => {
-  //     console.log("Socket connected:", socket.id);
-  //   });
-
-
-
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
-
-
+ 
 
 
   return (
     <>
-    
+  
     
 
     <Router>
@@ -56,7 +36,7 @@ function App() {
       
         
         
-     
+      
 
 
       
